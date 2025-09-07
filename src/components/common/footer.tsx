@@ -1,17 +1,24 @@
 import Link from 'next/link';
-import { Boxes } from 'lucide-react';
 
 export function Footer() {
+  const footerLinks = [
+    { name: 'Privacy Policy', href: '/privacy-policy' },
+    { name: 'Terms of Service', href: '/terms-of-service' },
+  ];
+
   return (
-    <footer className="border-t bg-card/50 backdrop-blur-lg">
-      <div className="container mx-auto px-4 py-6 text-center text-muted-foreground flex flex-col sm:flex-row justify-between items-center gap-4">
-        <Link href="/" className="flex items-center gap-2">
-          <Boxes className="w-7 h-7 text-primary" />
-          <span className="text-lg font-bold font-headline text-foreground">Toolbox AI</span>
-        </Link>
-        <p className="text-sm">
-          &copy; {new Date().getFullYear()} Toolbox AI. All rights reserved.
+    <footer className="border-t bg-background">
+      <div className="container mx-auto px-4 py-6 text-center text-muted-foreground flex flex-col sm:flex-row justify-center items-center gap-x-6 gap-y-4">
+        <p className="text-sm order-2 sm:order-1">
+          &copy; {new Date().getFullYear()} AllTools. All rights reserved.
         </p>
+        <div className="flex gap-6 order-1 sm:order-2">
+            {footerLinks.map((link) => (
+            <Link key={link.name} href={link.href} className="text-sm hover:text-primary transition-colors">
+                {link.name}
+            </Link>
+            ))}
+        </div>
       </div>
     </footer>
   );
