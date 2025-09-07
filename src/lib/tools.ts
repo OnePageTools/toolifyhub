@@ -16,7 +16,7 @@ import {
   Landmark,
   Braces,
   Code,
-  MonitorScreenshot,
+  MonitorSmartphone,
   Tags,
   Mail,
 } from 'lucide-react';
@@ -153,7 +153,7 @@ export const tools: Tool[] = [
     name: 'Website Screenshot',
     description: 'Capture a full-page screenshot of any website.',
     href: '/tools/website-screenshot',
-    icon: MonitorScreenshot,
+    icon: MonitorSmartphone,
     implemented: false,
   },
   {
