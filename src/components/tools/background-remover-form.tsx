@@ -1,27 +1,28 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Wand2, Upload, Download, Trash2 } from 'lucide-react';
+import { Loader2, Wand2, Upload, Download, Trash2, Image as ImageIcon } from 'lucide-react';
 import {
   removeBackground,
   type RemoveBackgroundOutput,
 } from '@/ai/flows/remove-background-flow';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 export function BackgroundRemoverForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [result, setResult] = useState<RemoveBackgroundOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleFileSelect = (file: File | undefined) => {
     if (file) {
       if (file.size > 4 * 1024 * 1024) { // 4MB limit
         toast({
@@ -40,6 +41,40 @@ export function BackgroundRemoverForm() {
       reader.readAsDataURL(file);
     }
   };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleFileSelect(event.target.files?.[0]);
+  };
+  
+  const onDragEnter = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+  
+  const onDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+  
+  const onDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true); // Keep it true while dragging over
+  };
+  
+  const onDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if(e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleFileSelect(e.dataTransfer.files[0]);
+        // To allow for re-uploading the same file if cleared
+        e.dataTransfer.clearData();
+    }
+  };
+
 
   const fileToDataUri = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -93,15 +128,35 @@ export function BackgroundRemoverForm() {
     <div className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="image-upload">Upload Image</Label>
-        <div className="flex items-center gap-2">
-          <Input id="image-upload" type="file" accept="image/png, image/jpeg, image/webp" onChange={handleFileChange} ref={fileInputRef} />
-          {preview && (
-             <Button variant="ghost" size="icon" onClick={handleClear}>
-                <Trash2 />
-                <span className='sr-only'>Clear</span>
-             </Button>
-          )}
-        </div>
+        <Input id="image-upload" type="file" accept="image/png, image/jpeg, image/webp" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
+        <label
+            htmlFor="image-upload"
+            className={cn(
+                "group relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary",
+                isDragging && "border-primary bg-primary/10",
+                preview && "p-0 border-0"
+            )}
+            onDragEnter={onDragEnter}
+            onDragLeave={onDragLeave}
+            onDragOver={onDragOver}
+            onDrop={onDrop}
+        >
+            {preview ? (
+              <>
+                <Image src={preview} alt="Original image preview" width={400} height={400} className="max-h-80 w-auto object-contain rounded-md" />
+                <Button variant="destructive" size="icon" onClick={(e) => { e.preventDefault(); handleClear()}} className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-md">
+                    <Trash2 className="h-4 w-4" />
+                    <span className='sr-only'>Clear</span>
+                </Button>
+              </>
+            ) : (
+                <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                    <ImageIcon className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
+                    <span className="font-semibold text-primary">Click to upload or drag & drop</span>
+                    <p className="text-xs">PNG, JPG, or WEBP (Max 4MB)</p>
+                </div>
+            )}
+        </label>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[256px]">
