@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Boxes } from 'lucide-react';
+import { Boxes, Wrench } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function Header() {
   return (
@@ -10,7 +11,15 @@ export function Header() {
           <Boxes className="w-8 h-8 text-primary" />
           <span className="text-xl font-bold font-headline">Toolbox AI</span>
         </Link>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" asChild>
+            <Link href="/">
+              <Wrench className="w-4 h-4 mr-2" />
+              Tools
+            </Link>
+          </Button>
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

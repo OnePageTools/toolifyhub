@@ -33,7 +33,7 @@ export default function Home() {
             aria-disabled={!tool.implemented}
             tabIndex={tool.implemented ? 0 : -1}
           >
-            <Card className="h-full flex flex-col transition-all duration-300 ease-in-out group-hover:shadow-2xl group-hover:scale-105 group-focus-visible:scale-105 group-focus-visible:shadow-2xl group-focus-visible:ring-2 group-focus-visible:ring-ring border-transparent bg-gradient-to-br from-card to-secondary/50 dark:to-card/70 group-hover:from-secondary/50 dark:group-hover:from-card/70">
+            <Card className="h-full flex flex-col transition-all duration-300 ease-in-out group-hover:shadow-2xl group-hover:-translate-y-2 group-focus-visible:-translate-y-2 group-focus-visible:shadow-2xl group-focus-visible:ring-2 group-focus-visible:ring-ring border-transparent bg-gradient-to-br from-card to-secondary/50 dark:to-card/70 group-hover:from-secondary/50 dark:group-hover:from-card/70">
               <CardHeader className="flex-row items-start gap-4 space-y-0">
                 <div className="p-3 bg-gradient-to-br from-primary to-accent rounded-lg shadow-md transition-all duration-300 group-hover:scale-110">
                   <tool.icon className="w-6 h-6 text-primary-foreground" />
@@ -52,7 +52,7 @@ export default function Home() {
               </CardContent>
               <div className="p-6 pt-0">
                  <div className="text-sm font-medium text-primary flex items-center gap-1">
-                    Use Tool
+                    {tool.implemented ? 'Use Tool' : 'Learn More'}
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                  </div>
               </div>

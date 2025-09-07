@@ -70,7 +70,7 @@ export const tools: Tool[] = [
     description: 'Automatically remove the background from your images.',
     href: '/tools/background-remover',
     icon: Eraser,
-    implemented: false,
+    implemented: true,
   },
   {
     name: 'QR Code Generator',
