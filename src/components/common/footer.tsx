@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Youtube, Instagram, Twitter } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -45,9 +44,10 @@ export function Footer() {
           <div className="footer-social glass-box">
             <h3>Follow Us</h3>
             <ul className="social-icons">
-              <li><a href="#" target="_blank" aria-label="YouTube"><Youtube /></a></li>
-              <li><a href="#" target="_blank" aria-label="Instagram"><Instagram /></a></li>
-              <li><a href="#" target="_blank" aria-label="Twitter"><Twitter /></a></li>
+              <li><a href="#" target="_blank">🔴 YouTube</a></li>
+              <li><a href="#" target="_blank">🎵 TikTok</a></li>
+              <li><a href="#" target="_blank">📸 Instagram</a></li>
+              <li><a href="#" target="_blank">🐦 Twitter</a></li>
             </ul>
           </div>
         </div>
