@@ -51,9 +51,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex min-h-screen flex-col bg-background">
+          <div className="relative flex min-h-screen flex-col bg-background">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+            >
+              <div className="absolute left-[20%] top-[5%] h-32 w-32 rounded-full bg-primary/20 blur-3xl" />
+              <div className="absolute right-[10%] top-[10%] h-48 w-48 rounded-full bg-accent/20 blur-3xl" />
+              <div className="absolute bottom-[10%] left-[5%] h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
+            </div>
             <Header />
-            <main className="flex-grow">{children}</main>
+            <main className="flex-grow z-10">{children}</main>
             <Footer />
           </div>
           <Toaster />
