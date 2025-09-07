@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="footer">
       <div className="container mx-auto px-4">
         <div className="footer-container">
-          <div className="footer-about glass-box">
+          <div className="footer-about">
             <h2>AllTools</h2>
             <p>
               Your All-in-One Free Toolkit. 20+ smart utilities to save time.
@@ -13,7 +13,7 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="footer-links glass-box">
+          <div className="footer-links">
             <h3>Quick Links</h3>
             <ul>
               <li><Link href="/">Home</Link></li>
@@ -23,7 +23,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="footer-support glass-box">
+          <div className="footer-support">
             <h3>Support</h3>
             <ul>
               <li><a href="mailto:goharkhan12131415@gmail.com">📧 Email Us</a></li>
@@ -32,7 +32,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="footer-legal glass-box">
+          <div className="footer-legal">
             <h3>Legal</h3>
             <ul>
               <li><Link href="#">Privacy Policy</Link></li>
@@ -41,13 +41,13 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="footer-social glass-box">
+          <div className="footer-social">
             <h3>Follow Us</h3>
-            <ul className="social-icons">
-              <li><a href="#" target="_blank">🔴 YouTube</a></li>
-              <li><a href="#" target="_blank">🎵 TikTok</a></li>
-              <li><a href="#" target="_blank">📸 Instagram</a></li>
-              <li><a href="#" target="_blank">🐦 Twitter</a></li>
+            <ul>
+               <li><a href="#" target="_blank">YouTube</a></li>
+               <li><a href="#" target="_blank">TikTok</a></li>
+               <li><a href="#" target="_blank">Instagram</a></li>
+               <li><a href="#" target="_blank">Twitter</a></li>
             </ul>
           </div>
         </div>
