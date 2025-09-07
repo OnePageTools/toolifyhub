@@ -13,8 +13,8 @@ import { ArrowRight } from 'lucide-react';
 export default function Home() {
   return (
     <div className="container mx-auto px-4 py-12">
-      <section className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tighter mb-4">
+      <section className="text-center mb-16">
+        <h1 className="text-4xl md:text-6xl font-bold font-headline tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
           Your All-in-One Free Toolkit
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -24,7 +24,7 @@ export default function Home() {
         </p>
       </section>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {tools.map((tool) => (
           <Link
             href={tool.href}
@@ -33,13 +33,13 @@ export default function Home() {
             aria-disabled={!tool.implemented}
             tabIndex={tool.implemented ? 0 : -1}
           >
-            <Card className="h-full flex flex-col transition-all duration-300 ease-in-out group-hover:shadow-lg group-hover:-translate-y-1 group-focus-visible:-translate-y-1 group-focus-visible:shadow-lg group-focus-visible:ring-2 group-focus-visible:ring-ring">
+            <Card className="h-full flex flex-col transition-all duration-300 ease-in-out group-hover:shadow-2xl group-hover:scale-105 group-focus-visible:scale-105 group-focus-visible:shadow-2xl group-focus-visible:ring-2 group-focus-visible:ring-ring border-transparent bg-gradient-to-br from-card to-secondary/50 dark:to-card/70 group-hover:from-secondary/50 dark:group-hover:from-card/70">
               <CardHeader className="flex-row items-start gap-4 space-y-0">
-                <div className="p-3 bg-secondary rounded-lg">
-                  <tool.icon className="w-6 h-6 text-primary" />
+                <div className="p-3 bg-gradient-to-br from-primary to-accent rounded-lg shadow-md transition-all duration-300 group-hover:scale-110">
+                  <tool.icon className="w-6 h-6 text-primary-foreground" />
                 </div>
                 <div className="flex-1">
-                  <CardTitle className="text-lg">{tool.name}</CardTitle>
+                  <CardTitle className="text-lg font-semibold">{tool.name}</CardTitle>
                   {!tool.implemented && (
                     <Badge variant="secondary" className="mt-1">
                       Coming Soon

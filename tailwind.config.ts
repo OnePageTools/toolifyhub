@@ -11,8 +11,8 @@ export default {
     extend: {
       fontFamily: {
         body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
-        code: ['monospace'],
+        headline: ['var(--font-poppins)', 'Inter', 'sans-serif'],
+        code: ['var(--font-roboto-mono)', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',

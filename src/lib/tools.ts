@@ -140,7 +140,7 @@ export const tools: Tool[] = [
     description: 'Format and validate your JSON data effortlessly.',
     href: '/tools/json-formatter',
     icon: Braces,
-    implemented: false,
+    implemented: true,
   },
   {
     name: 'Code Minifier',

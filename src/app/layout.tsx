@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Header } from '@/components/common/header';
 import { Toaster } from '@/components/ui/toaster';
 import { Footer } from '@/components/common/footer';
+import { Poppins, Roboto_Mono } from 'next/font/google';
 
 export const metadata: Metadata = {
   title: 'Toolbox AI - Your All-in-One Free Toolkit',
@@ -11,13 +12,26 @@ export const metadata: Metadata = {
     'A collection of 20+ free online tools including AI-powered utilities for text, images, and more. No sign-up required.',
 };
 
+const poppins = Poppins({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-poppins',
+  weight: ['400', '500', '600', '700', '800', '900'],
+});
+
+const robotoMono = Roboto_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-roboto-mono',
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${poppins.variable} ${robotoMono.variable}`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -37,7 +51,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex min-h-screen flex-col">
+          <div className="flex min-h-screen flex-col bg-background">
             <Header />
             <main className="flex-grow">{children}</main>
             <Footer />
