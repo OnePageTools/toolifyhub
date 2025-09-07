@@ -73,6 +73,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  .dark body {
+    background: linear-gradient(135deg, #0B1220, #141A2B);
+  }
   .bg-gradient-hero {
     background-image: radial-gradient(circle at 50% 0, hsl(var(--primary) / 0.1), transparent 40%);
   }
@@ -82,34 +85,49 @@
 }
 
 @layer components {
+  /* Glassmorphism Style */
+  .glass-box {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    @apply p-4 transition-transform duration-300 ease-in-out;
+  }
+  .glass-box:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+  }
+
   /* Footer Styles */
   .footer {
-    background: #0B1220;
-    color: #ffffff;
-    padding: 40px 20px 20px;
+    padding: 50px 20px 20px;
+    margin-top: 40px;
+    color: #fff;
     font-family: 'Inter', sans-serif;
   }
   .footer-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 30px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+    margin-bottom: 25px;
   }
   .footer h2 {
     font-size: 1.5rem;
     font-weight: bold;
-    color: hsl(var(--primary));
+    color: #00E0FF;
     margin-bottom: 0.5rem;
   }
   .footer h3 {
-    color: #0B63FF;
+    color: #00E0FF;
     margin-bottom: 1rem;
     font-weight: 600;
   }
   .footer-about p {
     font-size: 14px;
     line-height: 1.6;
-    color: hsl(var(--muted-foreground));
+    opacity: 0.85;
   }
   .footer-links ul,
   .footer-support ul,
@@ -126,17 +144,18 @@
   .footer a {
     color: #ffffff;
     text-decoration: none;
+    font-size: 14px;
     transition: color 0.3s ease;
   }
   .footer a:hover {
-    color: #00B894;
+    color: #00FFB3;
   }
   .footer-bottom {
     border-top: 1px solid rgba(255,255,255,0.2);
     text-align: center;
     padding-top: 15px;
     font-size: 13px;
-    color: hsl(var(--muted-foreground));
+    opacity: 0.8;
   }
   .social-icons {
       display: flex;

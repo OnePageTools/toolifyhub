@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="footer">
       <div className="container mx-auto px-4">
         <div className="footer-container">
-          <div className="footer-about">
+          <div className="footer-about glass-box">
             <h2>AllTools</h2>
             <p>
               Your All-in-One Free Toolkit. 20+ smart utilities to save time.
@@ -14,7 +14,7 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="footer-links">
+          <div className="footer-links glass-box">
             <h3>Quick Links</h3>
             <ul>
               <li><Link href="/">Home</Link></li>
@@ -24,7 +24,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="footer-support">
+          <div className="footer-support glass-box">
             <h3>Support</h3>
             <ul>
               <li><a href="mailto:goharkhan12131415@gmail.com">📧 Email Us</a></li>
@@ -33,7 +33,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="footer-legal">
+          <div className="footer-legal glass-box">
             <h3>Legal</h3>
             <ul>
               <li><Link href="#">Privacy Policy</Link></li>
@@ -42,13 +42,12 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="footer-social">
+          <div className="footer-social glass-box">
             <h3>Follow Us</h3>
             <ul className="social-icons">
               <li><a href="#" target="_blank" aria-label="YouTube"><Youtube /></a></li>
               <li><a href="#" target="_blank" aria-label="Instagram"><Instagram /></a></li>
               <li><a href="#" target="_blank" aria-label="Twitter"><Twitter /></a></li>
-              <li><a href="#" target="_blank" aria-label="TikTok">TikTok</a></li>
             </ul>
           </div>
         </div>
