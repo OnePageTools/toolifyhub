@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Menu, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 const AppLogo = () => (
   <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -34,6 +34,7 @@ export function Header() {
                 </Button>
             </SheetTrigger>
             <SheetContent>
+                <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
                 {/* Add mobile navigation links here */}
             </SheetContent>
            </Sheet>
