@@ -20,26 +20,33 @@ import {
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { tools as allTools } from '@/lib/tools';
-import type { Tool } from "@/lib/tools";
+import type { Tool, ToolCategory } from "@/lib/tools";
+import { cn } from "@/lib/utils";
 
 const MotionLink = motion(Link);
+
+const categories: ToolCategory[] = ["PDF", "Image", "Text", "Dev", "Utilities"];
 
 export default function Home() {
   const [darkMode, setDarkMode] = useState(false);
   const [query, setQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<ToolCategory | "All">("All");
 
-  const filtered = allTools.filter(
-    (t) =>
-      t.name.toLowerCase().includes(query.toLowerCase()) ||
-      t.description.toLowerCase().includes(query.toLowerCase())
-  );
+  const filteredTools = allTools
+    .filter((tool) =>
+      selectedCategory === "All" ? true : tool.category === selectedCategory
+    )
+    .filter(
+      (tool) =>
+        tool.name.toLowerCase().includes(query.toLowerCase()) ||
+        tool.description.toLowerCase().includes(query.toLowerCase())
+    );
 
   return (
     <div className={`${darkMode ? "dark" : ""} min-h-screen relative overflow-hidden font-body bg-background text-foreground`}>
@@ -122,9 +129,40 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Category Filters */}
+        <div className="px-6 pt-6">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <button
+              onClick={() => setSelectedCategory("All")}
+              className={cn(
+                "px-4 py-2 text-sm font-semibold rounded-full transition-all duration-300",
+                selectedCategory === "All"
+                  ? "bg-white/80 dark:bg-black/80 text-gray-900 dark:text-white shadow-lg"
+                  : "bg-white/30 dark:bg-black/40 text-gray-800 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-black/60"
+              )}
+            >
+              All
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={cn(
+                  "px-4 py-2 text-sm font-semibold rounded-full transition-all duration-300",
+                  selectedCategory === category
+                    ? "bg-white/80 dark:bg-black/80 text-gray-900 dark:text-white shadow-lg"
+                    : "bg-white/30 dark:bg-black/40 text-gray-800 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-black/60"
+                )}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Tools Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 px-6 py-8 flex-1">
-          {filtered.map((tool: Tool) => (
+          {filteredTools.map((tool: Tool) => (
             <MotionLink
               href={tool.href}
               key={tool.name}
