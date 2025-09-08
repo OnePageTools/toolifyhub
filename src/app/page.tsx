@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { tools as allTools } from '@/lib/tools';
 import type { Tool, ToolCategory } from "@/lib/tools";
 import { cn } from "@/lib/utils";
+import Footer from "@/components/common/footer";
 
 const MotionLink = motion(Link);
 
@@ -188,7 +189,8 @@ export default function Home() {
         <div className="mx-6 mb-4 rounded-2xl bg-black/10 dark:bg-white/10 h-14 flex items-center justify-center border border-white/20">
           <span className="font-medium text-sm text-gray-700 dark:text-gray-300">Banner Ad Placeholder</span>
         </div>
-
+        
+        <Footer />
       </div>
     </div>
   );
