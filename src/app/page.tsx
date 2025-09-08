@@ -15,7 +15,17 @@ import {
   Grid3X3,
   Heart,
   Settings,
+  Menu,
 } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 import { tools as allTools } from '@/lib/tools';
 import type { Tool } from "@/lib/tools";
 
@@ -46,12 +56,44 @@ export default function Home() {
           <h1 className="font-extrabold text-lg tracking-wide flex items-center gap-2 text-gray-800 dark:text-white">
             <Zap className="w-5 h-5 text-yellow-400" /> All-in-One Tools
           </h1>
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded-full bg-white/30 dark:bg-black/40 hover:scale-110 transition-transform"
-          >
-            {darkMode ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5 text-indigo-800" />}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className="p-2 rounded-full bg-white/30 dark:bg-black/40 hover:scale-110 transition-transform"
+            >
+              {darkMode ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5 text-indigo-800" />}
+            </button>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="p-2 rounded-full bg-white/30 dark:bg-black/40 hover:scale-110 transition-transform text-gray-800 dark:text-white">
+                  <Menu className="w-5 h-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle>Navigation</SheetTitle>
+                </SheetHeader>
+                <nav className="mt-8 flex flex-col gap-4">
+                  <Link href="#" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
+                    <HomeIcon className="w-5 h-5" />
+                    Home
+                  </Link>
+                  <Link href="#" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
+                    <Grid3X3 className="w-5 h-5" />
+                    All Tools
+                  </Link>
+                  <Link href="#" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
+                    <Heart className="w-5 h-5" />
+                    Favorites
+                  </Link>
+                  <Link href="#" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
+                    <Settings className="w-5 h-5" />
+                    Settings
+                  </Link>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
         </header>
 
         {/* Hero */}
@@ -105,29 +147,10 @@ export default function Home() {
         </div>
 
         {/* Banner Ad Placeholder */}
-        <div className="mx-6 mb-24 rounded-2xl bg-black/10 dark:bg-white/10 h-14 flex items-center justify-center border border-white/20">
+        <div className="mx-6 mb-4 rounded-2xl bg-black/10 dark:bg-white/10 h-14 flex items-center justify-center border border-white/20">
           <span className="font-medium text-sm text-gray-700 dark:text-gray-300">Banner Ad Placeholder</span>
         </div>
 
-        {/* Bottom Nav */}
-        <nav className="fixed bottom-0 left-0 right-0 flex justify-around items-center py-2 backdrop-blur-xl bg-white/30 dark:bg-black/30 shadow-xl border-t border-white/20 dark:border-white/10">
-          <button className="flex flex-col items-center text-xs hover:scale-110 transition-transform text-gray-700 dark:text-gray-300">
-            <HomeIcon className="w-5 h-5" />
-            Home
-          </button>
-          <button className="flex flex-col items-center text-xs hover:scale-110 transition-transform text-gray-700 dark:text-gray-300">
-            <Grid3X3 className="w-5 h-5" />
-            Tools
-          </button>
-          <button className="flex flex-col items-center text-xs hover:scale-110 transition-transform text-gray-700 dark:text-gray-300">
-            <Heart className="w-5 h-5" />
-            Fav
-          </button>
-          <button className="flex flex-col items-center text-xs hover:scale-110 transition-transform text-gray-700 dark:text-gray-300">
-            <Settings className="w-5 h-5" />
-            Settings
-          </button>
-        </nav>
       </div>
     </div>
   );
