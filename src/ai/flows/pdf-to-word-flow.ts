@@ -71,6 +71,8 @@ const convertPdfToWordFlow = ai.defineFlow(
 
     // Use AI to format the extracted text
     const { output } = await prompt({ text: truncatedText });
+
+    // The prompt's output schema now includes textContent, so we can return it directly.
     return output!;
   }
 );
