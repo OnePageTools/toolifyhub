@@ -1,14 +1,14 @@
 'use server';
 /**
- * @fileOverview A flow for converting PDF content to editable text.
- * - convertPdfToWord - A function that extracts text from a PDF file.
+ * @fileOverview A flow for converting PDF content to editable text using OCR.
+ * - convertPdfToWord - A function that extracts text from a PDF file, including from images.
  * - ConvertPdfToWordInput - The input type for the function.
  * - ConvertPdfToWordOutput - The return type for the function.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import pdf from 'pdf-parse/lib/pdf-parse.js';
+import { gemini15Flash } from '@genkit-ai/googleai';
 
 const ConvertPdfToWordInputSchema = z.object({
   pdfDataUri: z
@@ -31,17 +31,18 @@ export async function convertPdfToWord(input: ConvertPdfToWordInput): Promise<Co
 
 const prompt = ai.definePrompt({
     name: 'pdfToWordPrompt',
-    input: { schema: z.object({ text: z.string() }) },
+    input: { schema: z.object({ pdfDataUri: z.string() }) },
     output: { schema: z.object({ textContent: z.string().describe('The extracted and formatted text content from the PDF.') }) },
-    prompt: `You are a document conversion expert. Your task is to take the raw text extracted from a PDF and format it nicely so it can be used in a Word document.
+    prompt: `You are a document conversion expert. Your task is to perform OCR on the provided PDF, extract all text content, and format it nicely so it can be used in a Word document.
     
     Preserve the structure of the document as much as possible, including headings, paragraphs, lists, and tables. Use Markdown for formatting if it helps represent the structure.
     
-    Clean up any artifacts from the PDF extraction process, such as incorrect line breaks, repeated headers/footers, or misplaced page numbers.
+    Clean up any artifacts from the process, such as incorrect line breaks, repeated headers/footers, or misplaced page numbers.
 
-    Here is the extracted text:
-    {{{text}}}
+    Here is the PDF:
+    {{{media url=pdfDataUri}}}
     `,
+    model: gemini15Flash, // Use a model capable of handling PDF input
 });
 
 const convertPdfToWordFlow = ai.defineFlow(
@@ -51,27 +52,16 @@ const convertPdfToWordFlow = ai.defineFlow(
     outputSchema: ConvertPdfToWordOutputSchema,
   },
   async (input) => {
-    // Convert data URI to buffer
-    const base64Data = input.pdfDataUri.split(',')[1];
-    const pdfBuffer = Buffer.from(base64Data, 'base64');
-
-    let rawText;
     try {
-      // Parse PDF to extract text
-      const data = await pdf(pdfBuffer, { max: 1 }); // Limit to the first page to avoid overly large content
-      rawText = data.text;
+      // Use AI to perform OCR and format the extracted text
+      const { output } = await prompt({ pdfDataUri: input.pdfDataUri });
+
+      // The prompt's output schema now includes textContent, so we can return it directly.
+      return { textContent: output?.textContent };
+
     } catch (error) {
-       console.error("Error parsing PDF:", error);
-       return { error: "Failed to parse the PDF file. It might be corrupted or too complex." };
+       console.error("Error processing PDF with AI:", error);
+       return { error: "Failed to process the PDF file. It might be corrupted or an unsupported format." };
     }
-    
-    // Truncate the text to a safe length to avoid token limits.
-    const truncatedText = rawText.substring(0, 10000);
-
-    // Use AI to format the extracted text
-    const { output } = await prompt({ text: truncatedText });
-
-    // The prompt's output schema now includes textContent, so we can return it directly.
-    return { textContent: output?.textContent };
   }
 );
