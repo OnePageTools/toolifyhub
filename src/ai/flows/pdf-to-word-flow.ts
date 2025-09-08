@@ -33,11 +33,18 @@ const prompt = ai.definePrompt({
     name: 'pdfToWordPrompt',
     input: { schema: z.object({ pdfDataUri: z.string() }) },
     output: { schema: z.object({ textContent: z.string().describe('The extracted and formatted text content from the PDF.') }) },
-    prompt: `You are a document conversion expert. Your task is to perform OCR on the provided PDF, extract all text content, and format it nicely so it can be used in a Word document.
-    
-    Preserve the structure of the document as much as possible, including headings, paragraphs, lists, and tables. Use Markdown for formatting if it helps represent the structure.
-    
-    Clean up any artifacts from the process, such as incorrect line breaks, repeated headers/footers, or misplaced page numbers.
+    prompt: `You are a document conversion expert specializing in high-fidelity PDF to Markdown conversion. Your task is to perform OCR on the provided PDF, extract all text content, and format it into well-structured Markdown that can be easily used in a Word document.
+
+    Follow these rules meticulously:
+    1.  **Text Formatting**: Preserve all rich text formatting. Use Markdown syntax: **bold** for bold, *italic* for italic.
+    2.  **Headings**: Identify and use appropriate Markdown heading levels (e.g., #, ##, ###).
+    3.  **Lists**: Recreate both bulleted and numbered lists correctly.
+    4.  **Tables**: Convert any tables into valid Markdown tables, preserving their structure.
+    5.  **Hyperlinks**: Ensure all hyperlinks are preserved and functional using the format [link text](URL).
+    6.  **Layout**: Retain the original document structure, including paragraphs, line breaks, and relative spacing. Preserve columns if possible.
+    7.  **Cleanup**: Clean up any OCR artifacts. Remove repeated headers, footers, and page numbers from the body of the text.
+
+    The final output must be a single, clean Markdown document that is an editable and structurally identical representation of the original PDF.
 
     Here is the PDF:
     {{{media url=pdfDataUri}}}
