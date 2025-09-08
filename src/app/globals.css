@@ -86,18 +86,20 @@
 
 @layer components {
   /* Glassmorphism Style */
-  .glass-box {
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-    @apply p-4 transition-transform duration-300 ease-in-out;
+  .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+    @apply transition-all duration-300 ease-in-out;
   }
-  .glass-box:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
   }
 
   /* Footer Styles */
