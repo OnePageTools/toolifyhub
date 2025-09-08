@@ -110,9 +110,6 @@ export default function Home() {
             <Sparkles className="text-pink-400 w-6 h-6" />
             Your All-in-One Free Toolkit
           </h2>
-          <p className="text-sm opacity-85 mt-2 max-w-lg mx-auto text-gray-700 dark:text-gray-300">
-            SEO Optimized • Ultra Fast • Mobile Friendly • No Signup
-          </p>
         </div>
 
         {/* Search */}
