@@ -41,8 +41,7 @@ const convertWordToPdfFlow = ai.defineFlow(
     outputSchema: ConvertWordToPdfOutputSchema,
   },
   async (input) => {
-    let tempDocxPath = '';
-    let tempPdfPath = '';
+    let tempDir: string | null = null;
 
     try {
       // 1. Decode the Base64 data URI
@@ -53,18 +52,19 @@ const convertWordToPdfFlow = ai.defineFlow(
       const docxBuffer = Buffer.from(base64Data, 'base64');
 
       // 2. Write the buffer to a temporary file
-      const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'docx-'));
-      tempDocxPath = path.join(tempDir, 'input.docx');
-      tempPdfPath = path.join(tempDir, 'output.pdf');
+      tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'docx-pdf-'));
+      const tempDocxPath = path.join(tempDir, 'input.docx');
+      const tempPdfPath = path.join(tempDir, 'output.pdf');
       
       await fs.writeFile(tempDocxPath, docxBuffer);
 
       // 3. Convert the DOCX file to PDF
       await new Promise<void>((resolve, reject) => {
-          docx_pdf(tempDocxPath, tempPdfPath, (err: any, result: any) => {
+          docx_pdf(tempDocxPath, tempPdfPath, (err: any) => {
               if (err) {
                   console.error("docx-pdf conversion error:", err);
-                  reject(new Error('Failed to convert the document to PDF.'));
+                  // Provide a more generic error message as library internals can be complex
+                  reject(new Error('Failed to convert the document to PDF. The file may be unsupported or corrupted.'));
               } else {
                   resolve();
               }
@@ -83,12 +83,12 @@ const convertWordToPdfFlow = ai.defineFlow(
       console.error("Error during Word to PDF conversion:", error);
       return { error: error.message || 'An unexpected error occurred during conversion.' };
     } finally {
-      // 5. Clean up temporary files
-       if (tempDocxPath) {
+      // 5. Clean up temporary directory
+       if (tempDir) {
           try {
-            await fs.rm(path.dirname(tempDocxPath), { recursive: true, force: true });
+            await fs.rm(tempDir, { recursive: true, force: true });
           } catch (cleanupError) {
-            console.error('Failed to clean up temporary files:', cleanupError);
+            console.error('Failed to clean up temporary directory:', cleanupError);
           }
       }
     }
