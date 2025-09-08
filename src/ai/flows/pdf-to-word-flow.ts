@@ -57,9 +57,12 @@ const convertPdfToWordFlow = ai.defineFlow(
     // Parse PDF to extract text
     const data = await pdf(pdfBuffer, { max: 1 }); // Limit to the first page to avoid overly large content
     const rawText = data.text;
+    
+    // Truncate the text to a safe length to avoid token limits.
+    const truncatedText = rawText.substring(0, 10000);
 
     // Use AI to format the extracted text
-    const { output } = await prompt({ text: rawText });
+    const { output } = await prompt({ text: truncatedText });
     return output!;
   }
 );
