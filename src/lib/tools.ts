@@ -59,7 +59,7 @@ export const tools: Tool[] = [
     href: '/tools/word-to-pdf',
     icon: FileDown,
     category: 'PDF',
-    implemented: false,
+    implemented: true,
   },
   {
     name: 'PDF Compressor',
