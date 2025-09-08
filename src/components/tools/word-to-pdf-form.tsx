@@ -3,16 +3,18 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload, FileDown, Download, FileCheck2 } from 'lucide-react';
-import { convertWordToPdf } from '@/ai/flows/word-to-pdf-flow';
+import { Loader2, Upload, FileDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import mammoth from 'mammoth';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export function WordToPdfForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [resultDataUri, setResultDataUri] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const handleFileSelect = (file: File | undefined) => {
@@ -34,7 +36,6 @@ export function WordToPdfForm() {
         return;
       }
       setSelectedFile(file);
-      setResultDataUri(null);
     }
   };
   
@@ -70,15 +71,6 @@ export function WordToPdfForm() {
     }
   };
 
-  const fileToDataUri = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-      reader.readAsDataURL(file);
-    });
-  };
-
   const handleSubmit = async () => {
     if (!selectedFile) {
       toast({
@@ -90,85 +82,104 @@ export function WordToPdfForm() {
     }
 
     setIsLoading(true);
-    setResultDataUri(null);
 
     try {
-      const docxDataUri = await fileToDataUri(selectedFile);
-      const response = await convertWordToPdf({ docxDataUri });
-      
-      if (response.error) {
-        toast({
-          variant: "destructive",
-          title: "Conversion Failed",
-          description: response.error,
-        });
-      } else if (response.pdfDataUri) {
-        setResultDataUri(response.pdfDataUri);
-         toast({
-          title: "Success!",
-          description: "Your file has been converted to PDF.",
-        });
-      }
+      const arrayBuffer = await selectedFile.arrayBuffer();
+      const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
 
+      if (previewRef.current) {
+        // Render the HTML in a hidden div to get the layout
+        previewRef.current.innerHTML = html;
+        
+        // Use html2canvas to capture the rendered content
+        const canvas = await html2canvas(previewRef.current, {
+          scale: 2, // Improve quality
+          useCORS: true,
+          logging: false,
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        
+        // Calculate PDF dimensions
+        const pdf = new jsPDF({
+          orientation: canvas.width > canvas.height ? 'l' : 'p',
+          unit: 'px',
+          format: [canvas.width, canvas.height],
+        });
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.save(selectedFile.name.replace('.docx', '.pdf'));
+
+        toast({
+          title: "Success!",
+          description: "Your file has been converted and downloaded.",
+        });
+      } else {
+        throw new Error("Preview container not found.");
+      }
     } catch (error) {
       console.error(error);
       toast({
         variant: "destructive",
         title: "An error occurred",
         description:
-          "An unexpected error occurred. Please try again.",
+          "Failed to convert the document. It might be corrupted or use unsupported features.",
       });
     } finally {
       setIsLoading(false);
+      // Clear the preview content
+      if (previewRef.current) {
+        previewRef.current.innerHTML = '';
+      }
     }
   };
 
   return (
-    <div className="space-y-6 flex flex-col items-center">
-       <input id="docx-upload" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
-       <label
-            htmlFor="docx-upload"
-            className={cn(
-                "group relative flex w-full max-w-lg cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary",
-                isDragging && "border-primary bg-primary/10",
-            )}
-            onDragEnter={onDragEnter}
-            onDragLeave={onDragLeave}
-            onDragOver={onDragOver}
-            onDrop={onDrop}
-        >
-             <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                <Upload className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
-                <span className="font-semibold text-primary">
-                    {selectedFile ? selectedFile.name : "Click to upload or drag & drop"}
-                </span>
-                <p className="text-xs">.docx only (Max 50MB)</p>
-            </div>
-        </label>
+    <>
+      <div className="space-y-6 flex flex-col items-center">
+        <input id="docx-upload" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
+        <label
+              htmlFor="docx-upload"
+              className={cn(
+                  "group relative flex w-full max-w-lg cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary",
+                  isDragging && "border-primary bg-primary/10",
+              )}
+              onDragEnter={onDragEnter}
+              onDragLeave={onDragLeave}
+              onDragOver={onDragOver}
+              onDrop={onDrop}
+          >
+              <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                  <Upload className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
+                  <span className="font-semibold text-primary">
+                      {selectedFile ? selectedFile.name : "Click to upload or drag & drop"}
+                  </span>
+                  <p className="text-xs">.docx only (Max 50MB)</p>
+              </div>
+          </label>
 
-      <div className="flex flex-col items-center gap-4">
-         <Button onClick={handleSubmit} disabled={isLoading || !selectedFile} size="lg">
-            {isLoading ? (
-                <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Converting...
-                </>
-            ) : (
-                <>
-                <FileDown className="mr-2 h-4 w-4" />
-                Convert to PDF
-                </>
-            )}
-        </Button>
-        {resultDataUri && (
-            <a href={resultDataUri} download={selectedFile?.name.replace('.docx', '.pdf') || 'document.pdf'}>
-                <Button variant="outline" size="lg" className="border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700">
-                    <Download className="mr-2 h-5 w-5" />
-                    Download PDF
-                </Button>
-            </a>
-        )}
+        <div className="flex flex-col items-center gap-4">
+          <Button onClick={handleSubmit} disabled={isLoading || !selectedFile} size="lg">
+              {isLoading ? (
+                  <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Converting...
+                  </>
+              ) : (
+                  <>
+                  <FileDown className="mr-2 h-4 w-4" />
+                  Convert & Download PDF
+                  </>
+              )}
+          </Button>
+        </div>
       </div>
-    </div>
+      {/* Hidden div for rendering HTML to be captured by html2canvas */}
+      <div 
+        ref={previewRef} 
+        className="absolute -z-10 -left-[9999px] top-0 w-[8.5in] p-[1in] bg-white"
+        aria-hidden="true"
+      />
+    </>
   );
 }
