@@ -99,14 +99,24 @@ export function PdfToWordForm() {
     try {
       const pdfDataUri = await fileToDataUri(selectedFile);
       const response = await convertPdfToWord({ pdfDataUri });
-      setResult(response);
+      
+      if (response.error) {
+        toast({
+          variant: "destructive",
+          title: "Conversion Failed",
+          description: response.error,
+        });
+      } else {
+        setResult(response);
+      }
+
     } catch (error) {
       console.error(error);
       toast({
         variant: "destructive",
         title: "An error occurred",
         description:
-          "Failed to convert PDF. The file might be corrupted or too complex. Please try again.",
+          "An unexpected error occurred. Please try again.",
       });
     } finally {
       setIsLoading(false);
@@ -170,7 +180,7 @@ export function PdfToWordForm() {
         </Button>
       </div>
       
-      {result && (
+      {result && result.textContent && (
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Editable Text Content</CardTitle>

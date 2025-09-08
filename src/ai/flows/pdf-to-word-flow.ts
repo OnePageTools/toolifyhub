@@ -20,7 +20,8 @@ const ConvertPdfToWordInputSchema = z.object({
 export type ConvertPdfToWordInput = z.infer<typeof ConvertPdfToWordInputSchema>;
 
 const ConvertPdfToWordOutputSchema = z.object({
-  textContent: z.string().describe('The extracted and formatted text content from the PDF.'),
+  textContent: z.string().optional().describe('The extracted and formatted text content from the PDF.'),
+  error: z.string().optional().describe('An error message if the conversion failed.'),
 });
 export type ConvertPdfToWordOutput = z.infer<typeof ConvertPdfToWordOutputSchema>;
 
@@ -31,7 +32,8 @@ export async function convertPdfToWord(input: ConvertPdfToWordInput): Promise<Co
 const prompt = ai.definePrompt({
     name: 'pdfToWordPrompt',
     input: { schema: z.object({ text: z.string() }) },
-    output: { schema: ConvertPdfToWordOutputSchema },
+    // We only want the textContent in the AI output schema
+    output: { schema: z.object({ textContent: z.string().describe('The extracted and formatted text content from the PDF.') }) },
     prompt: `You are a document conversion expert. Your task is to take the raw text extracted from a PDF and format it nicely so it can be used in a Word document.
     
     Preserve the structure of the document as much as possible, including headings, paragraphs, lists, and tables. Use Markdown for formatting if it helps represent the structure.
@@ -61,7 +63,7 @@ const convertPdfToWordFlow = ai.defineFlow(
       rawText = data.text;
     } catch (error) {
        console.error("Error parsing PDF:", error);
-       throw new Error("Failed to parse the PDF file. It might be corrupted or too complex.");
+       return { error: "Failed to parse the PDF file. It might be corrupted or too complex." };
     }
     
     // Truncate the text to a safe length to avoid token limits.
