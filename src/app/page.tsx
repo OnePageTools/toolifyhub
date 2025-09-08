@@ -33,6 +33,8 @@ function Particles() {
   );
 }
 
+const MotionLink = motion(Link);
+
 export default function Home() {
   const [darkMode, setDarkMode] = useState(false);
   const [query, setQuery] = useState("");
@@ -86,20 +88,20 @@ export default function Home() {
           
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 px-6 py-8 flex-1">
             {filteredTools.map((tool: Tool) => (
-               <Link href={tool.href} key={tool.name} legacyBehavior>
-                <motion.a
-                  whileHover={{ scale: 1.07, y: -6, rotate: [0, 1, -1, 0] }}
-                  className="rounded-3xl backdrop-blur-xl bg-white/40 dark:bg-black/40 p-5 shadow-2xl flex flex-col justify-between cursor-pointer transition-all duration-300 border border-white/30 dark:border-white/10"
-                >
-                  <div>
-                    <h3 className="font-bold text-base drop-shadow-sm text-gray-800 dark:text-white">{tool.name}</h3>
-                    <p className="text-xs opacity-75 mt-2 leading-snug text-gray-700 dark:text-gray-300">{tool.description}</p>
-                  </div>
-                  <div className="flex justify-end mt-3">
-                    <ChevronRight className="w-5 h-5 opacity-70 text-gray-700 dark:text-gray-300" />
-                  </div>
-                </motion.a>
-              </Link>
+               <MotionLink
+                href={tool.href} 
+                key={tool.name}
+                whileHover={{ scale: 1.07, y: -6, rotate: [0, 1, -1, 0] }}
+                className="rounded-3xl backdrop-blur-xl bg-white/40 dark:bg-black/40 p-5 shadow-2xl flex flex-col justify-between cursor-pointer transition-all duration-300 border border-white/30 dark:border-white/10"
+              >
+                <div>
+                  <h3 className="font-bold text-base drop-shadow-sm text-gray-800 dark:text-white">{tool.name}</h3>
+                  <p className="text-xs opacity-75 mt-2 leading-snug text-gray-700 dark:text-gray-300">{tool.description}</p>
+                </div>
+                <div className="flex justify-end mt-3">
+                  <ChevronRight className="w-5 h-5 opacity-70 text-gray-700 dark:text-gray-300" />
+                </div>
+              </MotionLink>
             ))}
           </div>
         </main>
@@ -130,5 +132,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
