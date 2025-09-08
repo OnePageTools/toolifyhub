@@ -63,7 +63,7 @@ export function JsonFormatterForm() {
           value={jsonInput}
           onChange={(e) => setJsonInput(e.target.value)}
           placeholder='Paste your JSON here...'
-          className="min-h-[400px] font-code text-sm border-2 focus:border-primary transition-colors"
+          className="min-h-[400px] font-mono text-sm border-2 focus:border-primary transition-colors"
           aria-label="JSON Input"
         />
         <div className="absolute top-3 right-3 flex gap-2">
