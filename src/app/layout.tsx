@@ -6,9 +6,9 @@ import { Toaster } from '@/components/ui/toaster';
 import { Poppins, Inter } from 'next/font/google';
 
 export const metadata: Metadata = {
-  title: 'VIP Tools - Your All-in-One Free Toolkit',
+  title: 'All-in-One Free Tools - Your Ultimate Productivity Suite',
   description:
-    'A collection of 20+ free online tools including AI-powered utilities for text, images, and more. No sign-up required.',
+    'A collection of 20+ free, fast, and professional online tools including AI-powered utilities for text, images, and more. No sign-up required.',
 };
 
 const poppins = Poppins({
