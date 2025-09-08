@@ -6,4 +6,5 @@ import '@/ai/flows/ai-plagiarism-detection.ts';
 import '@/ai/flows/ai-assisted-essay-writing.ts';
 import '@/ai/flows/contextual-tool-assistance.ts';
 import '@/ai/flows/ai-content-summarization.ts';
+import '@/ai/flows/pdf-to-word-flow.ts';
 // Note: The flow for background removal is used directly and doesn't need to be started in dev mode.

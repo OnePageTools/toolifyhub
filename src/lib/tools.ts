@@ -51,7 +51,7 @@ export const tools: Tool[] = [
     href: '/tools/pdf-to-word',
     icon: FileText,
     category: 'PDF',
-    implemented: false,
+    implemented: true,
   },
   {
     name: 'Word to PDF',
