@@ -1,9 +1,8 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Header } from '@/components/common/header';
 import { Toaster } from '@/components/ui/toaster';
-import { Footer } from '@/components/common/footer';
 import { Poppins, Inter } from 'next/font/google';
 
 export const metadata: Metadata = {
@@ -41,9 +40,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="relative flex min-h-screen flex-col bg-background">
-            <Header />
-            <main className="flex-grow">{children}</main>
-            <Footer />
+            <main>{children}</main>
           </div>
           <Toaster />
         </ThemeProvider>
@@ -51,3 +48,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    

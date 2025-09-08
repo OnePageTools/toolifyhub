@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -73,88 +74,6 @@
   body {
     @apply bg-background text-foreground;
   }
-  .dark body {
-    background: linear-gradient(135deg, #0B1220, #141A2B);
-  }
-  .bg-gradient-hero {
-    background-image: radial-gradient(circle at 50% 0, hsl(var(--primary) / 0.1), transparent 40%);
-  }
-  .dark .bg-gradient-hero {
-    background-image: radial-gradient(circle at 50% 0, hsl(var(--primary) / 0.2), transparent 50%);
-  }
 }
 
-@layer components {
-  /* Glassmorphism Style */
-  .glass-card {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 30px rgba(0,0,0,0.1);
-    @apply transition-all duration-300 ease-in-out;
-  }
-  .glass-card:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-  }
-
-  /* Footer Styles */
-  .footer {
-    background: #0B1220;
-    color: #ffffff;
-    padding: 40px 20px 20px;
-    margin-top: 40px;
-    font-family: 'Inter', sans-serif;
-  }
-  .footer-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 30px;
-    margin-bottom: 20px;
-  }
-  .footer h2, .footer h3 {
-    color: #0B63FF;
-    margin-bottom: 12px;
-  }
-  .footer-about p {
-    font-size: 14px;
-    line-height: 1.6;
-    opacity: 0.9;
-  }
-  .footer-links ul,
-  .footer-support ul,
-  .footer-legal ul,
-  .footer-social ul {
-    list-style: none;
-    padding: 0;
-  }
-  .footer-links ul li,
-  .footer-support ul li,
-  .footer-legal ul li,
-  .footer-social ul li {
-    margin-bottom: 10px;
-  }
-  .footer a {
-    color: #ffffff;
-    text-decoration: none;
-    font-size: 14px;
-    transition: color 0.3s ease;
-  }
-  .footer a:hover {
-    color: #00B894;
-  }
-  .footer-bottom {
-    border-top: 1px solid rgba(255,255,255,0.2);
-    text-align: center;
-    padding-top: 15px;
-    font-size: 13px;
-    opacity: 0.8;
-  }
-  .social-icons li {
-    margin-bottom: 8px;
-  }
-}
+    
