@@ -6,7 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Poppins, Inter } from 'next/font/google';
 
 export const metadata: Metadata = {
-  title: 'AllTools - Your All-in-One Free Toolkit',
+  title: 'VIP Tools - Your All-in-One Free Toolkit',
   description:
     'A collection of 20+ free online tools including AI-powered utilities for text, images, and more. No sign-up required.',
 };
@@ -39,14 +39,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative flex min-h-screen flex-col bg-background">
-            <main>{children}</main>
-          </div>
+          <main>{children}</main>
           <Toaster />
         </ThemeProvider>
       </body>
     </html>
   );
 }
-
-    
