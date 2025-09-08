@@ -8,10 +8,11 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import docx_pdf from 'docx-pdf';
-import * as fs from 'fs/promises';
+import docx_to_pdf from 'docx-pdf';
 import * as os from 'os';
 import * as path from 'path';
+import * as fs from 'fs/promises';
+
 
 const ConvertWordToPdfInputSchema = z.object({
   docxDataUri: z
@@ -42,7 +43,6 @@ const convertWordToPdfFlow = ai.defineFlow(
   },
   async (input) => {
     let tempDir: string | null = null;
-
     try {
       // 1. Decode the Base64 data URI
       const base64Data = input.docxDataUri.split(';base64,').pop();
@@ -55,25 +55,22 @@ const convertWordToPdfFlow = ai.defineFlow(
       tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'docx-pdf-'));
       const tempDocxPath = path.join(tempDir, 'input.docx');
       const tempPdfPath = path.join(tempDir, 'output.pdf');
-      
       await fs.writeFile(tempDocxPath, docxBuffer);
 
       // 3. Convert the DOCX file to PDF
       await new Promise<void>((resolve, reject) => {
-          docx_pdf(tempDocxPath, tempPdfPath, (err: any) => {
-              if (err) {
-                  console.error("docx-pdf conversion error:", err);
-                  // Provide a more generic error message as library internals can be complex
-                  reject(new Error('Failed to convert the document to PDF. The file may be unsupported or corrupted.'));
-              } else {
-                  resolve();
-              }
-          });
+        docx_to_pdf(tempDocxPath, tempPdfPath, (err: any, result: any) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve();
+        });
       });
 
-
-      // 4. Read the converted PDF back into a buffer
+      // 4. Read the generated PDF file
       const pdfBuffer = await fs.readFile(tempPdfPath);
+
+      // 5. Encode the PDF buffer to a Base64 data URI
       const pdfBase64 = pdfBuffer.toString('base64');
 
       return {
@@ -81,9 +78,9 @@ const convertWordToPdfFlow = ai.defineFlow(
       };
     } catch (error: any) {
       console.error("Error during Word to PDF conversion:", error);
-      return { error: error.message || 'An unexpected error occurred during conversion.' };
+      return { error: error.message || 'An unexpected error occurred during conversion. The file may be corrupted or use unsupported features.' };
     } finally {
-      // 5. Clean up temporary directory
+      // 6. Clean up temporary directory
        if (tempDir) {
           try {
             await fs.rm(tempDir, { recursive: true, force: true });
