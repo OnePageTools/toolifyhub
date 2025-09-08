@@ -54,7 +54,7 @@ export default function Home() {
       <motion.div
         animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="absolute inset-0 bg-gradient-to-r from-indigo-700 via-purple-700 via-pink-600 to-yellow-400 bg-[length:300%_300%]"
+        className="absolute inset-0 bg-gradient-to-r from-purple-600 via-fuchsia-500 to-orange-400 bg-[length:300%_300%]"
       />
 
       <div className="relative z-10 min-h-screen flex flex-col">
