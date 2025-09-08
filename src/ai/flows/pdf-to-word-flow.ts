@@ -54,9 +54,15 @@ const convertPdfToWordFlow = ai.defineFlow(
     const base64Data = input.pdfDataUri.split(',')[1];
     const pdfBuffer = Buffer.from(base64Data, 'base64');
 
-    // Parse PDF to extract text
-    const data = await pdf(pdfBuffer, { max: 1 }); // Limit to the first page to avoid overly large content
-    const rawText = data.text;
+    let rawText;
+    try {
+      // Parse PDF to extract text
+      const data = await pdf(pdfBuffer, { max: 1 }); // Limit to the first page to avoid overly large content
+      rawText = data.text;
+    } catch (error) {
+       console.error("Error parsing PDF:", error);
+       throw new Error("Failed to parse the PDF file. It might be corrupted or too complex.");
+    }
     
     // Truncate the text to a safe length to avoid token limits.
     const truncatedText = rawText.substring(0, 10000);
