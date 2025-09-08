@@ -55,7 +55,7 @@ const convertPdfToWordFlow = ai.defineFlow(
     const pdfBuffer = Buffer.from(base64Data, 'base64');
 
     // Parse PDF to extract text
-    const data = await pdf(pdfBuffer);
+    const data = await pdf(pdfBuffer, { max: 1 }); // Limit to the first page to avoid overly large content
     const rawText = data.text;
 
     // Use AI to format the extracted text
