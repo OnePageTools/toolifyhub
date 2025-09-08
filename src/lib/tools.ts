@@ -67,7 +67,7 @@ export const tools: Tool[] = [
     href: '/tools/pdf-compressor',
     icon: FileArchive,
     category: 'PDF',
-    implemented: false,
+    implemented: true,
   },
   {
     name: 'Image Compressor',
