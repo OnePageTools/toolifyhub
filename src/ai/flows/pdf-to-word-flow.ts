@@ -32,7 +32,6 @@ export async function convertPdfToWord(input: ConvertPdfToWordInput): Promise<Co
 const prompt = ai.definePrompt({
     name: 'pdfToWordPrompt',
     input: { schema: z.object({ text: z.string() }) },
-    // We only want the textContent in the AI output schema
     output: { schema: z.object({ textContent: z.string().describe('The extracted and formatted text content from the PDF.') }) },
     prompt: `You are a document conversion expert. Your task is to take the raw text extracted from a PDF and format it nicely so it can be used in a Word document.
     
@@ -73,6 +72,6 @@ const convertPdfToWordFlow = ai.defineFlow(
     const { output } = await prompt({ text: truncatedText });
 
     // The prompt's output schema now includes textContent, so we can return it directly.
-    return output!;
+    return { textContent: output?.textContent };
   }
 );
