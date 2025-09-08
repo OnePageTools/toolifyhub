@@ -82,19 +82,19 @@ export default function Home() {
                   <SheetTitle>Navigation</SheetTitle>
                 </SheetHeader>
                 <nav className="mt-8 flex flex-col gap-4">
-                  <Link href="#" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
+                  <Link href="/" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
                     <HomeIcon className="w-5 h-5" />
                     Home
                   </Link>
-                  <Link href="#" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
+                  <Link href="/" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
                     <Grid3X3 className="w-5 h-5" />
                     All Tools
                   </Link>
-                  <Link href="#" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
+                  <Link href="/favorites" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
                     <Heart className="w-5 h-5" />
                     Favorites
                   </Link>
-                  <Link href="#" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
+                  <Link href="/settings" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
                     <Settings className="w-5 h-5" />
                     Settings
                   </Link>
