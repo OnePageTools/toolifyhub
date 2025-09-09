@@ -101,7 +101,17 @@ export function BackgroundRemoverForm() {
     try {
       const photoDataUri = await fileToDataUri(selectedFile);
       const response = await removeBackground({ photoDataUri });
-      setResult(response);
+      
+      if (response.error) {
+        toast({
+          variant: "destructive",
+          title: "Operation Failed",
+          description: response.error,
+        });
+      } else {
+        setResult(response);
+      }
+
     } catch (error) {
       console.error(error);
       toast({
@@ -199,7 +209,7 @@ export function BackgroundRemoverForm() {
                 </>
             )}
             </Button>
-            {result && (
+            {result && result.imageDataUri && (
                 <a href={result.imageDataUri} download="background-removed.png">
                     <Button variant="outline">
                         <Download className="mr-2 h-4 w-4" />

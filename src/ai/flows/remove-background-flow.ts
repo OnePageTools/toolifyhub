@@ -22,7 +22,9 @@ export type RemoveBackgroundInput = z.infer<typeof RemoveBackgroundInputSchema>;
 const RemoveBackgroundOutputSchema = z.object({
   imageDataUri: z
     .string()
+    .optional()
     .describe('The resulting image with the background removed as a data URI.'),
+  error: z.string().optional().describe('An error message if the operation failed.'),
 });
 export type RemoveBackgroundOutput = z.infer<
   typeof RemoveBackgroundOutputSchema
@@ -31,22 +33,30 @@ export type RemoveBackgroundOutput = z.infer<
 export async function removeBackground(
   input: RemoveBackgroundInput
 ): Promise<RemoveBackgroundOutput> {
-  const { media } = await ai.generate({
-    model: 'googleai/gemini-2.5-flash-image-preview',
-    prompt: [
-      { media: { url: input.photoDataUri } },
-      {
-        text: 'Remove the background from this image. The resulting image should have a transparent background.',
+  try {
+    const { media } = await ai.generate({
+      model: 'googleai/gemini-2.5-flash-image-preview',
+      prompt: [
+        { media: { url: input.photoDataUri } },
+        {
+          text: 'Remove the background from this image. The resulting image should have a transparent background.',
+        },
+      ],
+      config: {
+        responseModalities: ['IMAGE'],
       },
-    ],
-    config: {
-      responseModalities: ['IMAGE'],
-    },
-  });
+    });
 
-  if (!media?.url) {
-    throw new Error('Image generation failed or did not return an image.');
+    if (!media?.url) {
+      return { error: 'Image generation failed or did not return an image.' };
+    }
+
+    return { imageDataUri: media.url };
+  } catch (err: any) {
+    if (err.message && err.message.includes('429')) {
+      return { error: "The AI Background Remover is busy due to high demand. Please try again in a few moments." };
+    }
+    console.error("Error in removeBackground flow:", err);
+    return { error: 'An unexpected error occurred while removing the background.' };
   }
-
-  return { imageDataUri: media.url };
 }
