@@ -112,7 +112,9 @@ export function BackgroundRemoverForm() {
         });
         
         // Dynamically import the client-side library
-        const removeBackgroundClient = (await import("@imgly/background-removal")).default;
+        const removeBackgroundModule = await import("@imgly/background-removal");
+        const removeBackgroundClient = removeBackgroundModule.removeBackground;
+
 
         // Fallback to client-side removal if AI fails
         const clientResultBlob = await removeBackgroundClient(selectedFile);
