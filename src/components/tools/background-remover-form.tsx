@@ -12,6 +12,7 @@ import {
 } from '@/ai/flows/remove-background-flow';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import removeBackgroundClient from "@imgly/background-removal"
 
 export function BackgroundRemoverForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -24,11 +25,11 @@ export function BackgroundRemoverForm() {
 
   const handleFileSelect = (file: File | undefined) => {
     if (file) {
-      if (file.size > 4 * 1024 * 1024) { // 4MB limit
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
         toast({
             variant: "destructive",
             title: "File too large",
-            description: "Please upload an image smaller than 4MB.",
+            description: "Please upload an image smaller than 10MB.",
         });
         return;
       }
@@ -84,6 +85,15 @@ export function BackgroundRemoverForm() {
       reader.readAsDataURL(file);
     });
   };
+  
+  const blobToDataUri = (blob: Blob): Promise<string> => {
+     return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+  }
 
   const handleSubmit = async () => {
     if (!selectedFile) {
@@ -99,15 +109,21 @@ export function BackgroundRemoverForm() {
     setResult(null);
 
     try {
+      // First, try the AI-powered background removal
       const photoDataUri = await fileToDataUri(selectedFile);
       const response = await removeBackground({ photoDataUri });
       
-      if (response.error) {
-        toast({
-          variant: "destructive",
-          title: "Operation Failed",
-          description: response.error,
+      if (response.error || !response.imageDataUri) {
+         toast({
+            title: "AI Remover Busy",
+            description: "Switching to standard background removal. This may take a moment.",
         });
+
+        // Fallback to client-side removal if AI fails
+        const clientResultBlob = await removeBackgroundClient(selectedFile);
+        const clientResultDataUri = await blobToDataUri(clientResultBlob);
+        setResult({ imageDataUri: clientResultDataUri });
+
       } else {
         setResult(response);
       }
@@ -116,7 +132,7 @@ export function BackgroundRemoverForm() {
       console.error(error);
       toast({
         variant: "destructive",
-        title: "An error occurred",
+        title: "An unexpected error occurred",
         description:
           "Failed to remove background. Please try again later.",
       });
@@ -163,7 +179,7 @@ export function BackgroundRemoverForm() {
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                     <ImageIcon className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
                     <span className="font-semibold text-primary">Click to upload or drag & drop</span>
-                    <p className="text-xs">PNG, JPG, or WEBP (Max 4MB)</p>
+                    <p className="text-xs">PNG, JPG, or WEBP (Max 10MB)</p>
                 </div>
             )}
         </label>
