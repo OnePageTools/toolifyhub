@@ -1,137 +1,198 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload, Download, Trash2, Image as ImageIcon } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Loader2, Upload, Download, Trash2, Image as ImageIcon, Check, ChevronsUpDown, ArrowRight, Package, FileDown, Settings, X, Lock } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+
+
+type OriginalFile = {
+  id: string;
+  file: File;
+  preview: string;
+  originalSize: number;
+};
+
+type CompressedFile = {
+  id: string;
+  blob: Blob;
+  preview: string;
+  compressedSize: number;
+  originalSize: number;
+  name: string;
+};
+
+type OutputFormat = 'image/jpeg' | 'image/png' | 'image/webp';
 
 export function ImageCompressorForm() {
-  const [originalFile, setOriginalFile] = useState<File | null>(null);
-  const [originalPreview, setOriginalPreview] = useState<string | null>(null);
-  const [compressedImage, setCompressedImage] = useState<string | null>(null);
+  const [originalFiles, setOriginalFiles] = useState<OriginalFile[]>([]);
+  const [compressedFiles, setCompressedFiles] = useState<CompressedFile[]>([]);
+  
+  // Settings
   const [quality, setQuality] = useState(0.8);
+  const [outputFormat, setOutputFormat] = useState<OutputFormat | 'auto'>('auto');
+  const [maxWidth, setMaxWidth] = useState('');
+  const [maxHeight, setMaxHeight] = useState('');
+  const [lockAspectRatio, setLockAspectRatio] = useState(true);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [originalSize, setOriginalSize] = useState(0);
-  const [compressedSize, setCompressedSize] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  const handleFileSelect = (file: File | undefined) => {
-    if (file) {
-      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-        toast({
-            variant: "destructive",
-            title: "Invalid file type",
-            description: "Please upload a JPG, PNG, or WEBP file.",
-        });
-        return;
+  const handleFileSelect = (files: FileList | null) => {
+    if (files) {
+      const newFiles: OriginalFile[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
+          toast({
+              variant: "destructive",
+              title: "Invalid file type",
+              description: `Skipping ${file.name}. Please upload JPG, PNG, or WEBP files.`,
+          });
+          continue;
+        }
+        if (file.size > 20 * 1024 * 1024) { // 20MB limit per file
+          toast({
+              variant: "destructive",
+              title: "File too large",
+              description: `Skipping ${file.name}. Please upload images smaller than 20MB.`,
+          });
+          continue;
+        }
+        
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          newFiles.push({
+            id: `${file.name}-${file.lastModified}`,
+            file,
+            originalSize: file.size,
+            preview: reader.result as string,
+          });
+          // This is async, so update state when all files are read
+          if(newFiles.length === files.length) {
+            setOriginalFiles(prev => [...prev, ...newFiles]);
+            setCompressedFiles([]);
+          }
+        };
+        reader.readAsDataURL(file);
       }
-      if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        toast({
-            variant: "destructive",
-            title: "File too large",
-            description: "Please upload an image smaller than 10MB.",
-        });
-        return;
-      }
-      setOriginalFile(file);
-      setOriginalSize(file.size);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setOriginalPreview(reader.result as string);
-        setCompressedImage(null);
-        setCompressedSize(0);
-      };
-      reader.readAsDataURL(file);
     }
   };
-
+  
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleFileSelect(event.target.files?.[0]);
-  };
-
-  const onDragEnter = (e: React.DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
+    handleFileSelect(event.target.files);
   };
   
-  const onDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
-  
-  const onDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-  
+  const onDragEnter = (e: React.DragEvent<HTMLLabelElement>) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
+  const onDragLeave = (e: React.DragEvent<HTMLLabelElement>) => { e.preventDefault(); e.stopPropagation(); setIsDragging(false); };
+  const onDragOver = (e: React.DragEvent<HTMLLabelElement>) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
   const onDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
     if(e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        handleFileSelect(e.dataTransfer.files[0]);
+        handleFileSelect(e.dataTransfer.files);
         e.dataTransfer.clearData();
     }
   };
 
   const handleCompress = async () => {
-    if (!originalFile || !originalPreview) {
-      toast({
-        variant: "destructive",
-        title: "No image selected",
-        description: "Please upload an image first.",
-      });
+    if (originalFiles.length === 0) {
+      toast({ variant: "destructive", title: "No images to compress" });
       return;
     }
 
     setIsLoading(true);
-    setCompressedImage(null);
-    setCompressedSize(0);
+    setCompressedFiles([]);
+    const compressedResults: CompressedFile[] = [];
 
-    const image = document.createElement('img');
-    image.src = originalPreview;
-    image.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = image.width;
-      canvas.height = image.height;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(image, 0, 0);
-        canvas.toBlob((blob) => {
+    for (const original of originalFiles) {
+      try {
+        const image = document.createElement('img');
+        image.src = original.preview;
+        await new Promise(resolve => image.onload = resolve);
+        
+        const canvas = document.createElement('canvas');
+        let { width, height } = image;
+        
+        const targetWidth = parseInt(maxWidth);
+        const targetHeight = parseInt(maxHeight);
+
+        if (lockAspectRatio) {
+            if (targetWidth && !targetHeight) {
+                const ratio = targetWidth / width;
+                width = targetWidth;
+                height = height * ratio;
+            } else if (!targetWidth && targetHeight) {
+                const ratio = targetHeight / height;
+                height = targetHeight;
+                width = width * ratio;
+            } else if (targetWidth && targetHeight) {
+                width = targetWidth;
+                height = targetHeight;
+            }
+        } else {
+            if(targetWidth) width = targetWidth;
+            if(targetHeight) height = targetHeight;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(image, 0, 0, width, height);
+          const format = outputFormat === 'auto' ? original.file.type as OutputFormat : outputFormat;
+          const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, format, quality));
+          
           if (blob) {
-            const compressedUrl = URL.createObjectURL(blob);
-            setCompressedImage(compressedUrl);
-            setCompressedSize(blob.size);
-            toast({
-              title: "Success!",
-              description: `Image compressed by ${((1 - blob.size / originalSize) * 100).toFixed(0)}%`,
+            const newName = `${original.file.name.split('.').slice(0, -1).join('.')}.${format.split('/')[1]}`;
+            compressedResults.push({
+              id: original.id,
+              blob,
+              preview: URL.createObjectURL(blob),
+              compressedSize: blob.size,
+              originalSize: original.originalSize,
+              name: newName,
             });
           }
-          setIsLoading(false);
-        }, originalFile.type, quality);
+        }
+      } catch (error) {
+          toast({ variant: "destructive", title: "Compression Error", description: `Could not compress ${original.file.name}`})
       }
-    };
+    }
+    setCompressedFiles(compressedResults);
+    setIsLoading(false);
+    toast({ title: "Success!", description: `Compressed ${compressedResults.length} of ${originalFiles.length} images.` });
   };
 
-  const handleClear = () => {
-    setOriginalFile(null);
-    setOriginalPreview(null);
-    setCompressedImage(null);
-    setOriginalSize(0);
-    setCompressedSize(0);
+  const handleClearAll = () => {
+    setOriginalFiles([]);
+    setCompressedFiles([]);
     if (fileInputRef.current) {
         fileInputRef.current.value = "";
     }
+  };
+
+  const handleDownloadAll = async () => {
+      const zip = new JSZip();
+      compressedFiles.forEach(file => {
+          zip.file(file.name, file.blob);
+      });
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      saveAs(zipBlob, 'compressed-images.zip');
   };
 
   const formatBytes = (bytes: number, decimals = 2) => {
@@ -143,95 +204,135 @@ export function ImageCompressorForm() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   }
 
-  const reductionPercentage = originalSize > 0 && compressedSize > 0 
-    ? ((1 - compressedSize / originalSize) * 100).toFixed(0)
-    : 0;
-
   return (
     <div className="space-y-6">
-       <input id="image-upload" type="file" accept="image/png, image/jpeg, image/webp" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
+       <input id="image-upload" type="file" multiple accept="image/png, image/jpeg, image/webp" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
        <label
             htmlFor="image-upload"
             className={cn(
                 "group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary",
                 isDragging && "border-primary bg-primary/10",
-                originalPreview && "p-0 border-0"
             )}
-            onDragEnter={onDragEnter}
-            onDragLeave={onDragLeave}
-            onDragOver={onDragOver}
-            onDrop={onDrop}
+            onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}
         >
-             {originalPreview ? (
-              <>
-                <Image src={originalPreview} alt="Original image preview" width={400} height={400} className="max-h-80 w-auto object-contain rounded-md" />
-                <Button variant="destructive" size="icon" onClick={(e) => { e.preventDefault(); handleClear()}} className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-md">
-                    <Trash2 className="h-4 w-4" />
-                    <span className='sr-only'>Clear</span>
-                </Button>
-              </>
-            ) : (
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <ImageIcon className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
-                    <span className="font-semibold text-primary">Click to upload or drag & drop</span>
-                    <p className="text-xs">JPG, PNG, or WEBP (Max 10MB)</p>
-                </div>
-            )}
+            <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                <ImageIcon className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
+                <span className="font-semibold text-primary">Click to upload or drag & drop</span>
+                <p className="text-xs">JPG, PNG, WEBP (Max 20MB each)</p>
+            </div>
         </label>
+        
+        {originalFiles.length > 0 &&
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex justify-between items-center">
+                        <span>{originalFiles.length} Image(s) Ready</span>
+                        <Button variant="ghost" size="icon" onClick={handleClearAll}><X className="h-4 w-4" /></Button>
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ScrollArea className="h-40">
+                        <div className="space-y-2">
+                        {originalFiles.map(f => (
+                            <div key={f.id} className="flex items-center gap-3 text-sm p-2 bg-secondary rounded-md">
+                                <Image src={f.preview} alt={f.file.name} width={40} height={40} className="rounded object-cover h-10 w-10" />
+                                <span className="truncate flex-1 font-medium">{f.file.name}</span>
+                                <span className="text-muted-foreground">{formatBytes(f.originalSize)}</span>
+                            </div>
+                        ))}
+                        </div>
+                    </ScrollArea>
+                </CardContent>
+            </Card>
+        }
 
-        {originalFile && (
-            <Card>
-                <CardContent className="p-6 space-y-4">
-                     <div className="grid gap-2">
-                        <Label htmlFor="quality">Compression Quality: <span className="font-bold text-primary">{Math.round(quality * 100)}%</span></Label>
-                        <Slider
-                            id="quality"
-                            min={0.1}
-                            max={1}
-                            step={0.05}
-                            value={[quality]}
-                            onValueChange={(value) => setQuality(value[0])}
-                            disabled={isLoading}
-                        />
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Settings className="h-6 w-6" /> Compression Settings</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                 <div className="grid gap-2">
+                    <Label>Quality: <span className="font-bold text-primary">{Math.round(quality * 100)}%</span></Label>
+                    <Slider value={[quality]} onValueChange={(v) => setQuality(v[0])} min={0.1} max={1} step={0.05} />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                        <Label>Output Format</Label>
+                        <Select value={outputFormat} onValueChange={(v: 'auto' | OutputFormat) => setOutputFormat(v)}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="auto">Auto</SelectItem>
+                                <SelectItem value="image/jpeg">JPG</SelectItem>
+                                <SelectItem value="image/png">PNG</SelectItem>
+                                <SelectItem value="image/webp">WEBP</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
-                    <Button onClick={handleCompress} disabled={isLoading || !originalFile}>
-                        {isLoading ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Compressing...
-                            </>
-                        ) : (
-                            'Compress Image'
-                        )}
-                    </Button>
-                </CardContent>
-            </Card>
-        )}
-      
-      {compressedImage && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-                <CardContent className="p-4 text-center">
-                    <h3 className="font-semibold mb-2">Original</h3>
-                    {originalPreview && <Image src={originalPreview} alt="Original" width={300} height={300} className="mx-auto max-h-64 w-auto object-contain rounded-md" />}
-                    <p className="mt-2 text-sm font-medium">{formatBytes(originalSize)}</p>
-                </CardContent>
-            </Card>
-             <Card>
-                <CardContent className="p-4 text-center">
-                    <h3 className="font-semibold mb-2">Compressed</h3>
-                    <Image src={compressedImage} alt="Compressed" width={300} height={300} className="mx-auto max-h-64 w-auto object-contain rounded-md" />
-                    <p className="mt-2 text-sm font-bold text-primary">{formatBytes(compressedSize)}</p>
-                    <p className="text-sm font-semibold text-green-600">You saved {reductionPercentage}%</p>
-                     <a href={compressedImage} download={`compressed-${originalFile?.name}`}>
-                        <Button className="mt-4 w-full">
-                            <Download className="mr-2 h-4 w-4" />
-                            Download
-                        </Button>
-                    </a>
-                </CardContent>
-            </Card>
+                     <div className="grid gap-2">
+                         <div className="flex items-center justify-between">
+                             <Label>Resize</Label>
+                             <div className="flex items-center gap-2">
+                                <Lock className={cn("h-4 w-4", !lockAspectRatio && "text-muted-foreground")} />
+                                <Switch checked={lockAspectRatio} onCheckedChange={setLockAspectRatio} />
+                             </div>
+                         </div>
+                         <div className="flex gap-2 items-center">
+                            <Input placeholder="Width" value={maxWidth} onChange={e => setMaxWidth(e.target.value.replace(/\D/g, ''))} />
+                            <X className="h-4 w-4 text-muted-foreground" />
+                            <Input placeholder="Height" value={maxHeight} onChange={e => setMaxHeight(e.target.value.replace(/\D/g, ''))} />
+                         </div>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <div className="flex justify-center">
+            <Button size="lg" onClick={handleCompress} disabled={isLoading || originalFiles.length === 0}>
+                {isLoading ? <><Loader2 className="mr-2 animate-spin" />Compressing...</> : <>Compress {originalFiles.length > 0 ? originalFiles.length : ''} Image(s)</>}
+            </Button>
         </div>
+      
+      {compressedFiles.length > 0 && (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex justify-between items-center">
+                    <span>Compression Results</span>
+                    <Button onClick={handleDownloadAll}><Package className="mr-2"/> Download All (.zip)</Button>
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <ScrollArea className="h-72">
+                    <div className="space-y-3">
+                    {compressedFiles.map(c => {
+                        const reduction = ((1 - c.compressedSize / c.originalSize) * 100).toFixed(0);
+                        return (
+                             <div key={c.id} className="grid grid-cols-2 md:grid-cols-4 gap-4 items-center p-2 rounded-lg hover:bg-secondary">
+                                <div className="flex items-center gap-3">
+                                    <Image src={c.preview} alt={c.name} width={50} height={50} className="rounded-md object-cover h-12 w-12" />
+                                    <span className="text-sm font-semibold truncate hidden md:block">{c.name}</span>
+                                </div>
+                                <div className="flex items-center gap-2 justify-end md:justify-start">
+                                    <span className="text-sm text-muted-foreground">{formatBytes(c.originalSize)}</span>
+                                    <ArrowRight className="h-4 w-4 text-primary" />
+                                    <span className="text-sm font-bold">{formatBytes(c.compressedSize)}</span>
+                                </div>
+                                <div className="flex justify-end md:justify-start">
+                                    <span className="text-sm font-bold text-green-600 bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded-full">
+                                        Saved {reduction}%
+                                    </span>
+                                </div>
+                                <div className="flex justify-end col-span-2 md:col-span-1">
+                                     <a href={c.preview} download={c.name}>
+                                        <Button variant="outline"><FileDown className="mr-2" /> Download</Button>
+                                    </a>
+                                </div>
+                            </div>
+                        )
+                    })}
+                    </div>
+                </ScrollArea>
+            </CardContent>
+        </Card>
       )}
     </div>
   );

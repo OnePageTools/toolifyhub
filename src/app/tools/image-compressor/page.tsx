@@ -18,9 +18,9 @@ export default function ImageCompressorPage() {
              <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
                 <Minimize className="w-10 h-10 text-primary" />
              </div>
-            <CardTitle className="font-headline text-3xl">Image Compressor</CardTitle>
+            <CardTitle className="font-headline text-3xl">Advanced Image Compressor</CardTitle>
             <CardDescription className="text-lg">
-              Reduce the file size of your images (JPG, PNG, WEBP) without losing significant quality.
+              Compress, resize, and convert multiple images (JPG, PNG, WEBP) at once.
             </CardDescription>
           </CardHeader>
           <CardContent>
