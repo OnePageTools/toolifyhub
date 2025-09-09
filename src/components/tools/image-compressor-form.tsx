@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useCallback } from 'react';
@@ -147,8 +148,11 @@ export function ImageCompressorForm() {
     setIsLoading(true);
     setProcessedFiles([]);
     const processedResults: ProcessedFile[] = [];
+    let hadError = false;
 
     for (const original of originalFiles) {
+      if(hadError) break; // Stop processing if an error occurred
+
       try {
         let finalBlob: Blob;
         let finalPreview: string;
@@ -214,14 +218,27 @@ export function ImageCompressorForm() {
           wasCompressed: wasCompressed,
         });
 
-      } catch (error) {
+      } catch (error: any) {
           console.error(`Failed to process ${original.file.name}:`, error);
-          toast({ variant: "destructive", title: "Processing Error", description: `Could not process ${original.file.name}`})
+          hadError = true;
+          if (error.message && error.message.includes('429')) {
+             toast({ 
+                variant: "destructive", 
+                title: "AI Optimizer Busy", 
+                description: "The AI optimizer is experiencing high demand. Please try again later or use the standard compression.",
+                duration: 5000,
+             });
+          } else {
+            toast({ variant: "destructive", title: "Processing Error", description: `Could not process ${original.file.name}`})
+          }
       }
     }
     setProcessedFiles(processedResults);
     setIsLoading(false);
-    toast({ title: "Success!", description: `Processed ${processedResults.length} of ${originalFiles.length} images.` });
+
+    if (!hadError) {
+        toast({ title: "Success!", description: `Processed ${processedResults.length} of ${originalFiles.length} images.` });
+    }
   };
 
   const handleClearAll = () => {
