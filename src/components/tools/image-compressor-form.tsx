@@ -113,9 +113,9 @@ export function ImageCompressorForm() {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-    if(e.datatransfer.files && e.datatransfer.files.length > 0) {
-        handleFileSelect(e.datatransfer.files);
-        e.datatransfer.clearData();
+    if(e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleFileSelect(e.dataTransfer.files);
+        e.dataTransfer.clearData();
     }
   };
 
@@ -280,6 +280,11 @@ export function ImageCompressorForm() {
     }
   };
 
+  const handleRemoveFile = (idToRemove: string) => {
+    setOriginalFiles(prev => prev.filter(f => f.id !== idToRemove));
+  };
+
+
   const handleDownloadAll = async () => {
       const zip = new JSZip();
       processedFiles.forEach(file => {
@@ -321,7 +326,7 @@ export function ImageCompressorForm() {
                 <CardHeader>
                     <CardTitle className="flex justify-between items-center">
                         <span>{originalFiles.length} Image(s) Ready</span>
-                        <Button variant="ghost" size="icon" onClick={handleClearAll}><X className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" onClick={handleClearAll}><Trash2 className="h-4 w-4" /></Button>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -332,6 +337,9 @@ export function ImageCompressorForm() {
                                 <Image src={f.preview} alt={f.file.name} width={40} height={40} className="rounded object-cover h-10 w-10" />
                                 <span className="truncate flex-1 font-medium">{f.file.name}</span>
                                 <span className="text-muted-foreground">{formatBytes(f.originalSize)}</span>
+                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleRemoveFile(f.id)}>
+                                    <X className="h-4 w-4" />
+                                </Button>
                             </div>
                         ))}
                         </div>
