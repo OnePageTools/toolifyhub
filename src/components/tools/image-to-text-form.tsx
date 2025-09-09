@@ -107,23 +107,24 @@ export function ImageToTextForm() {
       const imageDataUri = await fileToDataUri(selectedFile);
       const response = await extractTextFromImage({ imageDataUri });
       
+      setResult(response);
+
       if (response.error) {
         toast({
           variant: "destructive",
           title: "Extraction Failed",
           description: response.error,
         });
-      } else {
-        setResult(response);
       }
 
     } catch (error) {
       console.error(error);
+      const errMessage = "An unexpected error occurred. Please try again.";
+      setResult({ error: errMessage });
       toast({
         variant: "destructive",
         title: "An error occurred",
-        description:
-          "An unexpected error occurred. Please try again.",
+        description: errMessage,
       });
     } finally {
       setIsLoading(false);
