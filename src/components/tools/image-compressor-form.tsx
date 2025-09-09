@@ -200,7 +200,9 @@ export function ImageCompressorForm() {
           const photoDataUri = await fileToDataUri(original.file);
           const response = await compressImage({ photoDataUri });
           if (response.error || !response.imageDataUri) {
-            throw new Error(response.error || "AI compression failed");
+             toast({ variant: "destructive", title: "AI Optimization Failed", description: response.error || "Could not process the image with AI." });
+             // Skip this file and continue with the next ones
+             continue; 
           }
           finalBlob = dataUriToBlob(response.imageDataUri);
           finalFormat = finalBlob.type.split('/')[1] || 'png';
@@ -426,3 +428,5 @@ export function ImageCompressorForm() {
     </div>
   );
 }
+
+    
