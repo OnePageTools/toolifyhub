@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload, Download, Trash2, Image as ImageIcon, Check, ChevronsUpDown, ArrowRight, Package, FileDown, Settings, X, Lock } from 'lucide-react';
+import { Loader2, Upload, Download, Trash2, Image as ImageIcon, ArrowRight, Package, FileDown, Settings, X, Lock, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
@@ -15,6 +15,7 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { compressImage } from '@/ai/flows/image-compressor-flow';
 
 
 type OriginalFile = {
@@ -46,6 +47,8 @@ export function ImageCompressorForm() {
   const [maxWidth, setMaxWidth] = useState('');
   const [maxHeight, setMaxHeight] = useState('');
   const [lockAspectRatio, setLockAspectRatio] = useState(true);
+  const [useAISmartOptimize, setUseAISmartOptimize] = useState(false);
+
 
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -56,7 +59,7 @@ export function ImageCompressorForm() {
     if (files) {
       const newFiles: OriginalFile[] = [];
       const validFiles = Array.from(files).filter(file => {
-        if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
           toast({
               variant: "destructive",
               title: "Invalid file type",
@@ -115,9 +118,29 @@ export function ImageCompressorForm() {
     }
   };
 
-  const handleCompress = async () => {
+  const dataUriToBlob = (dataUri: string): Blob => {
+    const byteString = atob(dataUri.split(',')[1]);
+    const mimeString = dataUri.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
+  };
+  
+  const fileToDataUri = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleProcess = async () => {
     if (originalFiles.length === 0) {
-      toast({ variant: "destructive", title: "No images to compress" });
+      toast({ variant: "destructive", title: "No images to process" });
       return;
     }
 
@@ -127,66 +150,73 @@ export function ImageCompressorForm() {
 
     for (const original of originalFiles) {
       try {
-        const image = document.createElement('img');
-        image.src = original.preview;
-        await new Promise(resolve => image.onload = resolve);
-        
-        const canvas = document.createElement('canvas');
-        let { width, height } = image;
-        
-        const targetWidth = parseInt(maxWidth);
-        const targetHeight = parseInt(maxHeight);
+        let finalBlob: Blob;
+        let finalPreview: string;
 
-        if (lockAspectRatio) {
-            if (targetWidth && width > targetWidth) {
-                const ratio = targetWidth / width;
-                width = targetWidth;
-                height = Math.round(height * ratio);
-            } else if (targetHeight && height > targetHeight) {
-                const ratio = targetHeight / height;
-                height = targetHeight;
-                width = Math.round(width * ratio);
-            }
+        if (useAISmartOptimize) {
+          const photoDataUri = await fileToDataUri(original.file);
+          const response = await compressImage({ photoDataUri });
+          finalPreview = response.imageDataUri;
+          finalBlob = dataUriToBlob(response.imageDataUri);
         } else {
-            if(targetWidth) width = targetWidth;
-            if(targetHeight) height = targetHeight;
+            const image = document.createElement('img');
+            image.src = original.preview;
+            await new Promise(resolve => image.onload = resolve);
+            
+            const canvas = document.createElement('canvas');
+            let { width, height } = image;
+            
+            const targetWidth = parseInt(maxWidth);
+            const targetHeight = parseInt(maxHeight);
+
+            if (lockAspectRatio) {
+                if (targetWidth && width > targetWidth) {
+                    const ratio = targetWidth / width;
+                    width = targetWidth;
+                    height = Math.round(height * ratio);
+                } else if (targetHeight && height > targetHeight) {
+                    const ratio = targetHeight / height;
+                    height = targetHeight;
+                    width = Math.round(width * ratio);
+                }
+            } else {
+                if(targetWidth) width = targetWidth;
+                if(targetHeight) height = targetHeight;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) throw new Error("Could not get canvas context");
+
+            ctx.drawImage(image, 0, 0, width, height);
+            const format = outputFormat === 'auto' ? original.file.type as OutputFormat : outputFormat;
+            const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, format, quality));
+
+            if (!blob) throw new Error("Canvas toBlob returned null");
+            finalBlob = blob;
+            finalPreview = URL.createObjectURL(finalBlob);
         }
 
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(image, 0, 0, width, height);
-          const format = outputFormat === 'auto' ? original.file.type as OutputFormat : outputFormat;
-          const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, format, quality));
-          
-          if (blob && blob.size < original.originalSize) {
-            // Compression was successful and reduced size
-            const newName = `${original.file.name.split('.').slice(0, -1).join('.')}.${format.split('/')[1]}`;
-            processedResults.push({
-              id: original.id,
-              blob,
-              preview: URL.createObjectURL(blob),
-              finalSize: blob.size,
-              originalSize: original.originalSize,
-              name: newName,
-              wasCompressed: true,
-            });
-          } else {
-             // Compression failed or increased size, use original
-            processedResults.push({
-              id: original.id,
-              blob: original.file,
-              preview: original.preview,
-              finalSize: original.originalSize,
-              originalSize: original.originalSize,
-              name: original.file.name,
-              wasCompressed: false,
-            });
-          }
-        }
+        const wasCompressed = finalBlob.size < original.originalSize;
+        const resultBlob = wasCompressed ? finalBlob : original.file;
+        const resultPreview = wasCompressed ? finalPreview : original.preview;
+        const format = outputFormat === 'auto' ? original.file.type.split('/')[1] : outputFormat.split('/')[1];
+        const newName = `${original.file.name.split('.').slice(0, -1).join('.')}.${format}`;
+
+        processedResults.push({
+          id: original.id,
+          blob: resultBlob,
+          preview: resultPreview,
+          finalSize: resultBlob.size,
+          originalSize: original.originalSize,
+          name: newName,
+          wasCompressed: wasCompressed,
+        });
+
       } catch (error) {
-          toast({ variant: "destructive", title: "Compression Error", description: `Could not process ${original.file.name}`})
+          console.error(`Failed to process ${original.file.name}:`, error);
+          toast({ variant: "destructive", title: "Processing Error", description: `Could not process ${original.file.name}`})
       }
     }
     setProcessedFiles(processedResults);
@@ -267,43 +297,55 @@ export function ImageCompressorForm() {
                 <CardTitle className="flex items-center gap-2"><Settings className="h-6 w-6" /> Compression Settings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-                 <div className="grid gap-2">
-                    <Label>Quality: <span className="font-bold text-primary">{Math.round(quality * 100)}%</span></Label>
-                    <Slider value={[quality]} onValueChange={(v) => setQuality(v[0])} min={0.1} max={1} step={0.05} />
+                <div className="flex items-center justify-between rounded-lg bg-secondary p-3">
+                    <div className="flex items-center gap-2">
+                        <Sparkles className="h-6 w-6 text-primary" />
+                        <div>
+                            <Label htmlFor="ai-optimize" className="font-bold">AI Smart Optimize</Label>
+                            <p className="text-xs text-muted-foreground">Best quality-to-size ratio. Slower.</p>
+                        </div>
+                    </div>
+                    <Switch id="ai-optimize" checked={useAISmartOptimize} onCheckedChange={setUseAISmartOptimize} />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div className={cn("space-y-6", useAISmartOptimize && "opacity-50 pointer-events-none")}>
                     <div className="grid gap-2">
-                        <Label>Output Format</Label>
-                        <Select value={outputFormat} onValueChange={(v: 'auto' | OutputFormat) => setOutputFormat(v)}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="auto">Auto</SelectItem>
-                                <SelectItem value="image/jpeg">JPG</SelectItem>
-                                <SelectItem value="image/png">PNG</SelectItem>
-                                <SelectItem value="image/webp">WEBP</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <Label>Quality: <span className="font-bold text-primary">{Math.round(quality * 100)}%</span></Label>
+                        <Slider value={[quality]} onValueChange={(v) => setQuality(v[0])} min={0.1} max={1} step={0.05} disabled={useAISmartOptimize} />
                     </div>
-                     <div className="grid gap-2">
-                         <div className="flex items-center justify-between">
-                             <Label>Resize</Label>
-                             <div className="flex items-center gap-2">
-                                <Lock className={cn("h-4 w-4", !lockAspectRatio && "text-muted-foreground")} />
-                                <Switch checked={lockAspectRatio} onCheckedChange={setLockAspectRatio} />
-                             </div>
-                         </div>
-                         <div className="flex gap-2 items-center">
-                            <Input placeholder="Width" value={maxWidth} onChange={e => setMaxWidth(e.target.value.replace(/\D/g, ''))} />
-                            <X className="h-4 w-4 text-muted-foreground" />
-                            <Input placeholder="Height" value={maxHeight} onChange={e => setMaxHeight(e.target.value.replace(/\D/g, ''))} />
-                         </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                            <Label>Output Format</Label>
+                            <Select value={outputFormat} onValueChange={(v: 'auto' | OutputFormat) => setOutputFormat(v)} disabled={useAISmartOptimize}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="auto">Auto</SelectItem>
+                                    <SelectItem value="image/jpeg">JPG</SelectItem>
+                                    <SelectItem value="image/png">PNG</SelectItem>
+                                    <SelectItem value="image/webp">WEBP</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="grid gap-2">
+                            <div className="flex items-center justify-between">
+                                <Label>Resize</Label>
+                                <div className="flex items-center gap-2">
+                                    <Lock className={cn("h-4 w-4", !lockAspectRatio && "text-muted-foreground")} />
+                                    <Switch checked={lockAspectRatio} onCheckedChange={setLockAspectRatio} disabled={useAISmartOptimize} />
+                                </div>
+                            </div>
+                            <div className="flex gap-2 items-center">
+                                <Input placeholder="Width" value={maxWidth} onChange={e => setMaxWidth(e.target.value.replace(/\D/g, ''))} disabled={useAISmartOptimize} />
+                                <X className="h-4 w-4 text-muted-foreground" />
+                                <Input placeholder="Height" value={maxHeight} onChange={e => setMaxHeight(e.target.value.replace(/\D/g, ''))} disabled={useAISmartOptimize} />
+                            </div>
+                        </div>
                     </div>
-                </div>
+                 </div>
             </CardContent>
         </Card>
 
         <div className="flex justify-center">
-            <Button size="lg" onClick={handleCompress} disabled={isLoading || originalFiles.length === 0}>
+            <Button size="lg" onClick={handleProcess} disabled={isLoading || originalFiles.length === 0}>
                 {isLoading ? <><Loader2 className="mr-2 animate-spin" />Processing...</> : <>Process {originalFiles.length > 0 ? originalFiles.length : ''} Image(s)</>}
             </Button>
         </div>
