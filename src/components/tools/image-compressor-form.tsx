@@ -24,20 +24,21 @@ type OriginalFile = {
   originalSize: number;
 };
 
-type CompressedFile = {
+type ProcessedFile = {
   id: string;
   blob: Blob;
   preview: string;
-  compressedSize: number;
+  finalSize: number;
   originalSize: number;
   name: string;
+  wasCompressed: boolean;
 };
 
 type OutputFormat = 'image/jpeg' | 'image/png' | 'image/webp';
 
 export function ImageCompressorForm() {
   const [originalFiles, setOriginalFiles] = useState<OriginalFile[]>([]);
-  const [compressedFiles, setCompressedFiles] = useState<CompressedFile[]>([]);
+  const [processedFiles, setProcessedFiles] = useState<ProcessedFile[]>([]);
   
   // Settings
   const [quality, setQuality] = useState(0.8);
@@ -54,15 +55,14 @@ export function ImageCompressorForm() {
   const handleFileSelect = (files: FileList | null) => {
     if (files) {
       const newFiles: OriginalFile[] = [];
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+      const validFiles = Array.from(files).filter(file => {
         if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
           toast({
               variant: "destructive",
               title: "Invalid file type",
               description: `Skipping ${file.name}. Please upload JPG, PNG, or WEBP files.`,
           });
-          continue;
+          return false;
         }
         if (file.size > 20 * 1024 * 1024) { // 20MB limit per file
           toast({
@@ -70,9 +70,15 @@ export function ImageCompressorForm() {
               title: "File too large",
               description: `Skipping ${file.name}. Please upload images smaller than 20MB.`,
           });
-          continue;
+          return false;
         }
-        
+        return true;
+      });
+
+      if (validFiles.length === 0) return;
+
+      let filesRead = 0;
+      validFiles.forEach(file => {
         const reader = new FileReader();
         reader.onloadend = () => {
           newFiles.push({
@@ -81,14 +87,14 @@ export function ImageCompressorForm() {
             originalSize: file.size,
             preview: reader.result as string,
           });
-          // This is async, so update state when all files are read
-          if(newFiles.length === files.length) {
+          filesRead++;
+          if(filesRead === validFiles.length) {
             setOriginalFiles(prev => [...prev, ...newFiles]);
-            setCompressedFiles([]);
+            setProcessedFiles([]);
           }
         };
         reader.readAsDataURL(file);
-      }
+      });
     }
   };
   
@@ -116,8 +122,8 @@ export function ImageCompressorForm() {
     }
 
     setIsLoading(true);
-    setCompressedFiles([]);
-    const compressedResults: CompressedFile[] = [];
+    setProcessedFiles([]);
+    const processedResults: ProcessedFile[] = [];
 
     for (const original of originalFiles) {
       try {
@@ -132,17 +138,14 @@ export function ImageCompressorForm() {
         const targetHeight = parseInt(maxHeight);
 
         if (lockAspectRatio) {
-            if (targetWidth && !targetHeight) {
+            if (targetWidth && width > targetWidth) {
                 const ratio = targetWidth / width;
                 width = targetWidth;
-                height = height * ratio;
-            } else if (!targetWidth && targetHeight) {
+                height = Math.round(height * ratio);
+            } else if (targetHeight && height > targetHeight) {
                 const ratio = targetHeight / height;
                 height = targetHeight;
-                width = width * ratio;
-            } else if (targetWidth && targetHeight) {
-                width = targetWidth;
-                height = targetHeight;
+                width = Math.round(width * ratio);
             }
         } else {
             if(targetWidth) width = targetWidth;
@@ -157,30 +160,43 @@ export function ImageCompressorForm() {
           const format = outputFormat === 'auto' ? original.file.type as OutputFormat : outputFormat;
           const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, format, quality));
           
-          if (blob) {
+          if (blob && blob.size < original.originalSize) {
+            // Compression was successful and reduced size
             const newName = `${original.file.name.split('.').slice(0, -1).join('.')}.${format.split('/')[1]}`;
-            compressedResults.push({
+            processedResults.push({
               id: original.id,
               blob,
               preview: URL.createObjectURL(blob),
-              compressedSize: blob.size,
+              finalSize: blob.size,
               originalSize: original.originalSize,
               name: newName,
+              wasCompressed: true,
+            });
+          } else {
+             // Compression failed or increased size, use original
+            processedResults.push({
+              id: original.id,
+              blob: original.file,
+              preview: original.preview,
+              finalSize: original.originalSize,
+              originalSize: original.originalSize,
+              name: original.file.name,
+              wasCompressed: false,
             });
           }
         }
       } catch (error) {
-          toast({ variant: "destructive", title: "Compression Error", description: `Could not compress ${original.file.name}`})
+          toast({ variant: "destructive", title: "Compression Error", description: `Could not process ${original.file.name}`})
       }
     }
-    setCompressedFiles(compressedResults);
+    setProcessedFiles(processedResults);
     setIsLoading(false);
-    toast({ title: "Success!", description: `Compressed ${compressedResults.length} of ${originalFiles.length} images.` });
+    toast({ title: "Success!", description: `Processed ${processedResults.length} of ${originalFiles.length} images.` });
   };
 
   const handleClearAll = () => {
     setOriginalFiles([]);
-    setCompressedFiles([]);
+    setProcessedFiles([]);
     if (fileInputRef.current) {
         fileInputRef.current.value = "";
     }
@@ -188,7 +204,7 @@ export function ImageCompressorForm() {
 
   const handleDownloadAll = async () => {
       const zip = new JSZip();
-      compressedFiles.forEach(file => {
+      processedFiles.forEach(file => {
           zip.file(file.name, file.blob);
       });
       const zipBlob = await zip.generateAsync({ type: 'blob' });
@@ -288,23 +304,24 @@ export function ImageCompressorForm() {
 
         <div className="flex justify-center">
             <Button size="lg" onClick={handleCompress} disabled={isLoading || originalFiles.length === 0}>
-                {isLoading ? <><Loader2 className="mr-2 animate-spin" />Compressing...</> : <>Compress {originalFiles.length > 0 ? originalFiles.length : ''} Image(s)</>}
+                {isLoading ? <><Loader2 className="mr-2 animate-spin" />Processing...</> : <>Process {originalFiles.length > 0 ? originalFiles.length : ''} Image(s)</>}
             </Button>
         </div>
       
-      {compressedFiles.length > 0 && (
+      {processedFiles.length > 0 && (
         <Card>
             <CardHeader>
                 <CardTitle className="flex justify-between items-center">
-                    <span>Compression Results</span>
+                    <span>Processing Results</span>
                     <Button onClick={handleDownloadAll}><Package className="mr-2"/> Download All (.zip)</Button>
                 </CardTitle>
             </CardHeader>
             <CardContent>
                 <ScrollArea className="h-72">
                     <div className="space-y-3">
-                    {compressedFiles.map(c => {
-                        const reduction = ((1 - c.compressedSize / c.originalSize) * 100).toFixed(0);
+                    {processedFiles.map(c => {
+                        const reduction = c.wasCompressed ? ((1 - c.finalSize / c.originalSize) * 100) : 0;
+                        const reductionFormatted = reduction.toFixed(0);
                         return (
                              <div key={c.id} className="grid grid-cols-2 md:grid-cols-4 gap-4 items-center p-2 rounded-lg hover:bg-secondary">
                                 <div className="flex items-center gap-3">
@@ -314,12 +331,18 @@ export function ImageCompressorForm() {
                                 <div className="flex items-center gap-2 justify-end md:justify-start">
                                     <span className="text-sm text-muted-foreground">{formatBytes(c.originalSize)}</span>
                                     <ArrowRight className="h-4 w-4 text-primary" />
-                                    <span className="text-sm font-bold">{formatBytes(c.compressedSize)}</span>
+                                    <span className="text-sm font-bold">{formatBytes(c.finalSize)}</span>
                                 </div>
                                 <div className="flex justify-end md:justify-start">
-                                    <span className="text-sm font-bold text-green-600 bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded-full">
-                                        Saved {reduction}%
-                                    </span>
+                                    {c.wasCompressed ? (
+                                        <span className="text-sm font-bold text-green-600 bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded-full">
+                                            Saved {reductionFormatted}%
+                                        </span>
+                                    ) : (
+                                         <span className="text-sm font-medium text-orange-600 bg-orange-100 dark:bg-orange-900/50 px-2 py-1 rounded-full">
+                                            No reduction
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="flex justify-end col-span-2 md:col-span-1">
                                      <a href={c.preview} download={c.name}>
