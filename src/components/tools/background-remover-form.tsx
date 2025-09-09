@@ -12,7 +12,6 @@ import {
 } from '@/ai/flows/remove-background-flow';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import removeBackgroundClient from "@imgly/background-removal"
 
 export function BackgroundRemoverForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -118,6 +117,9 @@ export function BackgroundRemoverForm() {
             title: "AI Remover Busy",
             description: "Switching to standard background removal. This may take a moment.",
         });
+        
+        // Dynamically import the client-side library
+        const removeBackgroundClient = (await import("@imgly/background-removal")).default;
 
         // Fallback to client-side removal if AI fails
         const clientResultBlob = await removeBackgroundClient(selectedFile);
