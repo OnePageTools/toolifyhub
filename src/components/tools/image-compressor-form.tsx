@@ -199,6 +199,9 @@ export function ImageCompressorForm() {
         if (useAISmartOptimize) {
           const photoDataUri = await fileToDataUri(original.file);
           const response = await compressImage({ photoDataUri });
+          if (response.error || !response.imageDataUri) {
+            throw new Error(response.error || "AI compression failed");
+          }
           finalBlob = dataUriToBlob(response.imageDataUri);
           finalFormat = finalBlob.type.split('/')[1] || 'png';
           message = `Saved ${((1 - finalBlob.size / original.originalSize) * 100).toFixed(0)}% with AI`;
@@ -242,11 +245,7 @@ export function ImageCompressorForm() {
 
       } catch (error: any) {
           console.error(`Failed to process ${original.file.name}:`, error);
-          let description = `Could not process ${original.file.name}.`;
-          if (error.message && error.message.includes('429')) {
-             description = "The AI optimizer is busy. Please try again later or use standard compression.";
-          }
-          toast({ variant: "destructive", title: "Processing Error", description });
+          toast({ variant: "destructive", title: "Processing Error", description: error.message || `Could not process ${original.file.name}.` });
       }
     }
     setProcessedFiles(processedResults);
