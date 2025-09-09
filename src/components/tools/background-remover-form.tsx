@@ -106,8 +106,9 @@ export function BackgroundRemoverForm() {
       
       if (response.error || !response.imageDataUri) {
          toast({
-            title: "AI Remover Busy",
-            description: "Switching to standard background removal. This may take a moment.",
+            variant: "destructive",
+            title: "AI Remover Failed",
+            description: `${response.error} Switching to standard background removal.`,
         });
         
         // Dynamically import the client-side library

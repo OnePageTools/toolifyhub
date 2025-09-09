@@ -39,7 +39,7 @@ export async function removeBackground(
       prompt: [
         { media: { url: input.photoDataUri } },
         {
-          text: 'Remove the background from this image. The resulting image should have a transparent background.',
+          text: 'Remove the background from this image. The resulting image should have a transparent background. Ensure the subject is cleanly cut out with no remaining background artifacts.',
         },
       ],
       config: {
