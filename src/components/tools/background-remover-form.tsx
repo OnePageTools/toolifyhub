@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useCallback } from 'react';
@@ -68,7 +69,7 @@ export function BackgroundRemoverForm() {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-    if(e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    if(e.dataTransfer.files && e.dataTansfer.files.length > 0) {
         handleFileSelect(e.dataTransfer.files[0]);
         // To allow for re-uploading the same file if cleared
         e.dataTransfer.clearData();
