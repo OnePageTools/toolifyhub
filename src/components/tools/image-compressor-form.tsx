@@ -33,7 +33,7 @@ type ProcessedFile = {
   finalSize: number;
   originalSize: number;
   name: string;
-  wasCompressed: boolean;
+  message: string;
 };
 
 type OutputFormat = 'image/jpeg' | 'image/png' | 'image/webp';
@@ -139,6 +139,47 @@ export function ImageCompressorForm() {
     });
   };
 
+  const processImageOnClient = async (
+    originalFile: OriginalFile,
+    targetFormat: OutputFormat,
+    quality: number
+  ): Promise<Blob | null> => {
+    const image = document.createElement('img');
+    image.src = originalFile.preview;
+    await new Promise(resolve => image.onload = resolve);
+    
+    const canvas = document.createElement('canvas');
+    let { width, height } = image;
+    
+    const targetWidth = parseInt(maxWidth);
+    const targetHeight = parseInt(maxHeight);
+
+    if (targetWidth || targetHeight) {
+      if (lockAspectRatio) {
+          const ratio = image.width / image.height;
+          if (targetWidth && (!targetHeight || targetWidth / ratio <= (targetHeight || image.height))) {
+              width = targetWidth;
+              height = Math.round(targetWidth / ratio);
+          } else if (targetHeight) {
+              height = targetHeight;
+              width = Math.round(targetHeight * ratio);
+          }
+      } else {
+          if(targetWidth) width = targetWidth;
+          if(targetHeight) height = targetHeight;
+      }
+    }
+
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error("Could not get canvas context");
+
+    ctx.drawImage(image, 0, 0, width, height);
+    return new Promise<Blob | null>(resolve => canvas.toBlob(resolve, targetFormat, quality));
+  };
+
+
   const handleProcess = async () => {
     if (originalFiles.length === 0) {
       toast({ variant: "destructive", title: "No images to process" });
@@ -148,95 +189,70 @@ export function ImageCompressorForm() {
     setIsLoading(true);
     setProcessedFiles([]);
     const processedResults: ProcessedFile[] = [];
-    let hadError = false;
-
+    
     for (const original of originalFiles) {
-      if(hadError) break; // Stop processing if an error occurred
-
       try {
         let finalBlob: Blob;
-        let finalPreview: string;
+        let message: string;
+        let finalFormat: string;
 
         if (useAISmartOptimize) {
           const photoDataUri = await fileToDataUri(original.file);
           const response = await compressImage({ photoDataUri });
-          finalPreview = response.imageDataUri;
           finalBlob = dataUriToBlob(response.imageDataUri);
+          finalFormat = finalBlob.type.split('/')[1] || 'png';
+          message = `Saved ${((1 - finalBlob.size / original.originalSize) * 100).toFixed(0)}% with AI`;
         } else {
-            const image = document.createElement('img');
-            image.src = original.preview;
-            await new Promise(resolve => image.onload = resolve);
+            const targetFormat = outputFormat === 'auto' ? original.file.type as OutputFormat : outputFormat;
+            let compressedBlob = await processImageOnClient(original, targetFormat, quality);
             
-            const canvas = document.createElement('canvas');
-            let { width, height } = image;
-            
-            const targetWidth = parseInt(maxWidth);
-            const targetHeight = parseInt(maxHeight);
-
-            if (lockAspectRatio) {
-                if (targetWidth && width > targetWidth) {
-                    const ratio = targetWidth / width;
-                    width = targetWidth;
-                    height = Math.round(height * ratio);
-                } else if (targetHeight && height > targetHeight) {
-                    const ratio = targetHeight / height;
-                    height = targetHeight;
-                    width = Math.round(width * ratio);
+            if (compressedBlob && compressedBlob.size < original.originalSize) {
+                finalBlob = compressedBlob;
+                finalFormat = targetFormat.split('/')[1];
+                message = `Saved ${((1 - finalBlob.size / original.originalSize) * 100).toFixed(0)}%`;
+            } else if (original.file.type !== 'image/webp') {
+                // Fallback: try converting to WebP if not already WebP
+                let webpBlob = await processImageOnClient(original, 'image/webp', quality);
+                if (webpBlob && webpBlob.size < original.originalSize) {
+                    finalBlob = webpBlob;
+                    finalFormat = 'webp';
+                    message = `Converted to WEBP for max savings`;
+                } else {
+                    finalBlob = original.file;
+                    finalFormat = original.file.type.split('/')[1];
+                    message = 'Great! Your image is already optimized.';
                 }
             } else {
-                if(targetWidth) width = targetWidth;
-                if(targetHeight) height = targetHeight;
+                finalBlob = original.file;
+                finalFormat = original.file.type.split('/')[1];
+                message = 'Great! Your image is already optimized.';
             }
-
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) throw new Error("Could not get canvas context");
-
-            ctx.drawImage(image, 0, 0, width, height);
-            const format = outputFormat === 'auto' ? original.file.type as OutputFormat : outputFormat;
-            const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, format, quality));
-
-            if (!blob) throw new Error("Canvas toBlob returned null");
-            finalBlob = blob;
-            finalPreview = URL.createObjectURL(finalBlob);
         }
-
-        const wasCompressed = finalBlob.size < original.originalSize;
-        const resultBlob = wasCompressed ? finalBlob : original.file;
-        const resultPreview = wasCompressed ? finalPreview : original.preview;
-        const format = outputFormat === 'auto' ? original.file.type.split('/')[1] : outputFormat.split('/')[1];
-        const newName = `${original.file.name.split('.').slice(0, -1).join('.')}.${format}`;
-
+        
+        const newName = `${original.file.name.split('.').slice(0, -1).join('.')}.${finalFormat}`;
         processedResults.push({
           id: original.id,
-          blob: resultBlob,
-          preview: resultPreview,
-          finalSize: resultBlob.size,
+          blob: finalBlob,
+          preview: URL.createObjectURL(finalBlob),
+          finalSize: finalBlob.size,
           originalSize: original.originalSize,
           name: newName,
-          wasCompressed: wasCompressed,
+          message,
         });
 
       } catch (error: any) {
           console.error(`Failed to process ${original.file.name}:`, error);
-          hadError = true;
+          let description = `Could not process ${original.file.name}.`;
           if (error.message && error.message.includes('429')) {
-             toast({ 
-                variant: "destructive", 
-                title: "AI Optimizer Busy", 
-                description: "The AI optimizer is experiencing high demand. Please try again later or use the standard compression.",
-                duration: 5000,
-             });
-          } else {
-            toast({ variant: "destructive", title: "Processing Error", description: `Could not process ${original.file.name}`})
+             description = "The AI optimizer is busy. Please try again later or use standard compression.";
           }
+          toast({ variant: "destructive", title: "Processing Error", description });
       }
     }
     setProcessedFiles(processedResults);
     setIsLoading(false);
 
-    if (!hadError) {
+    if (processedResults.length > 0) {
         toast({ title: "Success!", description: `Processed ${processedResults.length} of ${originalFiles.length} images.` });
     }
   };
@@ -379,8 +395,6 @@ export function ImageCompressorForm() {
                 <ScrollArea className="h-72">
                     <div className="space-y-3">
                     {processedFiles.map(c => {
-                        const reduction = c.wasCompressed ? ((1 - c.finalSize / c.originalSize) * 100) : 0;
-                        const reductionFormatted = reduction.toFixed(0);
                         return (
                              <div key={c.id} className="grid grid-cols-2 md:grid-cols-4 gap-4 items-center p-2 rounded-lg hover:bg-secondary">
                                 <div className="flex items-center gap-3">
@@ -393,15 +407,9 @@ export function ImageCompressorForm() {
                                     <span className="text-sm font-bold">{formatBytes(c.finalSize)}</span>
                                 </div>
                                 <div className="flex justify-end md:justify-start">
-                                    {c.wasCompressed ? (
-                                        <span className="text-sm font-bold text-green-600 bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded-full">
-                                            Saved {reductionFormatted}%
-                                        </span>
-                                    ) : (
-                                         <span className="text-sm font-medium text-orange-600 bg-orange-100 dark:bg-orange-900/50 px-2 py-1 rounded-full">
-                                            No reduction
-                                        </span>
-                                    )}
+                                    <span className="text-sm font-bold text-green-600 bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded-full">
+                                      {c.message}
+                                    </span>
                                 </div>
                                 <div className="flex justify-end col-span-2 md:col-span-1">
                                      <a href={c.preview} download={c.name}>
