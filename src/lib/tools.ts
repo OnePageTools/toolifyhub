@@ -83,7 +83,7 @@ export const tools: Tool[] = [
     href: '/tools/image-to-text',
     icon: Type,
     category: 'Image',
-    implemented: false,
+    implemented: true,
   },
   {
     name: 'Background Remover',
