@@ -20,7 +20,7 @@ import {
   MonitorSmartphone,
   Tags,
   Mail,
-  Image as ImageIcon,
+  ImageIcon,
   Type,
   Scissors,
   BookOpen,
@@ -75,7 +75,7 @@ export const tools: Tool[] = [
     href: '/tools/image-compressor',
     icon: ImageIcon,
     category: 'Image',
-    implemented: false,
+    implemented: true,
   },
   {
     name: 'Image to Text (OCR)',
