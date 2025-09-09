@@ -113,9 +113,9 @@ export function ImageCompressorForm() {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-    if(e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        handleFileSelect(e.dataTransfer.files);
-        e.dataTransfer.clearData();
+    if(e.datatransfer.files && e.datatransfer.files.length > 0) {
+        handleFileSelect(e.datatransfer.files);
+        e.datatransfer.clearData();
     }
   };
 
@@ -201,7 +201,7 @@ export function ImageCompressorForm() {
           const photoDataUri = await fileToDataUri(original.file);
           const response = await compressImage({ photoDataUri });
           if (response.error || !response.imageDataUri) {
-             toast({ variant: "destructive", title: "AI Optimization Failed", description: response.error || "Could not process with AI. Falling back to standard compression." });
+             toast({ variant: "destructive", title: "AI Optimization Failed", description: response.error || "Falling back to standard compression." });
              aiFailed = true; // Flag that AI failed, so we can try standard compression
           } else {
             finalBlob = dataUriToBlob(response.imageDataUri);
@@ -218,23 +218,22 @@ export function ImageCompressorForm() {
                 finalBlob = compressedBlob;
             } else if (original.file.type !== 'image/webp') {
                 let webpBlob = await processImageOnClient(original, 'image/webp', quality);
-                if (webpBlob && webpBlob.size < original.originalSize) {
+                if (webpBlob && webpBlob.size < (compressedBlob?.size || original.originalSize)) {
                     finalBlob = webpBlob;
                 } else {
-                    finalBlob = original.file; // Keep original if no method reduces size
+                    finalBlob = compressedBlob || original.file; // Keep compressed if smaller, else original
                 }
             } else {
-                finalBlob = original.file; // Keep original if already webp and no reduction
+                finalBlob = compressedBlob || original.file;
             }
         }
         
-        if (!finalBlob) { // Should not happen with the new logic, but as a safeguard
-            throw new Error("Compression resulted in an empty file.");
+        if (!finalBlob) { // Safeguard
+            finalBlob = original.file
         }
-
-        finalFormat = finalBlob.type.split('/')[1] || 'png';
         
         if(finalBlob.size >= original.originalSize) {
+            finalBlob = original.file; // Ensure we never return a larger file
             message = "Great! Your image is already optimized.";
         } else {
             const savings = ((1 - finalBlob.size / original.originalSize) * 100).toFixed(0);
@@ -247,7 +246,9 @@ export function ImageCompressorForm() {
             }
         }
         
+        finalFormat = finalBlob.type.split('/')[1] || 'png';
         const newName = `${original.file.name.split('.').slice(0, -1).join('.')}.${finalFormat}`;
+        
         processedResults.push({
           id: original.id,
           blob: finalBlob,
@@ -441,5 +442,3 @@ export function ImageCompressorForm() {
     </div>
   );
 }
-
-    
