@@ -192,45 +192,58 @@ export function ImageCompressorForm() {
     
     for (const original of originalFiles) {
       try {
-        let finalBlob: Blob;
+        let finalBlob: Blob | null = null;
         let message: string;
         let finalFormat: string;
+        let aiFailed = false;
 
         if (useAISmartOptimize) {
           const photoDataUri = await fileToDataUri(original.file);
           const response = await compressImage({ photoDataUri });
           if (response.error || !response.imageDataUri) {
-             toast({ variant: "destructive", title: "AI Optimization Failed", description: response.error || "Could not process the image with AI." });
-             // Skip this file and continue with the next ones
-             continue; 
+             toast({ variant: "destructive", title: "AI Optimization Failed", description: response.error || "Could not process with AI. Falling back to standard compression." });
+             aiFailed = true; // Flag that AI failed, so we can try standard compression
+          } else {
+            finalBlob = dataUriToBlob(response.imageDataUri);
           }
-          finalBlob = dataUriToBlob(response.imageDataUri);
-          finalFormat = finalBlob.type.split('/')[1] || 'png';
-          message = `Saved ${((1 - finalBlob.size / original.originalSize) * 100).toFixed(0)}% with AI`;
-        } else {
+        }
+        
+        // If AI was not used, or if AI failed, run standard compression
+        if (!useAISmartOptimize || aiFailed) {
             const targetFormat = outputFormat === 'auto' ? original.file.type as OutputFormat : outputFormat;
             let compressedBlob = await processImageOnClient(original, targetFormat, quality);
             
+            // Smart fallback logic
             if (compressedBlob && compressedBlob.size < original.originalSize) {
                 finalBlob = compressedBlob;
-                finalFormat = targetFormat.split('/')[1];
-                message = `Saved ${((1 - finalBlob.size / original.originalSize) * 100).toFixed(0)}%`;
             } else if (original.file.type !== 'image/webp') {
-                // Fallback: try converting to WebP if not already WebP
                 let webpBlob = await processImageOnClient(original, 'image/webp', quality);
                 if (webpBlob && webpBlob.size < original.originalSize) {
                     finalBlob = webpBlob;
-                    finalFormat = 'webp';
-                    message = `Converted to WEBP for max savings`;
                 } else {
-                    finalBlob = original.file;
-                    finalFormat = original.file.type.split('/')[1];
-                    message = 'Great! Your image is already optimized.';
+                    finalBlob = original.file; // Keep original if no method reduces size
                 }
             } else {
-                finalBlob = original.file;
-                finalFormat = original.file.type.split('/')[1];
-                message = 'Great! Your image is already optimized.';
+                finalBlob = original.file; // Keep original if already webp and no reduction
+            }
+        }
+        
+        if (!finalBlob) { // Should not happen with the new logic, but as a safeguard
+            throw new Error("Compression resulted in an empty file.");
+        }
+
+        finalFormat = finalBlob.type.split('/')[1] || 'png';
+        
+        if(finalBlob.size >= original.originalSize) {
+            message = "Great! Your image is already optimized.";
+        } else {
+            const savings = ((1 - finalBlob.size / original.originalSize) * 100).toFixed(0);
+            if (useAISmartOptimize && !aiFailed) {
+                message = `Saved ${savings}% with AI`;
+            } else if (finalBlob.type === 'image/webp' && original.file.type !== 'image/webp') {
+                message = `Converted to WEBP for max savings`;
+            } else {
+                message = `Saved ${savings}%`;
             }
         }
         
