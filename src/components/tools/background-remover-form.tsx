@@ -84,15 +84,6 @@ export function BackgroundRemoverForm() {
       reader.readAsDataURL(file);
     });
   };
-  
-  const blobToDataUri = (blob: Blob): Promise<string> => {
-     return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
-  }
 
   const handleSubmit = async () => {
     if (!selectedFile) {
@@ -123,8 +114,8 @@ export function BackgroundRemoverForm() {
 
         // Fallback to client-side removal if AI fails
         const clientResultBlob = await removeBackgroundClient(selectedFile);
-        const clientResultDataUri = await blobToDataUri(clientResultBlob);
-        setResult({ imageDataUri: clientResultDataUri });
+        const clientResultUrl = URL.createObjectURL(clientResultBlob);
+        setResult({ imageDataUri: clientResultUrl });
 
       } else {
         setResult(response);
