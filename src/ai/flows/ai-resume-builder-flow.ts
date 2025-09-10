@@ -2,50 +2,17 @@
 /**
  * @fileOverview A flow for generating and enhancing a professional resume using AI.
  * - buildResume - A function that takes resume data and generates a polished resume.
- * - ResumeDataSchema - The input type for the resume building function.
- * - ResumeOutputSchema - The return type for the resume building function.
+ * - ResumeData - The input type for the resume building function.
+ * - ResumeOutput - The return type for the resume building function.
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
-
-const ExperienceSchema = z.object({
-  jobTitle: z.string(),
-  company: z.string(),
-  location: z.string(),
-  startDate: z.string(),
-  endDate: z.string(),
-  responsibilities: z.array(z.string()),
-});
-
-const EducationSchema = z.object({
-  degree: z.string(),
-  school: z.string(),
-  location: z.string(),
-  gradDate: z.string(),
-});
-
-export const ResumeDataSchema = z.object({
-  fullName: z.string(),
-  email: z.string().email(),
-  phone: z.string(),
-  address: z.string(),
-  linkedin: z.string().url().optional(),
-  portfolio: z.string().url().optional(),
-  summary: z.string().describe('A professional summary. The AI should enhance this if possible.'),
-  experience: z.array(ExperienceSchema),
-  education: z.array(EducationSchema),
-  skills: z.array(z.string()),
-});
-
-export type ResumeData = z.infer<typeof ResumeDataSchema>;
-
-export const ResumeOutputSchema = z.object({
-  resumeMarkdown: z.string().describe('The full resume formatted in clean, professional Markdown.'),
-  suggestions: z.array(z.string()).describe('A list of actionable suggestions to improve the resume.'),
-});
-
-export type ResumeOutput = z.infer<typeof ResumeOutputSchema>;
+import {
+  ResumeDataSchema,
+  ResumeOutputSchema,
+  type ResumeData,
+  type ResumeOutput,
+} from '@/lib/schema/resume-schema';
 
 export async function buildResume(input: ResumeData): Promise<ResumeOutput> {
   return buildResumeFlow(input);

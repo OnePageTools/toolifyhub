@@ -1,16 +1,14 @@
 "use client";
 
 import { useState } from 'react';
-import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
+import { useForm, useFieldArray, FormProvider, useFormContext } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import {
   Loader2,
@@ -27,36 +25,10 @@ import {
   Download,
   Lightbulb,
 } from 'lucide-react';
-import { ResumeData, ResumeOutput, buildResume } from '@/ai/flows/ai-resume-builder-flow';
-
-const experienceSchema = z.object({
-  jobTitle: z.string().min(1, 'Job title is required'),
-  company: z.string().min(1, 'Company is required'),
-  location: z.string().min(1, 'Location is required'),
-  startDate: z.string().min(1, 'Start date is required'),
-  endDate: z.string().min(1, 'End date is required'),
-  responsibilities: z.array(z.string().min(1, 'Responsibility cannot be empty')).min(1, 'At least one responsibility is required'),
-});
-
-const educationSchema = z.object({
-  degree: z.string().min(1, 'Degree is required'),
-  school: z.string().min(1, 'School is required'),
-  location: z.string().min(1, 'Location is required'),
-  gradDate: z.string().min(1, 'Graduation date is required'),
-});
-
-const resumeFormSchema = z.object({
-  fullName: z.string().min(1, 'Full name is required'),
-  email: z.string().email('Invalid email address'),
-  phone: z.string().min(1, 'Phone number is required'),
-  address: z.string().min(1, 'Address is required'),
-  linkedin: z.string().url('Invalid URL').optional().or(z.literal('')),
-  portfolio: z.string().url('Invalid URL').optional().or(z.literal('')),
-  summary: z.string().min(20, 'Summary should be at least 20 characters'),
-  experience: z.array(experienceSchema).min(1, 'At least one work experience is required'),
-  education: z.array(educationSchema).min(1, 'At least one education entry is required'),
-  skills: z.array(z.string().min(1, 'Skill cannot be empty')).min(1, 'At least one skill is required'),
-});
+import { buildResume } from '@/ai/flows/ai-resume-builder-flow';
+import type { ResumeData, ResumeOutput } from '@/lib/schema/resume-schema';
+import { resumeFormSchema } from '@/lib/schema/resume-schema';
+import { cn } from '@/lib/utils';
 
 
 const steps = [
@@ -91,10 +63,8 @@ export function ResumeBuilderForm() {
   });
 
   const {
-    control,
     handleSubmit,
     trigger,
-    formState: { errors },
   } = methods;
 
   const nextStep = async () => {
@@ -208,7 +178,7 @@ export function ResumeBuilderForm() {
         {/* Stepper */}
         <div className="flex justify-between">
           {steps.map((step, index) => (
-            <div key={step.id} className="flex items-center flex-col gap-2 w-full">
+            <div key={step.id} className="flex items-center flex-col gap-2 w-full relative">
               <div
                 className={cn(
                   'w-10 h-10 rounded-full flex items-center justify-center border-2',
