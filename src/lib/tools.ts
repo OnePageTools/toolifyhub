@@ -179,7 +179,7 @@ export const tools: Tool[] = [
     href: '/tools/code-minifier',
     icon: Code,
     category: 'Dev',
-    implemented: false,
+    implemented: true,
   },
   {
     name: 'Website Screenshot',
