@@ -54,7 +54,7 @@ export async function removeBackground(
 
     return { imageDataUri: media.url };
   } catch (err: any) {
-    if (err.message && err.message.includes('429')) {
+    if (err.message && (err.message.includes('429') || err.message.includes('503'))) {
       // Return a specific error code for rate limiting that the client can handle silently.
       return { error: "RATE_LIMIT_EXCEEDED" };
     }
