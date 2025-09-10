@@ -163,7 +163,7 @@ export const tools: Tool[] = [
     href: '/tools/currency-converter',
     icon: DollarSign,
     category: 'Utilities',
-    implemented: false,
+    implemented: true,
   },
   {
     name: 'JSON Formatter',
