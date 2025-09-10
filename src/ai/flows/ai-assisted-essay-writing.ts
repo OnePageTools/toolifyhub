@@ -49,50 +49,68 @@ const prompt = ai.definePrompt({
           policymakerPitch: z.string().describe('A 2-sentence pitch summarizing the key proposal for policymakers.'),
       }).describe('Additional AI-generated analysis and tools.'),
   })},
-  prompt: `You are an expert academic researcher and policy analyst, specializing in technology, climate change, and global governance. Your task is to generate a premium-level academic whitepaper on the provided topic. The tone must be professional, strategic, and suitable for policymakers and researchers.
+  prompt: `You are a world-class policy advisor and information designer, blending the analytical rigor of a McKinsey consultant with the strategic foresight of the World Economic Forum. Your task is to generate a premium-level, executive-style whitepaper on the provided topic, making it highly scannable, visually compelling, and ready for policymakers.
 
 Topic: {{{topic}}}
 {{#if instructions}}Instructions: {{{instructions}}}{{/if}}
 
-**Academic Whitepaper Requirements:**
+**Executive Whitepaper Requirements:**
 
-1.  **Title Page**: Create a formal, professional title for the whitepaper.
-2.  **Abstract**: Write a concise, polished abstract summarizing the paper's key findings and recommendations.
-3.  **Introduction**:
-    *   Start with a strong hook to grab the reader's attention.
-    *   Clearly define the problem, state the paper's objectives, and outline its structure.
-4.  **Comparative Regional Analysis**:
-    *   Provide a detailed analysis of the AI governance policies in the **European Union (EU), United States (US), and China**.
-    *   For each region, discuss their unique approach, key policy documents (e.g., EU AI Act), strengths, and weaknesses.
-5.  **Case Studies: AI in Climate Change Mitigation**:
-    *   Include at least **three specific case studies** demonstrating how AI is applied to combat climate change.
-    *   Examples: Renewable energy optimization, precision agriculture for sustainable farming, or smart urban systems for energy efficiency.
-6.  **Ethical Challenges (Structured Discussion)**:
-    *   Dedicate a section to a structured discussion of the ethical challenges, covering:
-        *   Data ownership and sovereignty in cross-border climate data.
-        *   Environmental justice, focusing on the disparity in access and impact between the Global South and Global North.
-        *   Algorithmic bias in climate modeling and data.
-        *   The significant energy footprint of AI technologies themselves.
-7.  **Global Policy Roadmap**:
-    *   Provide a clear, phased roadmap for global policy action:
-        *   **Short-term (1-2 years)**: Key initial steps.
-        *   **Medium-term (3-5 years)**: Building on initial progress.
-        *   **Long-term (5-10 years)**: Establishing lasting frameworks.
-8.  **Actionable Recommendations**:
-    *   Conclude with **five clear, actionable recommendations** for international policymakers.
-9.  **Conclusion**:
-    *   Summarize the key findings and reiterate the strategic importance of global cooperation.
-10. **References**:
-    *   Include credible, authoritative sources (e.g., OECD, UN, IPCC, WEF, academic papers).
-    *   Use **in-text citations in APA style**, e.g., (UN, 2023).
-    *   Provide a full reference list at the end in APA format.
+The entire output must be a single, clean Markdown document. Use formatting (bold, italics, lists, tables) to maximize readability for a busy executive audience.
+
+1.  **Title Page**: Create a formal, professional title.
+
+2.  **Abstract (Concise & Polished)**: Write a tight, impactful abstract summarizing the paper's core thesis and key recommendations.
+
+3.  **Executive Summary**:
+    *   Start with a powerful opening statement.
+    *   Use **bullet points** to list 4-5 key findings and actionable recommendations.
+    *   Keep it concise and focused on high-level takeaways.
+
+4.  **Introduction**:
+    *   Start with a strong hook (e.g., a striking statistic on the cost of unpreparedness).
+    *   Clearly define the problem and state the paper's objectives.
+
+5.  **Comparative Regional AI Governance (EU, US, China)**:
+    *   Provide a brief analysis of each region's approach to AI governance in public health.
+    *   **Crucially, create a Markdown table** comparing the regions across these criteria: **Ethics & Rights Focus, Data Sharing Models, Public-Private Collaboration, and Regulatory Speed**.
+
+6.  **Case Studies: AI in Action (Pandemic & Climate Lessons)**:
+    *   Present **three specific case studies**.
+    *   For each case study, include an "**Infographic-Style Callout Box**" with a key statistic or insight. Use Markdown blockquotes for this.
+        *   **Case Study 1: Predictive Analytics**: How AI models (like BlueDot) predicted outbreaks faster than traditional methods.
+        *   **Case Study 2: Resource Optimization**: Lessons from using AI to optimize vaccine distribution, drawing parallels to AI in energy grid management.
+        *   **Case Study 3: Drug Discovery**: How AI accelerated research for COVID-19 treatments and vaccines.
+
+7.  **Ethical Challenges & Mitigation**:
+    *   Structure this section with clear subheadings (e.g., **Data Privacy, Algorithmic Bias, Digital Equity**).
+    *   For each challenge, briefly propose a mitigation strategy.
+    *   ***[DESIGNER NOTE: Suggest using a 'warning' icon next to this section header.]***
+
+8.  **Global Policy Roadmap**:
+    *   Provide a clear, phased roadmap in a bulleted list.
+    *   **Short-term (1-2 years)**: Establish global data-sharing standards for anonymized health data.
+    *   **Medium-term (3-5 years)**: Fund international "AI for Health" sandboxes to test cross-border models.
+    *   **Long-term (5-10 years)**: Develop a WHO-affiliated global AI pandemic response framework.
+    *   ***[DESIGNER NOTE: Suggest visualizing this as a timeline infographic.]***
+
+9.  **Actionable Recommendations (Bulleted List)**:
+    *   Conclude with **five clear, actionable recommendations** for global policymakers. Use strong action verbs.
+    *   ***[DESIGNER NOTE: Suggest using a 'checklist' icon for this section.]***
+
+10. **Conclusion**:
+    *   Summarize the key arguments and end with a powerful, forward-looking vision.
+
+11. **References**:
+    *   Include at least 4-5 credible, authoritative sources (e.g., WHO, The Lancet, Nature, WEF).
+    *   Use a simplified citation style for readability, e.g., (WHO, 2023).
 
 **AI Analysis & Toolkit Task (Append after the report):**
 1.  **Keywords**: 10 relevant keywords.
-2.  **Alternative Tones**: 3 alternative tones (e.g., "Op-Ed," "Investor Brief," "Technical Paper").
-3.  **Policymaker Pitch**: A compelling 2-sentence pitch summarizing the key recommendation.
+2.  **Alternative Tones**: 3 alternative tones (e.g., "Academic Journal Article," "Op-Ed," "Investor Brief").
+3.  **Policymaker Pitch**: A compelling 2-sentence pitch.
 
-The entire output must be a single, clean Markdown document. Respond in the required JSON format.`,
+Respond in the required JSON format.`,
 });
 
 const aiAssistedEssayWritingFlow = ai.defineFlow(
