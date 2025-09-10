@@ -20,12 +20,10 @@ import {
   type AIPlagiarismCheckOutput,
 } from '@/ai/flows/ai-plagiarism-detection';
 import { Loader2, ShieldCheck, ShieldAlert, FileDown, Search, ExternalLink, RefreshCw } from 'lucide-react';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Pie, PieChart, Cell } from 'recharts';
-import type { ChartConfig } from '@/components/ui/chart';
 import { useToast } from '@/hooks/use-toast';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Progress } from '@/components/ui/progress';
 
 const formSchema = z.object({
   text: z.string().min(50, { message: 'Please enter at least 50 characters to check.' }),
@@ -117,15 +115,6 @@ export function PlagiarismCheckerForm() {
     return highlighted;
   }, [result, form]);
 
-  const chartData = useMemo(() => [
-    { name: 'Unique', value: result?.uniquePercentage ?? 100, fill: 'var(--color-unique)' },
-    { name: 'Plagiarized', value: result?.plagiarismPercentage ?? 0, fill: 'var(--color-plagiarized)' },
-  ], [result]);
-  
-  const chartConfig = {
-    unique: { label: 'Unique', color: 'hsl(var(--chart-1))' },
-    plagiarized: { label: 'Plagiarized', color: 'hsl(var(--chart-2))' },
-  } satisfies ChartConfig;
 
   const handleReset = () => {
     form.reset();
@@ -188,25 +177,22 @@ export function PlagiarismCheckerForm() {
                  <p className="text-muted-foreground">Analysis completed on: {new Date().toLocaleString()}</p>
              </header>
             <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <Card className="col-span-1">
+                <Card className="col-span-1 flex flex-col justify-center">
                     <CardHeader>
                         <CardTitle className="text-xl">Overall Score</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                         <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-60">
-                            <PieChart>
-                                <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-                                <Pie data={chartData} dataKey="value" nameKey="name" innerRadius={50}>
-                                    {chartData.map((entry) => (
-                                        <Cell key={entry.name} fill={entry.fill} />
-                                    ))}
-                                </Pie>
-                            </PieChart>
-                         </ChartContainer>
-                         <div className="text-center text-4xl font-bold mt-4">
+                    <CardContent className="space-y-4">
+                        <div className="text-center text-4xl font-bold">
                             {result.uniquePercentage.toFixed(0)}%
                             <span className="text-lg font-normal text-muted-foreground"> Unique</span>
-                         </div>
+                        </div>
+                         <div>
+                            <div className="flex justify-between text-sm text-muted-foreground mb-1">
+                                <span>Plagiarized</span>
+                                <span>{result.plagiarismPercentage.toFixed(0)}%</span>
+                            </div>
+                            <Progress value={result.plagiarismPercentage} className="h-2 [&>div]:bg-destructive" />
+                        </div>
                     </CardContent>
                 </Card>
 
