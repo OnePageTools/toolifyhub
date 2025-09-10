@@ -208,14 +208,15 @@ const ResumePreview = () => {
         setIsClient(true);
     }, []);
 
-    const { control, getValues, trigger } = useFormContext<ResumeData>();
-    const formData = useWatch({ control });
+    const { getValues, trigger } = useFormContext<ResumeData>();
 
     const handleGeneratePreview = async () => {
       setIsGenerating(true);
       const isValid = await trigger();
       if (isValid) {
         setPreviewData(getValues());
+      } else {
+        setPreviewData(null);
       }
       setIsGenerating(false);
     }
@@ -223,8 +224,6 @@ const ResumePreview = () => {
     const ResumeTemplate = selectedTemplate.component;
     const colorTheme = colorThemes[selectedColor as keyof typeof colorThemes];
     
-    const isFormDataReady = !!(formData && formData.experience?.[0]?.jobTitle && formData.education?.[0]?.degree);
-
     return (
         <Card className="shadow-lg h-[80vh] flex flex-col">
             <CardHeader>
@@ -242,9 +241,9 @@ const ResumePreview = () => {
                             {Object.keys(colorThemes).map(key => <SelectItem key={key} value={key}>{key.charAt(0).toUpperCase() + key.slice(1)}</SelectItem>)}
                         </SelectContent>
                     </Select>
-                    {isClient && isFormDataReady && (
+                    {isClient && previewData && (
                         <PDFDownloadLink
-                            document={<ResumeTemplate data={formData} theme={colorTheme} />}
+                            document={<ResumeTemplate data={previewData} theme={colorTheme} />}
                             fileName="resume.pdf"
                         >
                             {({ loading }) => (
@@ -260,9 +259,9 @@ const ResumePreview = () => {
                 </Button>
             </CardHeader>
             <CardContent className="flex-grow">
-             {isClient && isFormDataReady ? (
+             {isClient && previewData ? (
                 <PDFViewer width="100%" height="100%" showToolbar={false}>
-                  <ResumeTemplate data={formData} theme={colorTheme} />
+                  <ResumeTemplate data={previewData} theme={colorTheme} />
                 </PDFViewer>
               ) : (
                 <div className="h-full flex items-center justify-center bg-secondary rounded-md">
@@ -491,3 +490,5 @@ const OptionalSectionsForm = () => {
       </div>
     );
   };
+
+    
