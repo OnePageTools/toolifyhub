@@ -49,33 +49,47 @@ const prompt = ai.definePrompt({
           policymakerPitch: z.string().describe('A 2-sentence pitch summarizing the key proposal for policymakers.'),
       }).describe('Additional AI-generated analysis and tools.'),
   })},
-  prompt: `You are a senior consultant at a top-tier global strategy firm, tasked with preparing a premium business report for government decision-makers. Your tone must be persuasive, data-driven, and highly professional.
+  prompt: `You are an expert academic researcher and policy analyst, specializing in technology, climate change, and global governance. Your task is to generate a premium-level academic whitepaper on the provided topic. The tone must be professional, strategic, and suitable for policymakers and researchers.
 
 Topic: {{{topic}}}
 {{#if instructions}}Instructions: {{{instructions}}}{{/if}}
 
-**Consulting-Style Report Requirements:**
+**Academic Whitepaper Requirements:**
 
-1.  **Title Page**: Create a formal, professional title for the report.
-2.  **Executive Insights Page**:
-    *   Start with a section titled "**Executive Insights**".
-    *   Provide exactly **5 key takeaways** in a numbered list. Each takeaway should be a concise, impactful statement.
+1.  **Title Page**: Create a formal, professional title for the whitepaper.
+2.  **Abstract**: Write a concise, polished abstract summarizing the paper's key findings and recommendations.
 3.  **Introduction**:
-    *   Clearly define the problem and its importance for policymakers.
-    *   State the report's objective and structure.
-4.  **Main Body: Analysis (Multiple Sections)**:
-    *   Use **bold subheadings** for each thematic section.
-    *   **Infographic-Style Summaries**: Within the text, create summaries that mimic the clarity of an infographic. Use concise, data-driven points. For example: "**By the Numbers:** - 75% of industries will be impacted by AI by 2030. - Global AI market projected to reach $1.5 trillion."
-    *   **SWOT Analysis Table**: Include a full SWOT analysis (Strengths, Weaknesses, Opportunities, Threats) related to the topic, formatted as a Markdown table.
-    *   **Global Risk Matrix**: Include a risk matrix that assesses at least 3 key risks, rating their likelihood (Low, Medium, High) and impact (Low, Medium, High). Format this as a Markdown table.
-5.  **Strategic Recommendations**:
-    *   Provide clear, actionable recommendations based on the analysis.
-6.  **Conclusion**:
-    *   Summarize the key findings and reiterate the strategic imperative for action.
+    *   Start with a strong hook to grab the reader's attention.
+    *   Clearly define the problem, state the paper's objectives, and outline its structure.
+4.  **Comparative Regional Analysis**:
+    *   Provide a detailed analysis of the AI governance policies in the **European Union (EU), United States (US), and China**.
+    *   For each region, discuss their unique approach, key policy documents (e.g., EU AI Act), strengths, and weaknesses.
+5.  **Case Studies: AI in Climate Change Mitigation**:
+    *   Include at least **three specific case studies** demonstrating how AI is applied to combat climate change.
+    *   Examples: Renewable energy optimization, precision agriculture for sustainable farming, or smart urban systems for energy efficiency.
+6.  **Ethical Challenges (Structured Discussion)**:
+    *   Dedicate a section to a structured discussion of the ethical challenges, covering:
+        *   Data ownership and sovereignty in cross-border climate data.
+        *   Environmental justice, focusing on the disparity in access and impact between the Global South and Global North.
+        *   Algorithmic bias in climate modeling and data.
+        *   The significant energy footprint of AI technologies themselves.
+7.  **Global Policy Roadmap**:
+    *   Provide a clear, phased roadmap for global policy action:
+        *   **Short-term (1-2 years)**: Key initial steps.
+        *   **Medium-term (3-5 years)**: Building on initial progress.
+        *   **Long-term (5-10 years)**: Establishing lasting frameworks.
+8.  **Actionable Recommendations**:
+    *   Conclude with **five clear, actionable recommendations** for international policymakers.
+9.  **Conclusion**:
+    *   Summarize the key findings and reiterate the strategic importance of global cooperation.
+10. **References**:
+    *   Include credible, authoritative sources (e.g., OECD, UN, IPCC, WEF, academic papers).
+    *   Use **in-text citations in APA style**, e.g., (UN, 2023).
+    *   Provide a full reference list at the end in APA format.
 
 **AI Analysis & Toolkit Task (Append after the report):**
-1.  **Keywords**: 10 relevant business and policy keywords.
-2.  **Alternative Tones**: 3 alternative tones (e.g., "Press Release," "Academic Abstract," "Internal Memo").
+1.  **Keywords**: 10 relevant keywords.
+2.  **Alternative Tones**: 3 alternative tones (e.g., "Op-Ed," "Investor Brief," "Technical Paper").
 3.  **Policymaker Pitch**: A compelling 2-sentence pitch summarizing the key recommendation.
 
 The entire output must be a single, clean Markdown document. Respond in the required JSON format.`,
