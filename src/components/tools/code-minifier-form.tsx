@@ -5,12 +5,13 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Copy, ClipboardCheck, Trash2, Wand2, Loader2, Code } from 'lucide-react';
+import { Copy, ClipboardCheck, Trash2, Wand2, Loader2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { minifyCode, type MinifyCodeInput } from '@/ai/flows/ai-code-minifier-flow';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 type Language = MinifyCodeInput['language'];
 
@@ -89,55 +90,71 @@ export function CodeMinifierForm() {
 
   return (
     <div className="p-4 space-y-4">
-      <div className="flex flex-wrap gap-4 items-center justify-between bg-secondary p-2 rounded-lg">
-        <div className="flex items-center gap-2">
-            <Label htmlFor="language-select" className="text-sm font-medium ml-2">Language:</Label>
-            <Select value={language} onValueChange={(v: Language) => setLanguage(v)}>
-                <SelectTrigger id="language-select" className="w-[120px]">
-                    <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="javascript">JavaScript</SelectItem>
-                    <SelectItem value="css">CSS</SelectItem>
-                    <SelectItem value="html">HTML</SelectItem>
-                    <SelectItem value="json">JSON</SelectItem>
-                </SelectContent>
-            </Select>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={handleMinify} disabled={isLoading || !inputCode.trim()}>
+       <div className="flex justify-center">
+         <Button onClick={handleMinify} disabled={isLoading || !inputCode.trim()} size="lg">
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-            Minify
+            Minify Code
           </Button>
-          <Button onClick={handleCopy} variant="outline" disabled={!outputCode}>
-            {isCopied ? <ClipboardCheck className="mr-2 h-4 w-4 text-green-500" /> : <Copy className="mr-2 h-4 w-4" />}
-            Copy
-          </Button>
-          <Button onClick={handleClear} variant="destructive">
-            <Trash2 className="mr-2 h-4 w-4" />
-            Clear
-          </Button>
-        </div>
-      </div>
+       </div>
+
       <div className="grid md:grid-cols-2 gap-4">
-        <ScrollArea className="h-[65vh] rounded-md border">
-          <Textarea
-            value={inputCode}
-            onChange={(e) => setInputCode(e.target.value)}
-            placeholder={`Paste your ${language.toUpperCase()} code here...`}
-            className="h-full resize-none font-mono text-sm border-0 focus-visible:ring-0"
-            aria-label="Code Input"
-          />
-        </ScrollArea>
-        <ScrollArea className="h-[65vh] rounded-md border bg-secondary/50">
-          <Textarea
-            value={outputCode}
-            readOnly
-            placeholder="Minified code will appear here..."
-            className="h-full resize-none font-mono text-sm border-0 focus-visible:ring-0 bg-transparent"
-            aria-label="Code Output"
-          />
-        </ScrollArea>
+        <Card className="h-[65vh] flex flex-col">
+            <CardHeader className="flex-row items-center justify-between p-3 border-b">
+                 <CardTitle className="text-lg">Input</CardTitle>
+                 <div className="flex items-center gap-2">
+                    <Label htmlFor="language-select" className="text-sm font-medium">Language:</Label>
+                    <Select value={language} onValueChange={(v: Language) => setLanguage(v)}>
+                        <SelectTrigger id="language-select" className="w-[120px] h-8">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="javascript">JavaScript</SelectItem>
+                            <SelectItem value="css">CSS</SelectItem>
+                            <SelectItem value="html">HTML</SelectItem>
+                            <SelectItem value="json">JSON</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </CardHeader>
+            <CardContent className="p-0 flex-grow">
+                 <ScrollArea className="h-full">
+                    <Textarea
+                        value={inputCode}
+                        onChange={(e) => setInputCode(e.target.value)}
+                        placeholder={`Paste your ${language.toUpperCase()} code here...`}
+                        className="h-full resize-none font-mono text-sm border-0 focus-visible:ring-0 rounded-t-none"
+                        aria-label="Code Input"
+                    />
+                </ScrollArea>
+            </CardContent>
+        </Card>
+        
+        <Card className="h-[65vh] flex flex-col">
+            <CardHeader className="flex-row items-center justify-between p-3 border-b">
+                 <CardTitle className="text-lg">Output</CardTitle>
+                 <div className="flex gap-2">
+                    <Button onClick={handleCopy} variant="outline" size="sm" disabled={!outputCode}>
+                        {isCopied ? <ClipboardCheck className="mr-2 h-4 w-4 text-green-500" /> : <Copy className="mr-2 h-4 w-4" />}
+                        Copy
+                    </Button>
+                    <Button onClick={handleClear} variant="ghost" size="sm">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Clear
+                    </Button>
+                </div>
+            </CardHeader>
+             <CardContent className="p-0 flex-grow bg-secondary/30">
+                <ScrollArea className="h-full">
+                    <Textarea
+                        value={outputCode}
+                        readOnly
+                        placeholder="Minified code will appear here..."
+                        className="h-full resize-none font-mono text-sm border-0 focus-visible:ring-0 bg-transparent rounded-t-none"
+                        aria-label="Code Output"
+                    />
+                </ScrollArea>
+            </CardContent>
+        </Card>
       </div>
 
       {stats && (
