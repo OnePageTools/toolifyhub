@@ -49,43 +49,34 @@ const prompt = ai.definePrompt({
           policymakerPitch: z.string().describe('A 2-sentence pitch summarizing the key proposal for policymakers.'),
       }).describe('Additional AI-generated analysis and tools.'),
   })},
-  prompt: `You are an expert academic researcher and policy analyst. Your task is to generate a high-quality academic research paper (approx. 2,000 words) on the given topic, suitable for submission to an international journal.
+  prompt: `You are a senior consultant at a top-tier global strategy firm, tasked with preparing a premium business report for government decision-makers. Your tone must be persuasive, data-driven, and highly professional.
 
 Topic: {{{topic}}}
 {{#if instructions}}Instructions: {{{instructions}}}{{/if}}
 
-**Academic Research Paper Requirements:**
+**Consulting-Style Report Requirements:**
 
-1.  **Title**: Create a formal, academic title.
-2.  **Abstract (200-250 words)**: Write a structured abstract covering: Background, Methods, Results, and Conclusion.
+1.  **Title Page**: Create a formal, professional title for the report.
+2.  **Executive Insights Page**:
+    *   Start with a section titled "**Executive Insights**".
+    *   Provide exactly **5 key takeaways** in a numbered list. Each takeaway should be a concise, impactful statement.
 3.  **Introduction**:
-    *   Start with a strong hook relevant to the academic field.
-    *   Provide background context and a clear problem statement.
-    *   End with a precise thesis statement outlining the paper's argument and structure.
-4.  **Literature Review**:
-    *   Synthesize findings from key academic and institutional sources.
-    *   Critically evaluate the existing literature, identifying gaps.
-    *   Cite credible reports from institutions like the OECD, World Economic Forum (WEF), and UNESCO.
-5.  **Methodology**: Briefly describe the research methodology (e.g., comparative case study, qualitative analysis).
-6.  **Main Body: Analysis & Findings (Multiple Sections)**:
+    *   Clearly define the problem and its importance for policymakers.
+    *   State the report's objective and structure.
+4.  **Main Body: Analysis (Multiple Sections)**:
     *   Use **bold subheadings** for each thematic section.
-    *   **In-depth Comparative Case Study**: Include at least one comparative case study (e.g., analyzing policies in South Korea vs. the EU vs. the USA).
-    *   Provide rigorous analysis with evidence. Use **APA in-text citations** throughout the paper.
-7.  **Discussion**:
-    *   Interpret the findings and discuss their implications.
-    *   Address potential limitations of the research.
-8.  **Conclusion & Policy Recommendations**:
-    *   Summarize the key findings and reiterate the thesis.
-    *   Provide specific, actionable policy recommendations.
-    *   Include **Key Performance Indicators (KPIs)** and evaluation metrics to measure the success of the proposed policies.
-9.  **References**:
-    *   Provide a full reference list in **APA 7th edition style**.
-    *   Include at least 6-8 credible academic or institutional sources.
+    *   **Infographic-Style Summaries**: Within the text, create summaries that mimic the clarity of an infographic. Use concise, data-driven points. For example: "**By the Numbers:** - 75% of industries will be impacted by AI by 2030. - Global AI market projected to reach $1.5 trillion."
+    *   **SWOT Analysis Table**: Include a full SWOT analysis (Strengths, Weaknesses, Opportunities, Threats) related to the topic, formatted as a Markdown table.
+    *   **Global Risk Matrix**: Include a risk matrix that assesses at least 3 key risks, rating their likelihood (Low, Medium, High) and impact (Low, Medium, High). Format this as a Markdown table.
+5.  **Strategic Recommendations**:
+    *   Provide clear, actionable recommendations based on the analysis.
+6.  **Conclusion**:
+    *   Summarize the key findings and reiterate the strategic imperative for action.
 
-**AI Analysis & Toolkit Task (Append after the paper):**
-1.  **Keywords**: 10 relevant academic keywords.
-2.  **Alternative Tones**: 3 alternative tones (e.g., "Policy Brief," "Op-Ed," "Conference Paper").
-3.  **Policymaker Pitch**: A compelling 2-sentence pitch summarizing the key policy implication.
+**AI Analysis & Toolkit Task (Append after the report):**
+1.  **Keywords**: 10 relevant business and policy keywords.
+2.  **Alternative Tones**: 3 alternative tones (e.g., "Press Release," "Academic Abstract," "Internal Memo").
+3.  **Policymaker Pitch**: A compelling 2-sentence pitch summarizing the key recommendation.
 
 The entire output must be a single, clean Markdown document. Respond in the required JSON format.`,
 });
