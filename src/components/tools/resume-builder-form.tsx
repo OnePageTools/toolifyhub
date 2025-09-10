@@ -92,9 +92,9 @@ export function ResumeBuilderForm() {
       const response = await buildResume(data);
       setResult(response);
       toast({ title: 'Success!', description: 'Your AI-enhanced resume has been generated.' });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Failed to generate resume. Please try again.' });
+      toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to generate resume. Please try again.' });
     } finally {
       setIsLoading(false);
     }
