@@ -90,13 +90,6 @@ export function CodeMinifierForm() {
 
   return (
     <div className="p-4 space-y-4">
-       <div className="flex justify-center">
-         <Button onClick={handleMinify} disabled={isLoading || !inputCode.trim()} size="lg">
-            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-            Minify Code
-          </Button>
-       </div>
-
       <div className="grid md:grid-cols-2 gap-4">
         <Card className="h-[75vh] flex flex-col">
             <CardHeader className="flex-row items-center justify-between p-3 border-b">
@@ -156,6 +149,13 @@ export function CodeMinifierForm() {
             </CardContent>
         </Card>
       </div>
+
+      <div className="flex justify-center">
+         <Button onClick={handleMinify} disabled={isLoading || !inputCode.trim()} size="lg">
+            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+            Minify Code
+          </Button>
+       </div>
 
       {stats && (
         <div className="flex flex-wrap justify-center gap-4 text-center">
