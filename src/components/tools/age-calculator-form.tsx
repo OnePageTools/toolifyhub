@@ -2,12 +2,11 @@
 "use client";
 
 import * as React from 'react';
-import { differenceInYears, differenceInMonths, differenceInDays, differenceInWeeks, format, isValid, getYear } from 'date-fns';
+import { differenceInWeeks, differenceInDays, format, isValid } from 'date-fns';
 import { Calendar as CalendarIcon, Zap, Gift, Cake, Sun } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
@@ -45,7 +44,6 @@ const getZodiacSign = (date: Date): string => {
     return "Capricorn"; // Default
 }
 
-
 export function AgeCalculatorForm() {
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [age, setAge] = React.useState<Age | null>(null);
@@ -60,24 +58,25 @@ export function AgeCalculatorForm() {
         return;
       }
       
-      const years = differenceInYears(now, date);
-      let months = differenceInMonths(now, date) % 12;
-      
-      let tempDate = new Date(date);
-      tempDate.setFullYear(tempDate.getFullYear() + years);
-      tempDate.setMonth(tempDate.getMonth() + months);
-      
-      let days = differenceInDays(now, tempDate);
+      let years = now.getFullYear() - date.getFullYear();
+      let months = now.getMonth() - date.getMonth();
+      let days = now.getDate() - date.getDate();
 
+      // Adjust months and years if the current date's month/day is before the birth date's
+      if (months < 0 || (months === 0 && days < 0)) {
+        years--;
+        months += 12;
+      }
+
+      // Adjust days and months if the current day is before the birth day
       if (days < 0) {
-        months -=1;
+        // Borrow from the previous month
+        months--;
+        const prevMonthLastDay = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+        days += prevMonthLastDay;
         if (months < 0) {
-            months = 11;
+          months = 11;
         }
-        tempDate = new Date(date);
-        tempDate.setFullYear(tempDate.getFullYear() + years);
-        tempDate.setMonth(tempDate.getMonth() + months);
-        days = differenceInDays(now, tempDate);
       }
 
       setAge({ years, months, days });
