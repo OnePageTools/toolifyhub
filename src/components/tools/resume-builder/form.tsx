@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -226,7 +227,7 @@ export function ResumeBuilderForm() {
               </div>
             </CardHeader>
             <CardContent className="h-[calc(100%-80px)]">
-             {isClient ? (
+             {isClient && formData ? (
                 <PDFViewer width="100%" height="100%" showToolbar={false}>
                   <ResumeTemplate data={formData} theme={colorTheme} />
                 </PDFViewer>
