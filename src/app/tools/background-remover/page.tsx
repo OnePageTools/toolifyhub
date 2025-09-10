@@ -1,3 +1,6 @@
+
+"use client";
+
 import { BackgroundRemoverForm } from '@/components/tools/background-remover-form';
 import {
   Card,
