@@ -1,14 +1,6 @@
 
 import { ResumeBuilderForm } from '@/components/tools/resume-builder/form';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
 import AIHelper from '@/components/ai-assistant';
-import { FileUser } from 'lucide-react';
 
 export default function ResumeBuilderPage() {
   return (
