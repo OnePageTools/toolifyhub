@@ -147,9 +147,22 @@ export function TextSummarizerForm() {
             <CardHeader>
               <CardTitle>Analysis Report</CardTitle>
             </CardHeader>
-            <CardContent>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {result.keywords?.map(kw => <Badge key={kw} variant="secondary">{kw}</Badge>)}
+            <CardContent className="grid md:grid-cols-2 gap-6">
+                 <div>
+                    <h4 className="text-sm font-semibold mb-2">Keywords</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {result.keywords?.map(kw => <Badge key={kw} variant="secondary">{kw}</Badge>)}
+                    </div>
+                 </div>
+                 <div className="grid grid-cols-2 gap-4 text-center">
+                    <Card className="p-3 bg-secondary/50">
+                        <p className="text-2xl font-bold">{result.originalWordCount}</p>
+                        <p className="text-xs text-muted-foreground">Original Words</p>
+                    </Card>
+                     <Card className="p-3 bg-secondary/50">
+                        <p className="text-2xl font-bold">{result.summaryWordCount}</p>
+                        <p className="text-xs text-muted-foreground">Summary Words</p>
+                    </Card>
                 </div>
             </CardContent>
           </Card>
