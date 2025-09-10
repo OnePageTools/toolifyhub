@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,6 +26,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 
 const formSchema = z.object({
   text: z.string().min(100, { message: 'Please enter at least 100 characters to summarize.' }),
@@ -179,7 +181,7 @@ export function TextSummarizerForm() {
                         <span className="sr-only">Regenerate</span>
                       </Button>
                       <Button variant="ghost" size="icon" onClick={handleCopy}>
-                        {isCopied ? <ClipboardCheck className="text-green-500" /> : <Clipboard />}
+                        {isCopied ? <ClipboardCheck className="text-green-500" /> : <ClipboardCheck />}
                         <span className="sr-only">Copy</span>
                       </Button>
                    </div>
