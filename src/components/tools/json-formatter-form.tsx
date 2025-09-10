@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -122,7 +123,7 @@ export function JsonFormatterForm() {
             </div>
         </div>
       <div className="grid md:grid-cols-2 gap-4">
-        <ScrollArea className="h-[60vh] rounded-md border">
+        <ScrollArea className="h-[75vh] rounded-md border">
             <Textarea
               value={jsonInput}
               onChange={(e) => setJsonInput(e.target.value)}
@@ -131,7 +132,7 @@ export function JsonFormatterForm() {
               aria-label="JSON Input"
             />
         </ScrollArea>
-        <ScrollArea className="h-[60vh] rounded-md border bg-secondary/50">
+        <ScrollArea className="h-[75vh] rounded-md border bg-secondary/50">
             <pre className="p-4 text-sm whitespace-pre-wrap font-mono">
                 {formattedJson ? (
                     <code>{formattedJson}</code>
