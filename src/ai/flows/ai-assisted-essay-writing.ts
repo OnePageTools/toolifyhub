@@ -23,11 +23,12 @@ const AiAssistedEssayInputSchema = z.object({
 export type AiAssistedEssayInput = z.infer<typeof AiAssistedEssayInputSchema>;
 
 const AiAssistedEssayOutputSchema = z.object({
-  essayMarkdown: z.string().optional().describe('The generated essay in clean, formatted Markdown.'),
-  suggestions: z.object({
-      improvements: z.array(z.string()).describe('A list of possible improvements for the essay.'),
-      alternativeTones: z.array(z.string()).describe('A list of alternative tones the user could adopt.'),
-  }).optional().describe('Actionable suggestions to enhance the essay.'),
+  essayMarkdown: z.string().optional().describe('The full generated document in clean, formatted Markdown.'),
+  analysis: z.object({
+      keywords: z.array(z.string()).describe('A list of 10 relevant keywords from the essay.'),
+      alternativeTones: z.array(z.string()).describe('A list of 3 alternative tones the user could adopt.'),
+      policymakerPitch: z.string().describe('A 2-sentence pitch summarizing the key proposal for policymakers.'),
+  }).optional().describe('Additional AI-generated analysis and tools.'),
   error: z.string().optional().describe('An error message if the operation failed.'),
 });
 export type AiAssistedEssayOutput = z.infer<typeof AiAssistedEssayOutputSchema>;
@@ -40,34 +41,45 @@ const prompt = ai.definePrompt({
   name: 'aiAssistedEssayPrompt',
   input: {schema: AiAssistedEssayInputSchema},
   output: {schema: z.object({
-      essayMarkdown: z.string().describe('The generated essay in clean, formatted Markdown.'),
-      suggestions: z.object({
-          improvements: z.array(z.string()).describe('A list of possible improvements for the essay.'),
-          alternativeTones: z.array(z.string()).describe('A list of alternative tones the user could adopt.'),
-      }).describe('Actionable suggestions to enhance the essay.'),
+      essayMarkdown: z.string().describe('The full generated document in clean, formatted Markdown, including all sections.'),
+      analysis: z.object({
+          keywords: z.array(z.string()).describe('A list of 10 relevant keywords from the essay.'),
+          alternativeTones: z.array(z.string()).describe('A list of 3 alternative tones the user could adopt.'),
+          policymakerPitch: z.string().describe('A 2-sentence pitch summarizing the key proposal for policymakers.'),
+      }).describe('Additional AI-generated analysis and tools.'),
   })},
-  prompt: `You are an expert academic and creative essay writer. Your task is to generate a premium-quality essay on the given topic, following all requirements meticulously.
+  prompt: `You are an expert academic writer and policy analyst. Your task is to generate a premium-quality, in-depth document on the given topic, following all requirements meticulously.
 
 Topic: {{{topic}}}
 {{#if instructions}}Instructions: {{{instructions}}}{{/if}}
 
-**Essay Requirements:**
-1.  **Length**: 600–800 words (unless specified otherwise in the instructions).
-2.  **Hook**: Start the essay with a powerful and relevant hook (e.g., a striking fact, a compelling quote, or a provocative question).
-3.  **Structure**:
-    *   **Introduction**: Present a clear and assertive thesis statement.
-    *   **Body (3–4 Sections)**: Divide the body into distinct sections, each with a **bold subheading**. Each section must present a clear argument supported by evidence.
-    *   **Conclusion**: Summarize the key arguments and end with a strong call-to-action or a thought-provoking question.
-4.  **Depth and Evidence**:
-    *   Incorporate at least **two real-world examples** (e.g., policies, statistics, historical events) to substantiate your claims.
-    *   Anticipate at least one **counterargument** and thoughtfully refute it to strengthen your position.
-5.  **Style & Tone**: Maintain a balanced, intellectual, and persuasive tone. Use sophisticated vocabulary and varied sentence structures. Ensure smooth transitions between sections.
-6.  **Formatting**: The entire essay must be in clean Markdown format.
+**Document Requirements:**
 
-**AI Suggestions Task:**
-After generating the essay, provide a short "AI Suggestions" section with:
-1.  **Possible Improvements**: 2-3 specific suggestions (e.g., "Consider adding a citation from a primary source," "The refutation of the counterargument could be strengthened by...").
-2.  **Alternative Tones**: Suggest 2-3 alternative tones (e.g., "Academic," "Persuasive," "Creative," "Narrative").
+1.  **Title**: Create a compelling title for the document.
+2.  **Abstract**: Write a 3-sentence abstract (max 150 words).
+3.  **Executive Summary**: Write a comprehensive executive summary (150–200 words).
+4.  **Main Body (1,200–1,500 words)**:
+    *   **Introduction**: Start with a powerful hook and a clear thesis statement.
+    *   **Structured Sections**: Divide the body into several sections with **bold subheadings**.
+    *   **Evidence**: Include real-world examples, data, or statistics.
+    *   **Policy Proposal**: Include a dedicated section with **three specific policy mechanisms** (e.g., mandatory impact assessments, licensing for high-risk AI, global audit registry).
+    *   **Counterarguments & Rebuttals**: Dedicate one full paragraph to addressing and refuting potential counterarguments.
+5.  **Implementation Roadmap**:
+    *   Provide a clear roadmap with three phases: Short-term (1–2 years), Medium-term (3–5 years), and Long-term (5–10 years).
+    *   For each phase, define at least one specific Key Performance Indicator (KPI).
+6.  **Cost Estimate**:
+    *   Provide a high-level cost estimate (High/Medium/Low).
+    *   Specify who would likely bear the costs (e.g., government, private sector, consumers).
+7.  **Regulator Checklist**: Create a 3-item checklist for regulators to consider.
+8.  **Conclusion**: End with a strong, thought-provoking conclusion.
+9.  **Citations**: Include at least **4 citations/references in APA style** at the very end.
+10. **Formatting**: The entire output must be in a single, clean Markdown document.
+
+**AI Analysis & Toolkit Task:**
+After generating the full document, provide a separate analysis object with:
+1.  **Keywords**: 10 relevant keywords from the text.
+2.  **Alternative Tones**: 3 alternative tones (e.g., "Academic," "Persuasive," "Op-Ed").
+3.  **Policymaker Pitch**: A compelling 2-sentence pitch for policymakers.
 
 Respond in the required JSON format.`,
 });

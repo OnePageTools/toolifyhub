@@ -14,15 +14,16 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useState } from 'react';
 import {
   aiAssistedEssayWriting,
   type AiAssistedEssayOutput,
 } from '@/ai/flows/ai-assisted-essay-writing';
-import { Bot, Loader2, Sparkles, Lightbulb } from 'lucide-react';
+import { Bot, Loader2, Sparkles, Lightbulb, Tags, Mic, Palette } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 const formSchema = z.object({
   topic: z.string().min(5, { message: 'Topic must be at least 5 characters.' }),
@@ -128,40 +129,44 @@ export function EssayWriterForm() {
         </div>
       )}
 
-      {result && result.essayMarkdown && result.suggestions && (
+      {result && result.essayMarkdown && result.analysis && (
         <div className="grid md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Bot />
-                      Generated Essay
+                      Generated Document
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ScrollArea className="h-96 rounded-md border p-4 bg-secondary/30">
-                      <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: result.essayMarkdown.replace(/\n/g, '<br />') }} />
+                    <ScrollArea className="h-[70vh] rounded-md border p-4 bg-secondary/30">
+                      <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: result.essayMarkdown.replace(/\\n/g, '<br />') }} />
                     </ScrollArea>
                   </CardContent>
                 </Card>
             </div>
-             <div className="md:col-span-1">
+             <div className="md:col-span-1 space-y-6">
                 <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Lightbulb /> AI Suggestions</CardTitle>
+                        <CardTitle className="flex items-center gap-2 text-lg"><Lightbulb /> AI Analysis & Toolkit</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
                         <div>
-                            <h4 className="font-semibold text-sm mb-2">Possible Improvements</h4>
-                            <ul className="space-y-2 list-disc pl-4 text-sm text-muted-foreground">
-                                {result.suggestions.improvements.map((s, i) => <li key={i}>{s}</li>)}
-                            </ul>
+                            <h4 className="font-semibold text-sm mb-3 flex items-center gap-2"><Tags/> Keywords</h4>
+                            <div className="flex flex-wrap gap-2">
+                                {result.analysis.keywords.map((s, i) => <Badge variant="secondary" key={i}>{s}</Badge>)}
+                            </div>
                         </div>
                          <div>
-                            <h4 className="font-semibold text-sm mb-2">Alternative Tones</h4>
-                            <ul className="space-y-2 list-disc pl-4 text-sm text-muted-foreground">
-                                {result.suggestions.alternativeTones.map((s, i) => <li key={i}>{s}</li>)}
-                            </ul>
+                            <h4 className="font-semibold text-sm mb-3 flex items-center gap-2"><Palette/> Alternative Tones</h4>
+                            <div className="flex flex-wrap gap-2">
+                               {result.analysis.alternativeTones.map((s, i) => <Badge variant="outline" key={i}>{s}</Badge>)}
+                            </div>
+                        </div>
+                         <div>
+                            <h4 className="font-semibold text-sm mb-3 flex items-center gap-2"><Mic/> Policymaker Pitch</h4>
+                            <p className="text-sm text-muted-foreground italic">"{result.analysis.policymakerPitch}"</p>
                         </div>
                     </CardContent>
                 </Card>
