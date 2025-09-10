@@ -9,7 +9,6 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { gemini15Flash } from '@genkit-ai/googleai';
 
 const ExtractTextFromImageInputSchema = z.object({
   imageDataUri: z
@@ -51,7 +50,6 @@ const prompt = ai.definePrompt({
   Image to process:
   {{{media url=imageDataUri}}}
   `,
-  model: gemini15Flash,
 });
 
 const extractTextFromImageFlow = ai.defineFlow(

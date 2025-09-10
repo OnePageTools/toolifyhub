@@ -8,7 +8,6 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { gemini15Flash } from '@genkit-ai/googleai';
 
 const ConvertPdfToWordInputSchema = z.object({
   pdfDataUri: z
@@ -49,7 +48,6 @@ const prompt = ai.definePrompt({
     Here is the PDF:
     {{{media url=pdfDataUri}}}
     `,
-    model: gemini15Flash, // Use a model capable of handling PDF input
 });
 
 const convertPdfToWordFlow = ai.defineFlow(

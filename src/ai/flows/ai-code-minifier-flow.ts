@@ -9,7 +9,6 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { gemini15Flash } from '@genkit-ai/googleai';
 
 const MinifyCodeInputSchema = z.object({
   code: z.string().describe('The source code to be minified.'),
@@ -48,7 +47,6 @@ Code to minify:
 {{{code}}}
 \`\`\`
 `,
-  model: gemini15Flash,
   config: {
     temperature: 0, // Set to 0 for deterministic output
   },
