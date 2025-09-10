@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A flow for generating and enhancing a professional resume using AI.
@@ -66,14 +67,15 @@ const resumePrompt = ai.definePrompt({
 
 **Your Tasks:**
 
-1.  **Rewrite and Enhance Summary:**
-    *   Rewrite the professional summary to be more impactful, concise, and tailored to the roles suggested by the experience.
-    *   This enhanced summary should be the value for the 'resumeMarkdown' field in the output. DO NOT include the full resume. ONLY the summary.
+1.  **Generate Full Resume in Markdown:**
+    *   Rewrite and enhance the user's content to be more impactful, using action verbs and quantifying achievements where possible.
+    *   Format the entire resume into a clean, professional Markdown document. This should be a complete resume, not just a summary.
+    *   This enhanced resume will be the value for the 'resumeMarkdown' field in the output.
 
 2.  **Provide Suggestions:**
     *   Analyze the entire resume and provide 3-5 specific, actionable suggestions for improvement. Examples: "Consider adding a 'Projects' section to showcase your work," or "Quantify your achievements in your experience section (e.g. 'Increased sales by 20%')."
 
-Respond in the required JSON format with the enhanced 'resumeMarkdown' (which is just the summary) and 'suggestions'.`,
+Respond in the required JSON format with the full 'resumeMarkdown' and 'suggestions'.`,
 });
 
 const buildResumeFlow = ai.defineFlow(

@@ -1,15 +1,15 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useForm, useFieldArray, FormProvider, useFormContext, useWatch } from 'react-hook-form';
+import { useState } from 'react';
+import { useForm, useFieldArray, FormProvider, useFormContext } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import {
   Loader2,
@@ -21,66 +21,33 @@ import {
   Wrench,
   FileText,
   Wand2,
-  ArrowRight,
+  Lightbulb,
   Book,
   Award,
   Languages,
-  Download,
-  Palette,
-  Eye,
-  Camera,
-  RefreshCw,
+  ArrowRight,
 } from 'lucide-react';
 import { buildResume } from '@/ai/flows/ai-resume-builder-flow';
-import type { ResumeData } from '@/lib/schema/resume-schema';
+import type { ResumeData, ResumeOutput } from '@/lib/schema/resume-schema';
 import { resumeFormSchema } from '@/lib/schema/resume-schema';
 import { cn } from '@/lib/utils';
-import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
-import { DefaultTemplate } from './templates/default-template';
-import { MinimalistTemplate } from './templates/minimalist-template';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+
 
 const steps = [
-  { id: 'personal', name: 'Personal', icon: User, fields: ['fullName', 'email', 'phone', 'address', 'linkedin', 'portfolio', 'profilePicture'] },
+  { id: 'personal', name: 'Personal Details', icon: User, fields: ['fullName', 'email', 'phone', 'address', 'linkedin', 'portfolio'] },
   { id: 'summary', name: 'Summary', icon: FileText, fields: ['summary'] },
   { id: 'experience', name: 'Experience', icon: Briefcase, fields: ['experience'] },
   { id: 'education', name: 'Education', icon: GraduationCap, fields: ['education'] },
   { id: 'skills', name: 'Skills', icon: Wrench, fields: ['skills'] },
   { id: 'optional', name: 'Optional', icon: Plus, fields: ['projects', 'certifications', 'languages'] },
-  { id: 'review', name: 'Review', icon: Eye, fields: [] },
 ];
-
-type TemplateName = 'default' | 'minimalist';
-type ColorTheme = {
-  primary: string;
-  secondary: string;
-  text: string;
-};
-
-const colorThemes: Record<string, ColorTheme> = {
-  'Blue/White': { primary: '#2563eb', secondary: '#f1f5f9', text: '#1e293b' },
-  'Black/Gold': { primary: '#ca8a04', secondary: '#fefce8', text: '#1c1917' },
-  'Grey/Teal': { primary: '#0d9488', secondary: '#f0fdfa', text: '#1f2937' },
-};
-
 
 export function ResumeBuilderForm() {
   const [currentStep, setCurrentStep] = useState(0);
-  const [isLoadingAI, setIsLoadingAI] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-  const [template, setTemplate] = useState<TemplateName>('default');
-  const [colorTheme, setColorTheme] = useState<ColorTheme>(colorThemes['Blue/White']);
-  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<ResumeOutput | null>(null);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const { toast } = useToast();
 
   const methods = useForm<ResumeData>({
     resolver: zodResolver(resumeFormSchema),
@@ -92,7 +59,6 @@ export function ResumeBuilderForm() {
       linkedin: '',
       portfolio: '',
       summary: '',
-      profilePicture: null,
       experience: [{ jobTitle: '', company: '', location: '', startDate: '', endDate: '', responsibilities: [''] }],
       education: [{ degree: '', school: '', location: '', gradDate: '' }],
       skills: [''],
@@ -102,8 +68,10 @@ export function ResumeBuilderForm() {
     },
   });
 
-  const { control, handleSubmit, trigger, getValues } = methods;
-  const formData = useWatch({ control });
+  const {
+    handleSubmit,
+    trigger,
+  } = methods;
 
   const nextStep = async () => {
     const fields = steps[currentStep].fields;
@@ -112,6 +80,8 @@ export function ResumeBuilderForm() {
 
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
+    } else {
+      await handleSubmit(onSubmit)();
     }
   };
 
@@ -120,188 +90,178 @@ export function ResumeBuilderForm() {
       setCurrentStep(currentStep - 1);
     }
   };
+  
+  const handleEnhanceWithAI = async (section: 'summary' | `experience.${number}.responsibilities`) => {
+      // Dummy function for now. In a real scenario, this would call the AI.
+      toast({title: "AI Enhancement", description: "This feature will be implemented soon!"})
+  }
 
-  const handleEnhanceWithAI = async () => {
-    setIsLoadingAI(true);
+  const onSubmit = async (data: ResumeData) => {
+    setIsLoading(true);
+    setResult(null);
     try {
-      const response = await buildResume(getValues());
-      methods.setValue('summary', response.resumeMarkdown);
-      toast({ title: "AI Enhancement Successful", description: "Your summary has been enhanced by AI." });
+      const response = await buildResume(data);
+      setResult(response);
+      toast({ title: 'Success!', description: 'Your AI-enhanced resume has been generated.' });
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'AI Enhancement Failed', description: error.message });
+      console.error(error);
+      toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to generate resume. Please try again.' });
     } finally {
-      setIsLoadingAI(false);
+      setIsLoading(false);
     }
   };
   
-  const ResumeTemplate = template === 'default' ? DefaultTemplate : MinimalistTemplate;
-  
-  // A simple check to ensure formData and its nested arrays are ready for rendering
-  const isFormDataReady = formData && formData.experience && formData.education && formData.skills;
-
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 p-8 min-h-[60vh]">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="text-lg text-muted-foreground">AI is building your resume...</p>
+        <p className="text-sm text-muted-foreground">This may take a moment.</p>
+      </div>
+    );
+  }
 
   return (
     <FormProvider {...methods}>
-      <div className="grid lg:grid-cols-2 gap-8">
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="font-headline text-3xl">AI Resume Builder</CardTitle>
-            <CardDescription>Follow the steps to create a professional resume.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-8">
-              {/* Stepper */}
-              <div className="flex justify-between overflow-x-auto pb-2">
-                {steps.map((step, index) => (
-                  <button key={step.id} onClick={() => setCurrentStep(index)} disabled={index > currentStep} className="flex items-center flex-col gap-2 w-full relative group">
-                    <div
-                      className={cn(
-                        'w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300',
-                         currentStep === index ? 'bg-primary border-primary text-primary-foreground scale-110' :
-                         currentStep > index ? 'bg-green-500 border-green-500 text-white' : 'bg-secondary group-hover:bg-secondary/80'
-                      )}
-                    >
-                      <step.icon className="h-5 w-5" />
-                    </div>
-                    <p className={cn('text-xs sm:text-sm font-medium whitespace-nowrap', currentStep === index && 'text-primary')}>{step.name}</p>
-                    {index < steps.length - 1 && <div className="absolute top-5 left-1/2 w-full h-0.5 bg-border -z-10" />}
-                  </button>
-                ))}
-              </div>
-
-              <form className="mt-8" onSubmit={handleSubmit(() => {})}>
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={currentStep}
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 30 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {currentStep === 0 && <PersonalDetailsForm />}
-                    {currentStep === 1 && <SummaryForm onEnhance={handleEnhanceWithAI} isLoading={isLoadingAI} />}
-                    {currentStep === 2 && <ExperienceForm />}
-                    {currentStep === 3 && <EducationForm />}
-                    {currentStep === 4 && <SkillsForm />}
-                    {currentStep === 5 && <OptionalSectionsForm />}
-                    {currentStep === 6 && <ReviewAndExportTemplate />}
-                  </motion.div>
-                </AnimatePresence>
-              </form>
-
-              {/* Navigation */}
-              <div className="mt-8 pt-5 border-t">
+      <Card className="shadow-lg">
+        <CardHeader>
+           <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="font-headline text-3xl">AI Resume Builder</CardTitle>
+              <p className="text-muted-foreground">Create a professional resume in minutes with AI assistance.</p>
+            </div>
+             {result && (
+              <Button onClick={() => setResult(null)}>
+                <Wand2 /> Back to Editor
+              </Button>
+            )}
+           </div>
+        </CardHeader>
+        <CardContent>
+            {result ? (
+               <ResumePreview result={result} />
+            ) : (
+             <div className="space-y-8">
+                {/* Stepper */}
                 <div className="flex justify-between">
-                  <Button type="button" variant="outline" onClick={prevStep} disabled={currentStep === 0}>
-                    Back
-                  </Button>
-                  {currentStep < steps.length - 1 && (
-                    <Button type="button" onClick={nextStep}>
-                      Next Step <ArrowRight />
+                  {steps.map((step, index) => (
+                    <div key={step.id} className="flex items-center flex-col gap-2 w-full relative">
+                      <div
+                        className={cn(
+                          'w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300',
+                          currentStep === index ? 'bg-primary border-primary text-primary-foreground scale-110' : 
+                          currentStep > index ? 'bg-green-500 border-green-500 text-white' : 'bg-secondary'
+                        )}
+                      >
+                        <step.icon className="h-5 w-5" />
+                      </div>
+                      <p className={cn('text-sm font-medium', currentStep === index && 'text-primary')}>{step.name}</p>
+                      {index < steps.length - 1 && <div className="absolute top-5 left-1/2 w-full h-0.5 bg-border -z-10" />}
+                    </div>
+                  ))}
+                </div>
+
+                <form className="mt-8" onSubmit={handleSubmit(onSubmit)}>
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentStep}
+                      initial={{ opacity: 0, x: -50 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 50 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {currentStep === 0 && <PersonalDetailsForm />}
+                      {currentStep === 1 && <SummaryForm onEnhance={() => handleEnhanceWithAI('summary')} />}
+                      {currentStep === 2 && <ExperienceForm onEnhance={handleEnhanceWithAI} />}
+                      {currentStep === 3 && <EducationForm />}
+                      {currentStep === 4 && <SkillsForm />}
+                      {currentStep === 5 && <OptionalSectionsForm />}
+                    </motion.div>
+                  </AnimatePresence>
+                </form>
+
+                {/* Navigation */}
+                <div className="mt-8 pt-5 border-t">
+                  <div className="flex justify-between">
+                    <Button type="button" variant="outline" onClick={prevStep} disabled={currentStep === 0}>
+                      Back
                     </Button>
-                  )}
+                    <Button type="button" onClick={nextStep}>
+                      {currentStep === steps.length - 1 ? 'Generate Resume' : 'Next Step'}
+                      <ArrowRight />
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Live Preview */}
-        <div className="hidden lg:block sticky top-10 h-[90vh]">
-          <Card className="h-full shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Live Preview</CardTitle>
-              <div className="flex gap-2 items-center">
-                  <Select value={template} onValueChange={(v: TemplateName) => setTemplate(v)}>
-                      <SelectTrigger className="w-[140px]"><SelectValue/></SelectTrigger>
-                      <SelectContent>
-                          <SelectItem value="default">Default</SelectItem>
-                          <SelectItem value="minimalist">Minimalist</SelectItem>
-                      </SelectContent>
-                  </Select>
-                   <Select onValueChange={(key) => setColorTheme(colorThemes[key])}>
-                      <SelectTrigger className="w-[140px]"><SelectValue placeholder="Theme" /></SelectTrigger>
-                      <SelectContent>
-                          {Object.keys(colorThemes).map(themeName => (
-                              <SelectItem key={themeName} value={themeName}>{themeName}</SelectItem>
-                          ))}
-                      </SelectContent>
-                  </Select>
-              </div>
-            </CardHeader>
-            <CardContent className="h-[calc(100%-80px)]">
-             {isClient && isFormDataReady ? (
-                <PDFViewer width="100%" height="100%" showToolbar={false}>
-                  <ResumeTemplate data={formData} theme={colorTheme} />
-                </PDFViewer>
-              ) : (
-                <div className="flex items-center justify-center h-full"><Loader2 className="animate-spin" /></div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+            )}
+        </CardContent>
+      </Card>
     </FormProvider>
   );
 }
 
+const ResumePreview = ({result}: {result: ResumeOutput}) => {
+    return (
+        <div className="grid md:grid-cols-3 gap-6">
+            <div className="md:col-span-2">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Generated Resume (Markdown)</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="prose prose-sm dark:prose-invert max-w-none p-4 border rounded-md bg-secondary/30 h-[600px] overflow-y-auto">
+                            <pre className="whitespace-pre-wrap font-sans bg-transparent p-0 m-0">{result.resumeMarkdown}</pre>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+             <div className="md:col-span-1">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Lightbulb /> AI Suggestions</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="space-y-3 list-disc pl-5 text-sm">
+                            {result.suggestions.map((s, i) => <li key={i}>{s}</li>)}
+                        </ul>
+                    </CardContent>
+                </Card>
+             </div>
+         </div>
+    )
+}
 
 // Sub-components for each step
+
 const PersonalDetailsForm = () => {
-    const { register, formState: { errors }, setValue, watch } = useFormContext<ResumeData>();
-    const profilePicture = watch('profilePicture');
-    
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setValue('profilePicture', reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    }
+    const { register, formState: { errors } } = useFormContext<ResumeData>();
     return (
-        <div className="space-y-4">
-             <div className="flex items-center gap-4">
-                <div className="w-24 h-24 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
-                    {profilePicture ? <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" /> : <Camera className="w-8 h-8 text-muted-foreground" />}
-                </div>
-                <div>
-                    <Label htmlFor="profile-picture-upload">Profile Picture</Label>
-                    <Input id="profile-picture-upload" type="file" accept="image/*" onChange={handleFileChange} className="mt-1" />
-                    <p className="text-xs text-muted-foreground mt-1">Optional. A professional headshot is recommended.</p>
-                </div>
-             </div>
-            <div className="grid md:grid-cols-2 gap-4">
-                <div><Label>Full Name</Label><Input {...register('fullName')} /><p className="text-destructive text-xs">{errors.fullName?.message}</p></div>
-                <div><Label>Email</Label><Input {...register('email')} /><p className="text-destructive text-xs">{errors.email?.message}</p></div>
-                <div><Label>Phone</Label><Input {...register('phone')} /><p className="text-destructive text-xs">{errors.phone?.message}</p></div>
-                <div><Label>Address</Label><Input {...register('address')} /><p className="text-destructive text-xs">{errors.address?.message}</p></div>
-                <div><Label>LinkedIn Profile URL</Label><Input {...register('linkedin')} /><p className="text-destructive text-xs">{errors.linkedin?.message}</p></div>
-                <div><Label>Portfolio/Website URL</Label><Input {...register('portfolio')} /><p className="text-destructive text-xs">{errors.portfolio?.message}</p></div>
-            </div>
+        <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2"><Label>Full Name</Label><Input {...register('fullName')} /><p className="text-destructive text-xs">{errors.fullName?.message}</p></div>
+            <div className="space-y-2"><Label>Email</Label><Input {...register('email')} /><p className="text-destructive text-xs">{errors.email?.message}</p></div>
+            <div className="space-y-2"><Label>Phone</Label><Input {...register('phone')} /><p className="text-destructive text-xs">{errors.phone?.message}</p></div>
+            <div className="space-y-2"><Label>Address</Label><Input {...register('address')} /><p className="text-destructive text-xs">{errors.address?.message}</p></div>
+            <div className="space-y-2"><Label>LinkedIn Profile URL</Label><Input {...register('linkedin')} /><p className="text-destructive text-xs">{errors.linkedin?.message}</p></div>
+            <div className="space-y-2"><Label>Portfolio/Website URL</Label><Input {...register('portfolio')} /><p className="text-destructive text-xs">{errors.portfolio?.message}</p></div>
         </div>
     );
 };
 
-const SummaryForm = ({ onEnhance, isLoading }: { onEnhance: () => void, isLoading: boolean }) => {
+const SummaryForm = ({onEnhance}: {onEnhance: () => void}) => {
     const { register, formState: { errors } } = useFormContext<ResumeData>();
     return (
         <div className="space-y-2">
             <div className="flex justify-between items-center">
               <Label>Professional Summary</Label>
-               <Button type="button" size="sm" variant="outline" onClick={onEnhance} disabled={isLoading}>
-                {isLoading ? <Loader2 className="animate-spin" /> : <Wand2/>} Enhance with AI
-               </Button>
+               <Button type="button" size="sm" variant="outline" onClick={onEnhance}><Wand2/> Enhance with AI</Button>
             </div>
-            <Textarea {...register('summary')} rows={8} placeholder="Write a brief summary about your professional background and career goals. Or, write a draft and let AI enhance it!" />
+            <Textarea {...register('summary')} rows={8} placeholder="Write a brief summary about your professional background and career goals." />
             <p className="text-destructive text-xs">{errors.summary?.message}</p>
         </div>
     );
 }
 
-const ExperienceForm = () => {
+const ExperienceForm = ({onEnhance}: {onEnhance: (section: `experience.${number}.responsibilities`) => void}) => {
     const { control, register, formState: { errors } } = useFormContext<ResumeData>();
     const { fields, append, remove } = useFieldArray({ control, name: 'experience' });
 
@@ -310,15 +270,15 @@ const ExperienceForm = () => {
             {fields.map((field, index) => (
                 <div key={field.id} className="p-4 border rounded-lg space-y-4 relative bg-secondary/30">
                     <div className="grid md:grid-cols-2 gap-4">
-                        <div><Label>Job Title</Label><Input {...register(`experience.${index}.jobTitle`)} /><p className="text-destructive text-xs">{errors.experience?.[index]?.jobTitle?.message}</p></div>
-                        <div><Label>Company</Label><Input {...register(`experience.${index}.company`)} /><p className="text-destructive text-xs">{errors.experience?.[index]?.company?.message}</p></div>
-                        <div><Label>Location</Label><Input {...register(`experience.${index}.location`)} /><p className="text-destructive text-xs">{errors.experience?.[index]?.location?.message}</p></div>
-                        <div><Label>Start & End Date</Label>
+                        <div className="space-y-2"><Label>Job Title</Label><Input {...register(`experience.${index}.jobTitle`)} /><p className="text-destructive text-xs">{errors.experience?.[index]?.jobTitle?.message}</p></div>
+                        <div className="space-y-2"><Label>Company</Label><Input {...register(`experience.${index}.company`)} /><p className="text-destructive text-xs">{errors.experience?.[index]?.company?.message}</p></div>
+                        <div className="space-y-2"><Label>Location</Label><Input {...register(`experience.${index}.location`)} /><p className="text-destructive text-xs">{errors.experience?.[index]?.location?.message}</p></div>
+                        <div className="space-y-2"><Label>Start & End Date</Label>
                             <div className="flex gap-2"><Input placeholder="e.g. Jan 2020" {...register(`experience.${index}.startDate`)} /><Input placeholder="e.g. Present" {...register(`experience.${index}.endDate`)} /></div>
                             <p className="text-destructive text-xs">{errors.experience?.[index]?.startDate?.message || errors.experience?.[index]?.endDate?.message}</p>
                         </div>
                     </div>
-                     <ResponsibilitiesArray index={index} />
+                     <ResponsibilitiesArray index={index} onEnhance={() => onEnhance(`experience.${index}.responsibilities`)} />
                     {fields.length > 1 && <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => remove(index)}><Trash2 className="h-4 w-4" /></Button>}
                 </div>
             ))}
@@ -327,16 +287,19 @@ const ExperienceForm = () => {
     );
 };
 
-const ResponsibilitiesArray = ({ index }: { index: number }) => {
+const ResponsibilitiesArray = ({ index, onEnhance }: { index: number, onEnhance: () => void }) => {
     const { control, register, formState: { errors } } = useFormContext<ResumeData>();
     const { fields, append, remove } = useFieldArray({ control, name: `experience.${index}.responsibilities` });
     
     return (
         <div className="space-y-2">
-            <Label>Key Responsibilities & Achievements</Label>
+            <div className="flex justify-between items-center">
+              <Label>Key Responsibilities</Label>
+               <Button type="button" size="sm" variant="outline" onClick={onEnhance}><Wand2/> Enhance with AI</Button>
+            </div>
             {fields.map((field, rIndex) => (
                  <div key={field.id} className="flex gap-2 items-center">
-                    <Input {...register(`experience.${index}.responsibilities.${rIndex}`)} placeholder="e.g., Increased sales by 20% in Q3" />
+                    <Input {...register(`experience.${index}.responsibilities.${rIndex}`)} placeholder="e.g., Managed a team of 5 engineers" />
                     {fields.length > 1 && <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => remove(rIndex)}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
                 </div>
             ))}
@@ -354,10 +317,10 @@ const EducationForm = () => {
             {fields.map((field, index) => (
                 <div key={field.id} className="p-4 border rounded-lg space-y-4 relative bg-secondary/30">
                     <div className="grid md:grid-cols-2 gap-4">
-                        <div><Label>Degree/Certificate</Label><Input {...register(`education.${index}.degree`)} /><p className="text-destructive text-xs">{errors.education?.[index]?.degree?.message}</p></div>
-                        <div><Label>School/University</Label><Input {...register(`education.${index}.school`)} /><p className="text-destructive text-xs">{errors.education?.[index]?.school?.message}</p></div>
-                        <div><Label>Location</Label><Input {...register(`education.${index}.location`)} /><p className="text-destructive text-xs">{errors.education?.[index]?.location?.message}</p></div>
-                        <div><Label>Graduation Date</Label><Input {...register(`education.${index}.gradDate`)} /><p className="text-destructive text-xs">{errors.education?.[index]?.gradDate?.message}</p></div>
+                        <div className="space-y-2"><Label>Degree/Certificate</Label><Input {...register(`education.${index}.degree`)} /><p className="text-destructive text-xs">{errors.education?.[index]?.degree?.message}</p></div>
+                        <div className="space-y-2"><Label>School/University</Label><Input {...register(`education.${index}.school`)} /><p className="text-destructive text-xs">{errors.education?.[index]?.school?.message}</p></div>
+                        <div className="space-y-2"><Label>Location</Label><Input {...register(`education.${index}.location`)} /><p className="text-destructive text-xs">{errors.education?.[index]?.location?.message}</p></div>
+                        <div className="space-y-2"><Label>Graduation Date</Label><Input {...register(`education.${index}.gradDate`)} /><p className="text-destructive text-xs">{errors.education?.[index]?.gradDate?.message}</p></div>
                     </div>
                      {fields.length > 1 && <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => remove(index)}><Trash2 className="h-4 w-4" /></Button>}
                 </div>
@@ -374,7 +337,7 @@ const SkillsForm = () => {
         <div className="space-y-4">
             <Label>Skills</Label>
              <p className="text-sm text-muted-foreground">List your top technical and soft skills. Add each skill individually.</p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {fields.map((field, index) => (
                     <div key={field.id} className="flex items-center gap-2">
                         <Input {...register(`skills.${index}`)} placeholder="e.g., JavaScript" />
@@ -453,41 +416,6 @@ const OptionalSectionsForm = () => {
           </div>
         ))}
         <Button type="button" variant="outline" onClick={() => append('')}><Plus /> Add Language</Button>
-      </div>
-    );
-  };
-
-  const ReviewAndExportTemplate = () => {
-    const { getValues } = useFormContext<ResumeData>();
-    const [isClient, setIsClient] = useState(false);
-    const [template, setTemplate] = useState<TemplateName>('default');
-    const [colorTheme, setColorTheme] = useState<ColorTheme>(colorThemes['Blue/White']);
-  
-    useEffect(() => setIsClient(true), []);
-
-    const ResumeTemplate = template === 'default' ? DefaultTemplate : MinimalistTemplate;
-  
-    return (
-      <div className="text-center space-y-4">
-        <h3 className="text-2xl font-bold">Your Resume is Ready!</h3>
-        <p className="text-muted-foreground">Download your professionally crafted resume below.</p>
-        
-        {isClient ? (
-          <PDFDownloadLink
-            document={<ResumeTemplate data={getValues()} theme={colorTheme} />}
-            fileName="resume.pdf"
-          >
-            {({ loading }) => (
-              <Button size="lg" disabled={loading}>
-                {loading ? <Loader2 className="animate-spin" /> : <Download />} Download PDF
-              </Button>
-            )}
-          </PDFDownloadLink>
-        ) : (
-          <Button size="lg" disabled>
-            <Loader2 className="animate-spin" /> Loading...
-          </Button>
-        )}
       </div>
     );
   };

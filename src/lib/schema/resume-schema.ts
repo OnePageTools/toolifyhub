@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 const experienceSchema = z.object({
@@ -74,7 +75,7 @@ export const ResumeDataSchema = z.object({
 export type ResumeData = z.infer<typeof ResumeDataSchema>;
 
 export const ResumeOutputSchema = z.object({
-  resumeMarkdown: z.string().describe('The full resume formatted in clean, professional Markdown. This should just be the summary for now.'),
+  resumeMarkdown: z.string().describe('The full resume formatted in clean, professional Markdown. This should be the entire resume, not just the summary.'),
   suggestions: z.array(z.string()).describe('A list of actionable suggestions to improve the resume.'),
 });
 
