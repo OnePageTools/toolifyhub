@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -49,7 +50,7 @@ function Calendar({
           "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
         day_today: "bg-accent text-accent-foreground",
         day_outside:
-          "day-outside text-muted-foreground aria-selected:bg-accent/50 aria-selected:text-muted-foreground",
+          "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground",
         day_disabled: "text-muted-foreground opacity-50",
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
@@ -57,11 +58,14 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" {...props} />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" {...props} />,
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
         Dropdown: (props) => {
-          const { fromDate, fromMonth, fromYear, toDate, toMonth, toYear } = useDayPicker();
+          const { fromDate, toDate } = useDayPicker();
           const { goToMonth, month } = useNavigation();
+          
+          const fromYear = fromDate?.getFullYear() || 1900;
+          const toYear = toDate?.getFullYear() || new Date().getFullYear();
 
           if (props.name === 'months') {
             const months = Array.from({ length: 12 }, (_, i) => new Date(1970, i));
@@ -87,7 +91,7 @@ function Calendar({
           }
 
           if (props.name === 'years') {
-            const years = Array.from({ length: (toYear || 0) - (fromYear || 0) + 1 }, (_, i) => (fromYear || 0) + i).reverse();
+            const years = Array.from({ length: toYear - fromYear + 1 }, (_, i) => fromYear + i).reverse();
             return (
               <Select
                 value={month?.getFullYear().toString()}
