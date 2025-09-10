@@ -98,7 +98,7 @@ export function CodeMinifierForm() {
        </div>
 
       <div className="grid md:grid-cols-2 gap-4">
-        <Card className="h-[65vh] flex flex-col">
+        <Card className="h-[75vh] flex flex-col">
             <CardHeader className="flex-row items-center justify-between p-3 border-b">
                  <CardTitle className="text-lg">Input</CardTitle>
                  <div className="flex items-center gap-2">
@@ -129,7 +129,7 @@ export function CodeMinifierForm() {
             </CardContent>
         </Card>
         
-        <Card className="h-[65vh] flex flex-col">
+        <Card className="h-[75vh] flex flex-col">
             <CardHeader className="flex-row items-center justify-between p-3 border-b">
                  <CardTitle className="text-lg">Output</CardTitle>
                  <div className="flex gap-2">
