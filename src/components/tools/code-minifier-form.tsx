@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -9,6 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { minifyCode, type MinifyCodeInput } from '@/ai/flows/ai-code-minifier-flow';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 
 type Language = MinifyCodeInput['language'];
 
