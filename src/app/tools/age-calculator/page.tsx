@@ -7,19 +7,25 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import AIHelper from '@/components/ai-assistant';
+import { CalendarClock } from 'lucide-react';
 
 export default function AgeCalculatorPage() {
   return (
     <div className="container mx-auto py-10 px-4">
-      <div className="max-w-3xl mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline text-2xl">Age Calculator</CardTitle>
-            <CardDescription>
-              Calculate your age accurately down to the years, months, and days.
+      <div className="max-w-4xl mx-auto">
+        <Card className="shadow-lg border-primary/20 overflow-hidden">
+          <CardHeader className="text-center bg-secondary/50 p-8">
+             <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
+                <CalendarClock className="w-10 h-10 text-primary" />
+             </div>
+            <CardTitle className="font-headline text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
+              Age Calculator
+            </CardTitle>
+            <CardDescription className="text-lg mt-2">
+              Instantly calculate your age and discover fun facts about your journey through time.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6 md:p-8">
             <AgeCalculatorForm />
           </CardContent>
         </Card>
