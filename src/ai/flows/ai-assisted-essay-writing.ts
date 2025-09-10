@@ -42,12 +42,12 @@ const prompt = ai.definePrompt({
   name: 'aiAssistedEssayPrompt',
   input: {schema: AiAssistedEssayInputSchema},
   output: {schema: z.object({
-      essayMarkdown: z.string().describe('The full generated document in clean, formatted Markdown, including all sections.'),
+      essayMarkdown: z.string().optional().describe('The full generated document in clean, formatted Markdown, including all sections.'),
       analysis: z.object({
           keywords: z.array(z.string()).describe('A list of 10 relevant keywords from the essay.'),
           alternativeTones: z.array(z.string()).describe('A list of 3 alternative tones the user could adopt.'),
           policymakerPitch: z.string().describe('A 2-sentence pitch summarizing the key proposal for policymakers.'),
-      }).describe('Additional AI-generated analysis and tools.'),
+      }).optional().describe('Additional AI-generated analysis and tools.'),
   })},
   prompt: `You are a world-class policy advisor and information designer, blending the analytical rigor of a McKinsey consultant with the strategic foresight of the World Economic Forum. Your task is to generate a premium-level, executive-style whitepaper on the provided topic, making it highly scannable, visually compelling, and ready for policymakers.
 
@@ -122,7 +122,7 @@ const aiAssistedEssayWritingFlow = ai.defineFlow(
   async (input) => {
     try {
       const { output } = await prompt(input);
-      if (!output) {
+      if (!output || !output.essayMarkdown) {
         throw new Error('AI failed to generate a response.');
       }
       return output;
