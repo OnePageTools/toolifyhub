@@ -223,6 +223,7 @@ const ResumePreview = () => {
     
     const ResumeTemplate = selectedTemplate.component;
     const colorTheme = colorThemes[selectedColor as keyof typeof colorThemes];
+    const isFormDataReady = previewData && previewData.experience && previewData.education;
     
     return (
         <Card className="shadow-lg h-[80vh] flex flex-col">
@@ -241,7 +242,7 @@ const ResumePreview = () => {
                             {Object.keys(colorThemes).map(key => <SelectItem key={key} value={key}>{key.charAt(0).toUpperCase() + key.slice(1)}</SelectItem>)}
                         </SelectContent>
                     </Select>
-                    {isClient && previewData && (
+                    {isClient && isFormDataReady && (
                         <PDFDownloadLink
                             document={<ResumeTemplate data={previewData} theme={colorTheme} />}
                             fileName="resume.pdf"
@@ -259,7 +260,7 @@ const ResumePreview = () => {
                 </Button>
             </CardHeader>
             <CardContent className="flex-grow">
-             {isClient && previewData ? (
+             {isClient && isFormDataReady ? (
                 <PDFViewer width="100%" height="100%" showToolbar={false}>
                   <ResumeTemplate data={previewData} theme={colorTheme} />
                 </PDFViewer>
@@ -490,5 +491,3 @@ const OptionalSectionsForm = () => {
       </div>
     );
   };
-
-    
