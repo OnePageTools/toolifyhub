@@ -69,6 +69,7 @@ export function ResumeBuilderForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ResumeOutput | null>(null);
+  const { toast } = useToast();
 
   const methods = useForm<ResumeData>({
     resolver: zodResolver(resumeFormSchema),
@@ -104,10 +105,23 @@ export function ResumeBuilderForm() {
     setResult(null);
     try {
       const response = await buildResume(data);
-      setResult(response);
+       if (response.error) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: response.error,
+        });
+        setResult(null);
+      } else {
+        setResult(response);
+      }
     } catch (error: any) {
        console.error("Error building resume:", error);
-       // Add toast notification for the user
+        toast({
+            variant: 'destructive',
+            title: 'An unexpected error occurred',
+            description: 'Please try again.',
+        });
     } finally {
       setIsLoading(false);
     }
@@ -157,7 +171,7 @@ export function ResumeBuilderForm() {
                 </Button>
               </div>
             </div>
-             {result && (
+             {result && result.suggestions && (
                 <Card className="mt-6">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><Lightbulb /> AI Suggestions</CardTitle>
@@ -195,7 +209,7 @@ const ResumePreview = () => {
     }, []);
 
     const { control, getValues, trigger } = useFormContext<ResumeData>();
-    const currentValues = useWatch({ control });
+    const formData = useWatch({ control });
 
     const handleGeneratePreview = async () => {
       setIsGenerating(true);
@@ -208,6 +222,8 @@ const ResumePreview = () => {
     
     const ResumeTemplate = selectedTemplate.component;
     const colorTheme = colorThemes[selectedColor as keyof typeof colorThemes];
+    
+    const isFormDataReady = !!(formData && formData.experience?.[0]?.jobTitle && formData.education?.[0]?.degree);
 
     return (
         <Card className="shadow-lg h-[80vh] flex flex-col">
@@ -226,9 +242,9 @@ const ResumePreview = () => {
                             {Object.keys(colorThemes).map(key => <SelectItem key={key} value={key}>{key.charAt(0).toUpperCase() + key.slice(1)}</SelectItem>)}
                         </SelectContent>
                     </Select>
-                    {isClient && previewData && (
+                    {isClient && isFormDataReady && (
                         <PDFDownloadLink
-                            document={<ResumeTemplate data={previewData} theme={colorTheme} />}
+                            document={<ResumeTemplate data={formData} theme={colorTheme} />}
                             fileName="resume.pdf"
                         >
                             {({ loading }) => (
@@ -244,13 +260,13 @@ const ResumePreview = () => {
                 </Button>
             </CardHeader>
             <CardContent className="flex-grow">
-             {isClient && previewData ? (
+             {isClient && isFormDataReady ? (
                 <PDFViewer width="100%" height="100%" showToolbar={false}>
-                  <ResumeTemplate data={previewData} theme={colorTheme} />
+                  <ResumeTemplate data={formData} theme={colorTheme} />
                 </PDFViewer>
               ) : (
                 <div className="h-full flex items-center justify-center bg-secondary rounded-md">
-                    <p className="text-muted-foreground text-center p-4">Click "Generate Preview" to see your resume.</p>
+                    <p className="text-muted-foreground text-center p-4">Fill in your details and click "Generate Preview" to see your resume.</p>
                 </div>
               )}
             </CardContent>
@@ -475,7 +491,3 @@ const OptionalSectionsForm = () => {
       </div>
     );
   };
-
-    
-
-    

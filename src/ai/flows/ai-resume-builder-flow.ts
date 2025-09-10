@@ -94,9 +94,9 @@ const buildResumeFlow = ai.defineFlow(
     } catch (err: any) {
        console.error("Error in buildResumeFlow:", err);
        if (err.message && (err.message.includes('503') || err.message.includes('overloaded'))) {
-         throw new Error("The AI service is currently busy due to high demand. Please try again in a few moments.");
+         return { error: "The AI service is currently busy due to high demand. Please try again in a few moments." };
        }
-       throw new Error("An unexpected error occurred while generating the resume. Please try again.");
+       return { error: "An unexpected error occurred while generating the resume. Please try again." };
     }
   }
 );
