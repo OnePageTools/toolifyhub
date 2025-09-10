@@ -16,6 +16,11 @@ const educationSchema = z.object({
   gradDate: z.string().min(1, 'Graduation date is required'),
 });
 
+const projectSchema = z.object({
+    name: z.string().min(1, 'Project name is required'),
+    description: z.string().min(1, 'Description is required'),
+});
+
 export const resumeFormSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
   email: z.string().email('Invalid email address'),
@@ -23,10 +28,14 @@ export const resumeFormSchema = z.object({
   address: z.string().min(1, 'Address is required'),
   linkedin: z.string().url('Invalid URL').optional().or(z.literal('')),
   portfolio: z.string().url('Invalid URL').optional().or(z.literal('')),
+  profilePicture: z.string().nullable().optional(),
   summary: z.string().min(20, 'Summary should be at least 20 characters'),
   experience: z.array(experienceSchema).min(1, 'At least one work experience is required'),
   education: z.array(educationSchema).min(1, 'At least one education entry is required'),
   skills: z.array(z.string().min(1, 'Skill cannot be empty')).min(1, 'At least one skill is required'),
+  projects: z.array(projectSchema).optional(),
+  certifications: z.array(z.string().min(1, 'Cannot be empty')).optional(),
+  languages: z.array(z.string().min(1, 'Cannot be empty')).optional(),
 });
 
 export const ResumeDataSchema = z.object({
@@ -36,6 +45,7 @@ export const ResumeDataSchema = z.object({
   address: z.string(),
   linkedin: z.string().url().optional(),
   portfolio: z.string().url().optional(),
+  profilePicture: z.string().nullable().optional(),
   summary: z.string().describe('A professional summary. The AI should enhance this if possible.'),
   experience: z.array(
     z.object({
@@ -56,12 +66,15 @@ export const ResumeDataSchema = z.object({
     })
   ),
   skills: z.array(z.string()),
+  projects: z.array(z.object({ name: z.string(), description: z.string() })).optional(),
+  certifications: z.array(z.string()).optional(),
+  languages: z.array(z.string()).optional(),
 });
 
 export type ResumeData = z.infer<typeof ResumeDataSchema>;
 
 export const ResumeOutputSchema = z.object({
-  resumeMarkdown: z.string().describe('The full resume formatted in clean, professional Markdown.'),
+  resumeMarkdown: z.string().describe('The full resume formatted in clean, professional Markdown. This should just be the summary for now.'),
   suggestions: z.array(z.string()).describe('A list of actionable suggestions to improve the resume.'),
 });
 

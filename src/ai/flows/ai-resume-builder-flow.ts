@@ -51,20 +51,29 @@ const resumePrompt = ai.definePrompt({
 **Skills:**
 - {{#each skills}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
 
+**Projects:**
+{{#each projects}}
+- **{{name}}**: {{description}}
+{{/each}}
+
+**Certifications:**
+- {{#each certifications}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
+
+**Languages:**
+- {{#each languages}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
+
 ---
 
 **Your Tasks:**
 
-1.  **Rewrite and Enhance:**
-    *   **Summary:** Rewrite the professional summary to be more impactful and concise.
-    *   **Responsibilities:** Rephrase each responsibility using action verbs and quantify achievements where possible (e.g., "Increased sales by 20%" instead of "Responsible for sales").
-2.  **Format as Markdown:**
-    *   Create a clean, well-structured resume using Markdown.
-    *   Use headings, bold text, and bullet points to create a professional layout. The name should be the main heading (#). Sections like "Contact Information", "Summary", "Experience", "Education", and "Skills" should be level 2 headings (##).
-3.  **Provide Suggestions:**
-    *   Analyze the entire resume and provide 3-5 specific, actionable suggestions for improvement. Examples: "Consider adding a 'Projects' section to showcase your work," or "Tailor your skills to the specific job you're applying for."
+1.  **Rewrite and Enhance Summary:**
+    *   Rewrite the professional summary to be more impactful, concise, and tailored to the roles suggested by the experience.
+    *   This enhanced summary should be the value for the 'resumeMarkdown' field in the output. DO NOT include the full resume. ONLY the summary.
 
-Respond in the required JSON format with 'resumeMarkdown' and 'suggestions'.`,
+2.  **Provide Suggestions:**
+    *   Analyze the entire resume and provide 3-5 specific, actionable suggestions for improvement. Examples: "Consider adding a 'Projects' section to showcase your work," or "Quantify your achievements in your experience section (e.g. 'Increased sales by 20%')."
+
+Respond in the required JSON format with the enhanced 'resumeMarkdown' (which is just the summary) and 'suggestions'.`,
 });
 
 const buildResumeFlow = ai.defineFlow(
