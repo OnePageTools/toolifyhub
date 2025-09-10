@@ -38,16 +38,11 @@ export async function aiAssistedEssayWriting(input: AiAssistedEssayInput): Promi
   return aiAssistedEssayWritingFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'aiAssistedEssayPrompt',
+const essayPrompt = ai.definePrompt({
+  name: 'aiAssistedEssayMainPrompt',
   input: {schema: AiAssistedEssayInputSchema},
   output: {schema: z.object({
       essayMarkdown: z.string().optional().describe('The full generated document in clean, formatted Markdown, including all sections.'),
-      analysis: z.object({
-          keywords: z.array(z.string()).describe('A list of 10 relevant keywords from the essay.'),
-          alternativeTones: z.array(z.string()).describe('A list of 3 alternative tones the user could adopt.'),
-          policymakerPitch: z.string().describe('A 2-sentence pitch summarizing the key proposal for policymakers.'),
-      }).optional().describe('Additional AI-generated analysis and tools.'),
   })},
   prompt: `You are a world-class policy advisor and information designer, blending the analytical rigor of a McKinsey consultant with the strategic foresight of the World Economic Forum. Your task is to generate a premium-level, executive-style whitepaper on the provided topic, making it highly scannable, visually compelling, and ready for policymakers.
 
@@ -105,13 +100,33 @@ The entire output must be a single, clean Markdown document. Use formatting (bol
     *   Include at least 4-5 credible, authoritative sources (e.g., WHO, The Lancet, Nature, WEF).
     *   Use a simplified citation style for readability, e.g., (WHO, 2023).
 
-**AI Analysis & Toolkit Task (Append after the report):**
-1.  **Keywords**: 10 relevant keywords.
-2.  **Alternative Tones**: 3 alternative tones (e.g., "Academic Journal Article," "Op-Ed," "Investor Brief").
-3.  **Policymaker Pitch**: A compelling 2-sentence pitch.
+Respond in the required JSON format.`,
+});
+
+
+const analysisPrompt = ai.definePrompt({
+    name: 'aiAssistedEssayAnalysisPrompt',
+    input: { schema: z.object({ essayMarkdown: z.string() }) },
+    output: { schema: z.object({
+        analysis: z.object({
+            keywords: z.array(z.string()).describe('A list of 10 relevant keywords from the essay.'),
+            alternativeTones: z.array(z.string()).describe('A list of 3 alternative tones the user could adopt.'),
+            policymakerPitch: z.string().describe('A 2-sentence pitch summarizing the key proposal for policymakers.'),
+        }).optional().describe('Additional AI-generated analysis and tools.'),
+    })},
+    prompt: `Based on the following document, perform an analysis.
+
+Document:
+"{{{essayMarkdown}}}"
+
+**AI Analysis & Toolkit Task:**
+1.  **Keywords**: Extract the 10 most relevant keywords.
+2.  **Alternative Tones**: Suggest 3 alternative tones for the document (e.g., "Academic Journal Article," "Op-Ed," "Investor Brief").
+3.  **Policymaker Pitch**: Write a compelling 2-sentence pitch summarizing the key proposal for policymakers.
 
 Respond in the required JSON format.`,
 });
+
 
 const aiAssistedEssayWritingFlow = ai.defineFlow(
   {
@@ -121,11 +136,25 @@ const aiAssistedEssayWritingFlow = ai.defineFlow(
   },
   async (input) => {
     try {
-      const { output } = await prompt(input);
-      if (!output || !output.essayMarkdown) {
-        throw new Error('AI failed to generate a response.');
+      // Step 1: Generate the main essay content.
+      const { output: essayOutput } = await essayPrompt(input);
+      if (!essayOutput || !essayOutput.essayMarkdown) {
+        throw new Error('AI failed to generate the main essay content.');
       }
-      return output;
+
+      // Step 2: Generate the analysis based on the essay content.
+      // This can run in parallel in the future if needed, but for now, it depends on the essay.
+      const { output: analysisOutput } = await analysisPrompt({ essayMarkdown: essayOutput.essayMarkdown });
+       if (!analysisOutput || !analysisOutput.analysis) {
+        throw new Error('AI failed to generate the analysis.');
+      }
+
+      // Step 3: Combine the results.
+      return {
+        essayMarkdown: essayOutput.essayMarkdown,
+        analysis: analysisOutput.analysis,
+      };
+
     } catch (err: any) {
       console.error("Error in aiAssistedEssayWritingFlow:", err);
       if (err.message && (err.message.includes('503') || err.message.includes('overloaded'))) {
