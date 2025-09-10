@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import QRCode from 'qrcode.react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,8 +21,16 @@ export function QrCodeGeneratorForm() {
   const [value, setValue] = useState('https://toolbox-ai.com');
   const [size, setSize] = useState(256);
   const [level, setLevel] = useState<'L' | 'M' | 'Q' | 'H'>('M');
+  const [isShareSupported, setIsShareSupported] = useState(false);
   const qrRef = useRef<HTMLDivElement>(null);
   const { resolvedTheme } = useTheme();
+
+  useEffect(() => {
+    // This check runs only on the client, after the component has mounted.
+    if (navigator.share) {
+      setIsShareSupported(true);
+    }
+  }, []);
 
   const downloadQRCode = () => {
     if (qrRef.current) {
@@ -110,7 +119,7 @@ export function QrCodeGeneratorForm() {
           <Button onClick={downloadQRCode} className="w-full">
             <Download className="mr-2 h-4 w-4" /> Download PNG
           </Button>
-          {typeof navigator !== 'undefined' && navigator.share &&
+          {isShareSupported &&
             <Button onClick={shareQRCode} variant="outline" className="w-full">
                 <Share2 className="mr-2 h-4 w-4" /> Share
             </Button>
