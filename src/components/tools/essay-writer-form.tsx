@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,10 +21,11 @@ import {
   aiAssistedEssayWriting,
   type AiAssistedEssayOutput,
 } from '@/ai/flows/ai-assisted-essay-writing';
-import { Bot, Loader2, Sparkles, Lightbulb, Tags, Mic, Palette } from 'lucide-react';
+import { Bot, Loader2, Sparkles, Lightbulb, Tags, Mic, Palette, Copy, ClipboardCheck, Download } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   topic: z.string().min(5, { message: 'Topic must be at least 5 characters.' }),
@@ -34,6 +36,7 @@ export function EssayWriterForm() {
   const [result, setResult] = useState<AiAssistedEssayOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -71,6 +74,29 @@ export function EssayWriterForm() {
     } finally {
       setIsLoading(false);
     }
+  }
+  
+  const handleCopy = () => {
+    if (!result?.essayMarkdown) return;
+    navigator.clipboard.writeText(result.essayMarkdown).then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+        toast({ title: "Copied!", description: "Essay content copied to clipboard."});
+    }).catch(err => {
+        toast({ variant: "destructive", title: "Copy Failed", description: "Could not copy text."});
+    })
+  }
+  
+  const handleDownload = () => {
+      if (!result?.essayMarkdown) return;
+      const blob = new Blob([result.essayMarkdown], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'ai-generated-essay.md';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
   }
 
   return (
@@ -130,43 +156,53 @@ export function EssayWriterForm() {
       )}
 
       {result && result.essayMarkdown && result.analysis && (
-        <div className="grid md:grid-cols-3 gap-6">
-            <div className="md:col-span-2">
-                <Card>
-                  <CardHeader>
+        <div className="grid lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+                <Card className="shadow-md">
+                  <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle className="flex items-center gap-2">
                       <Bot />
                       Generated Document
                     </CardTitle>
+                     <div className="flex gap-2">
+                        <Button variant="ghost" size="icon" onClick={handleCopy}>
+                            {isCopied ? <ClipboardCheck className="text-green-500" /> : <Copy />}
+                        </Button>
+                         <Button variant="ghost" size="icon" onClick={handleDownload}>
+                            <Download />
+                        </Button>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <ScrollArea className="h-[70vh] rounded-md border p-4 bg-secondary/30">
-                      <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: result.essayMarkdown.replace(/\\n/g, '<br />') }} />
+                      <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: result.essayMarkdown.replace(/\\n/g, '<br />') }} />
                     </ScrollArea>
                   </CardContent>
                 </Card>
             </div>
-             <div className="md:col-span-1 space-y-6">
-                <Card>
+             <div className="lg:col-span-1 space-y-6">
+                <Card className="shadow-md">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg"><Lightbulb /> AI Analysis & Toolkit</CardTitle>
+                        <CardTitle className="flex items-center gap-2 text-xl"><Lightbulb /> AI Analysis & Toolkit</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div>
-                            <h4 className="font-semibold text-sm mb-3 flex items-center gap-2"><Tags/> Keywords</h4>
+                            <h4 className="font-semibold text-md mb-3 flex items-center gap-2 text-primary"><Tags/> Keywords</h4>
                             <div className="flex flex-wrap gap-2">
-                                {result.analysis.keywords.map((s, i) => <Badge variant="secondary" key={i}>{s}</Badge>)}
+                                {result.analysis.keywords.map((s, i) => <Badge variant="secondary" key={i} className="text-sm">{s}</Badge>)}
                             </div>
                         </div>
+                        <Separator/>
                          <div>
-                            <h4 className="font-semibold text-sm mb-3 flex items-center gap-2"><Palette/> Alternative Tones</h4>
+                            <h4 className="font-semibold text-md mb-3 flex items-center gap-2 text-primary"><Palette/> Alternative Tones</h4>
                             <div className="flex flex-wrap gap-2">
-                               {result.analysis.alternativeTones.map((s, i) => <Badge variant="outline" key={i}>{s}</Badge>)}
+                               {result.analysis.alternativeTones.map((s, i) => <Badge variant="outline" key={i} className="text-sm">{s}</Badge>)}
                             </div>
                         </div>
+                        <Separator/>
                          <div>
-                            <h4 className="font-semibold text-sm mb-3 flex items-center gap-2"><Mic/> Policymaker Pitch</h4>
-                            <p className="text-sm text-muted-foreground italic">"{result.analysis.policymakerPitch}"</p>
+                            <h4 className="font-semibold text-md mb-3 flex items-center gap-2 text-primary"><Mic/> Policymaker Pitch</h4>
+                            <p className="text-sm text-muted-foreground italic p-3 bg-secondary/50 rounded-md">"{result.analysis.policymakerPitch}"</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -179,3 +215,5 @@ export function EssayWriterForm() {
     </div>
   );
 }
+
+  
