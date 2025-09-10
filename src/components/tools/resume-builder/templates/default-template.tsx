@@ -124,8 +124,7 @@ export const DefaultTemplate = ({ data, theme }: TemplateProps) => {
 
         <View style={styles.rightColumn}>
           <Text style={styles.name}>{data.fullName}</Text>
-          {/* A title can be derived or set as a static value for this template */}
-          {data.experience[0] && <Text style={styles.title}>{data.experience[0].jobTitle}</Text>}
+          {data.experience?.[0]?.jobTitle && <Text style={styles.title}>{data.experience[0].jobTitle}</Text>}
           
           <Text style={styles.sectionTitle}>Summary</Text>
           <Text style={styles.text}>{data.summary}</Text>
@@ -135,7 +134,7 @@ export const DefaultTemplate = ({ data, theme }: TemplateProps) => {
             <View key={index} style={{ marginBottom: 15 }}>
               <Text style={styles.subheading}>{exp.jobTitle}</Text>
               <Text style={styles.text}>{exp.company} | {exp.location} | {exp.startDate} - {exp.endDate}</Text>
-              {exp.responsibilities.map((resp, i) => (
+              {exp.responsibilities?.map((resp, i) => (
                 <Text key={i} style={styles.listItem}>• {resp}</Text>
               ))}
             </View>

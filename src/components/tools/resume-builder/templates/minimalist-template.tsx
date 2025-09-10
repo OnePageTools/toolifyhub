@@ -132,7 +132,7 @@ export const MinimalistTemplate = ({ data, theme }: TemplateProps) => {
                     <Text style={styles.subheading}>{exp.jobTitle} at {exp.company}</Text>
                     <Text style={{fontSize: 9}}>{exp.startDate} - {exp.endDate}</Text>
                 </View>
-              {exp.responsibilities.map((resp, i) => (
+              {exp.responsibilities?.map((resp, i) => (
                 <Text key={i} style={styles.listItem}>• {resp}</Text>
               ))}
             </View>
