@@ -2,7 +2,8 @@
 /**
  * @fileOverview This file defines a Genkit flow for AI-assisted essay writing.
  *
- * The flow takes a topic and optional instructions as input and generates an essay draft.
+ * The flow takes a topic and optional instructions as input and generates a polished essay draft
+ * along with suggestions for improvement.
  * It exports:
  * - `aiAssistedEssayWriting`: The main function to trigger the essay writing flow.
  * - `AiAssistedEssayInput`: The input type for the essay writing function.
@@ -17,12 +18,16 @@ const AiAssistedEssayInputSchema = z.object({
   instructions: z
     .string()
     .optional()
-    .describe('Optional instructions for the essay.'),
+    .describe('Optional instructions for the essay (e.g., desired length, specific focus).'),
 });
 export type AiAssistedEssayInput = z.infer<typeof AiAssistedEssayInputSchema>;
 
 const AiAssistedEssayOutputSchema = z.object({
-  essay: z.string().describe('The generated essay.'),
+  essayMarkdown: z.string().describe('The generated essay in clean, formatted Markdown.'),
+  suggestions: z.object({
+      improvements: z.array(z.string()).describe('A list of possible improvements for the essay.'),
+      alternativeTones: z.array(z.string()).describe('A list of alternative tones the user could adopt.'),
+  }).describe('Actionable suggestions to enhance the essay.'),
 });
 export type AiAssistedEssayOutput = z.infer<typeof AiAssistedEssayOutputSchema>;
 
@@ -34,13 +39,28 @@ const prompt = ai.definePrompt({
   name: 'aiAssistedEssayPrompt',
   input: {schema: AiAssistedEssayInputSchema},
   output: {schema: AiAssistedEssayOutputSchema},
-  prompt: `You are an AI essay writer. Your task is to generate an essay on the given topic, following any specific instructions provided.
+  prompt: `You are a professional academic and creative essay writer. Your task is to generate a polished essay on the given topic, following all requirements meticulously.
 
 Topic: {{{topic}}}
+{{#if instructions}}Instructions: {{{instructions}}}{{/if}}
 
-Instructions: {{{instructions}}}
+**Essay Requirements:**
+1.  **Length**: 500–700 words (unless specified otherwise in the instructions).
+2.  **Structure**:
+    *   **Introduction**: Start with a compelling hook and a clear thesis statement.
+    *   **Body Paragraphs**: 3–4 paragraphs, each with a clear topic sentence, supporting evidence/examples, and analysis.
+    *   **Conclusion**: Summarize the main points and provide a strong concluding thought or key takeaway.
+3.  **Style & Tone**: Maintain a formal, coherent, and logical style. Use smooth transitions between paragraphs. The tone should be balanced, professional, and engaging. Avoid generic statements.
+4.  **Depth**: Incorporate real-world examples, references, or data where appropriate to add substance.
+5.  **Language**: Use varied sentence structures and a sophisticated vocabulary.
+6.  **Formatting**: The entire essay must be in clean Markdown format, using headings where appropriate (e.g., '# Title', '## Introduction').
 
-Essay:`,
+**AI Suggestions Task:**
+After generating the essay, provide a short "AI Suggestions" section with:
+1.  **Possible Improvements**: 2-3 specific suggestions (e.g., "Consider adding a citation from a primary source to strengthen paragraph 2," or "The conclusion could be more impactful by posing a forward-looking question.").
+2.  **Alternative Tones**: Suggest 2-3 alternative tones the essay could be written in (e.g., "Persuasive," "Academic," "Creative," "Narrative").
+
+Respond in the required JSON format.`,
 });
 
 const aiAssistedEssayWritingFlow = ai.defineFlow(

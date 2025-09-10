@@ -20,7 +20,7 @@ import {
   aiAssistedEssayWriting,
   type AiAssistedEssayOutput,
 } from '@/ai/flows/ai-assisted-essay-writing';
-import { Bot, Loader2, Sparkles } from 'lucide-react';
+import { Bot, Loader2, Sparkles, Lightbulb } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 
 const formSchema = z.object({
@@ -103,20 +103,53 @@ export function EssayWriterForm() {
           </Button>
         </form>
       </Form>
+      
+      {isLoading && (
+        <div className="flex flex-col items-center justify-center gap-4 p-8 min-h-[40vh]">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          <p className="text-lg text-muted-foreground">Our AI is writing your essay...</p>
+        </div>
+      )}
+
       {result && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bot />
-              Generated Essay
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-72 rounded-md border p-4">
-              <p className="whitespace-pre-wrap">{result.essay}</p>
-            </ScrollArea>
-          </CardContent>
-        </Card>
+        <div className="grid md:grid-cols-3 gap-6">
+            <div className="md:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Bot />
+                      Generated Essay
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ScrollArea className="h-96 rounded-md border p-4 bg-secondary/30">
+                      <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: result.essayMarkdown.replace(/\n/g, '<br />') }} />
+                    </ScrollArea>
+                  </CardContent>
+                </Card>
+            </div>
+             <div className="md:col-span-1">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Lightbulb /> AI Suggestions</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div>
+                            <h4 className="font-semibold text-sm mb-2">Possible Improvements</h4>
+                            <ul className="space-y-2 list-disc pl-4 text-sm text-muted-foreground">
+                                {result.suggestions.improvements.map((s, i) => <li key={i}>{s}</li>)}
+                            </ul>
+                        </div>
+                         <div>
+                            <h4 className="font-semibold text-sm mb-2">Alternative Tones</h4>
+                            <ul className="space-y-2 list-disc pl-4 text-sm text-muted-foreground">
+                                {result.suggestions.alternativeTones.map((s, i) => <li key={i}>{s}</li>)}
+                            </ul>
+                        </div>
+                    </CardContent>
+                </Card>
+             </div>
+         </div>
       )}
        {error && (
         <p className="text-sm text-destructive">{error}</p>
