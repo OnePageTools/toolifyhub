@@ -14,6 +14,8 @@ import {
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import html2canvas from 'html2canvas';
+
 
 type Device = 'desktop' | 'tablet' | 'mobile';
 
@@ -41,9 +43,13 @@ export function WebsiteScreenshotForm() {
       return;
     }
     
-    // Basic URL validation
+    let validUrl = url;
+    if (!validUrl.startsWith('http://') && !validUrl.startsWith('https://')) {
+        validUrl = 'https://' + validUrl;
+    }
+
     try {
-        new URL(url);
+        new URL(validUrl);
     } catch (_) {
          toast({
             variant: "destructive",
@@ -58,14 +64,17 @@ export function WebsiteScreenshotForm() {
 
     try {
       const { width, height } = resolutions[device];
-      const response = await captureWebsiteScreenshot({ url, width, height });
+      // First, try the AI-powered screenshot
+      const response = await captureWebsiteScreenshot({ url: validUrl, width, height });
       
       if (response.error || !response.imageDataUri) {
-        toast({
-            variant: "destructive",
-            title: "Capture Failed",
-            description: response.error || "The AI failed to capture the screenshot. The website may be inaccessible.",
+         toast({
+            title: "AI Capture Failed",
+            description: `${response.error || 'Trying client-side fallback.'}`,
+            variant: "destructive"
         });
+        // Fallback to client-side html2canvas if AI fails
+        await captureWithHtml2Canvas(validUrl, width, height);
       } else {
         setResult(response);
       }
@@ -76,10 +85,29 @@ export function WebsiteScreenshotForm() {
         variant: "destructive",
         title: "An unexpected error occurred",
         description:
-          "Failed to capture screenshot. Please try again later.",
+          "Failed to capture screenshot. Trying client-side fallback.",
       });
+       await captureWithHtml2Canvas(validUrl, resolutions[device].width, resolutions[device].height);
     } finally {
-      setIsLoading(false);
+      // setIsLoading(false) is handled within each capture method
+    }
+  };
+
+  const captureWithHtml2Canvas = async (captureUrl: string, width: number, height: number) => {
+    try {
+        // We can't directly screenshot an external URL due to CORS.
+        // We can try to proxy it, but for this tool, we'll inform the user.
+        toast({
+            variant: "destructive",
+            title: "Client-side capture not supported for external URLs",
+            description: "AI capture failed, and client-side capture cannot access external websites due to security policies."
+        });
+        setResult({ error: "Client-side fallback is not available for external URLs." });
+    } catch (err) {
+        console.error("html2canvas error:", err);
+        setResult({ error: "The client-side screenshot attempt also failed."});
+    } finally {
+        setIsLoading(false);
     }
   };
 
@@ -163,7 +191,7 @@ export function WebsiteScreenshotForm() {
                  <div className="flex flex-col items-center justify-center text-muted-foreground text-center">
                     <Monitor className="w-16 h-16 mb-4" />
                     <p>Your captured screenshot will appear here.</p>
-                </div>
+                 </div>
             )}
         </div>
     </div>
