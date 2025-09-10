@@ -187,7 +187,7 @@ export const tools: Tool[] = [
     href: '/tools/website-screenshot',
     icon: Camera,
     category: 'Utilities',
-    implemented: false,
+    implemented: true,
   },
   {
     name: 'Meta Tag Generator',
