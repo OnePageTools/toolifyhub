@@ -32,23 +32,19 @@ export async function captureWebsiteScreenshot(
 ): Promise<CaptureWebsiteScreenshotOutput> {
   try {
     const { media } = await ai.generate({
-      model: 'googleai/gemini-2.5-flash-image-preview',
-      prompt: [
-        {
-          text: `You are a virtual web browser. Your task is to render the webpage at the following URL and provide a high-quality, full-page screenshot of it.
+      model: 'gemini-1.5-flash',
+      prompt: `You are an expert web page renderer. Your task is to access the given URL and provide a high-quality, full-page screenshot of it.
 
 URL: ${input.url}
 
-Render the page with a viewport of ${input.width}x${input.height} pixels. Ensure all elements, images, and styles are loaded and rendered correctly before taking the screenshot. The final output must be only the image of the rendered webpage.`,
-        },
-      ],
+Render the page with a viewport of ${input.width}x${input.height} pixels. Ensure all elements, images, and styles are loaded correctly before taking the screenshot. The final output must be only the image of the rendered webpage. If the website is inaccessible or blocks you, you must state that in the error output, not in the image.`,
       config: {
         responseModalities: ['IMAGE'],
       },
     });
 
     if (!media?.url) {
-      return { error: 'Image generation failed or did not return an image. The website might be blocking AI access.' };
+      return { error: 'Image generation failed. The website might be blocking AI access or is temporarily unavailable.' };
     }
     
     return { imageDataUri: media.url };
@@ -58,9 +54,9 @@ Render the page with a viewport of ${input.width}x${input.height} pixels. Ensure
     if (err.message && (err.message.includes('429') || err.message.includes('503'))) {
       return { error: "The screenshot service is currently experiencing high demand. Please try again in a few moments." };
     }
-    if (err.message && err.message.includes('parse')) {
+    if (err.message && (err.message.includes('parse') || err.message.includes('URL'))) {
          return { error: 'The provided URL seems to be invalid or inaccessible. Please check it and try again.' };
     }
-    return { error: 'An unexpected error occurred while capturing the screenshot.' };
+    return { error: 'An unexpected error occurred while capturing the screenshot. The site may be down or blocking automated access.' };
   }
 }

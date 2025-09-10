@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,9 +12,7 @@ import {
   type CaptureWebsiteScreenshotOutput,
 } from '@/ai/flows/website-screenshot-flow';
 import Image from 'next/image';
-import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import html2canvas from 'html2canvas';
 
 
 type Device = 'desktop' | 'tablet' | 'mobile';
@@ -64,17 +62,15 @@ export function WebsiteScreenshotForm() {
 
     try {
       const { width, height } = resolutions[device];
-      // First, try the AI-powered screenshot
       const response = await captureWebsiteScreenshot({ url: validUrl, width, height });
       
       if (response.error || !response.imageDataUri) {
          toast({
             title: "AI Capture Failed",
-            description: `${response.error || 'Trying client-side fallback.'}`,
+            description: `${response.error || 'The AI could not capture the screenshot.'}`,
             variant: "destructive"
         });
-        // Fallback to client-side html2canvas if AI fails
-        await captureWithHtml2Canvas(validUrl, width, height);
+        setResult(response); // Set result even if there's an error to show the message
       } else {
         setResult(response);
       }
@@ -85,29 +81,10 @@ export function WebsiteScreenshotForm() {
         variant: "destructive",
         title: "An unexpected error occurred",
         description:
-          "Failed to capture screenshot. Trying client-side fallback.",
+          "Failed to capture screenshot. Please try again.",
       });
-       await captureWithHtml2Canvas(validUrl, resolutions[device].width, resolutions[device].height);
     } finally {
-      // setIsLoading(false) is handled within each capture method
-    }
-  };
-
-  const captureWithHtml2Canvas = async (captureUrl: string, width: number, height: number) => {
-    try {
-        // We can't directly screenshot an external URL due to CORS.
-        // We can try to proxy it, but for this tool, we'll inform the user.
-        toast({
-            variant: "destructive",
-            title: "Client-side capture not supported for external URLs",
-            description: "AI capture failed, and client-side capture cannot access external websites due to security policies."
-        });
-        setResult({ error: "Client-side fallback is not available for external URLs." });
-    } catch (err) {
-        console.error("html2canvas error:", err);
-        setResult({ error: "The client-side screenshot attempt also failed."});
-    } finally {
-        setIsLoading(false);
+       setIsLoading(false);
     }
   };
 
@@ -191,6 +168,12 @@ export function WebsiteScreenshotForm() {
                  <div className="flex flex-col items-center justify-center text-muted-foreground text-center">
                     <Monitor className="w-16 h-16 mb-4" />
                     <p>Your captured screenshot will appear here.</p>
+                 </div>
+            )}
+             {!isLoading && result?.error && (
+                 <div className="text-destructive text-center">
+                    <p><strong>Capture Failed</strong></p>
+                    <p>{result.error}</p>
                  </div>
             )}
         </div>
