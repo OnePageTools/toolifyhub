@@ -135,6 +135,9 @@ export function ResumeBuilderForm() {
   };
   
   const ResumeTemplate = template === 'default' ? DefaultTemplate : MinimalistTemplate;
+  
+  // A simple check to ensure formData and its nested arrays are ready for rendering
+  const isFormDataReady = formData && formData.experience && formData.education && formData.skills;
 
 
   return (
@@ -227,7 +230,7 @@ export function ResumeBuilderForm() {
               </div>
             </CardHeader>
             <CardContent className="h-[calc(100%-80px)]">
-             {isClient && formData ? (
+             {isClient && isFormDataReady ? (
                 <PDFViewer width="100%" height="100%" showToolbar={false}>
                   <ResumeTemplate data={formData} theme={colorTheme} />
                 </PDFViewer>
