@@ -49,44 +49,45 @@ const prompt = ai.definePrompt({
           policymakerPitch: z.string().describe('A 2-sentence pitch summarizing the key proposal for policymakers.'),
       }).describe('Additional AI-generated analysis and tools.'),
   })},
-  prompt: `You are an expert consultant and policy analyst for a prestigious global institution like McKinsey or the World Economic Forum. Your task is to generate a premium-quality, in-depth policy brief on the given topic, adopting an authoritative, concise, and professional tone suitable for global leaders.
+  prompt: `You are an expert academic researcher and policy analyst. Your task is to generate a high-quality academic research paper (approx. 2,000 words) on the given topic, suitable for submission to an international journal.
 
 Topic: {{{topic}}}
 {{#if instructions}}Instructions: {{{instructions}}}{{/if}}
 
-**Policy Brief Requirements:**
+**Academic Research Paper Requirements:**
 
-1.  **Title**: Create a compelling, professional title.
-2.  **Abstract (3 sentences, max 150 words)**: Write a concise, executive-style abstract. Incorporate at least one strong statistic or citation from a credible source (e.g., OECD, UNESCO, WEF).
-3.  **Executive Summary (150–200 words)**: Provide a polished summary of the key findings and recommendations, **using bullet points** for clarity.
-4.  **Main Body (1,200–1,500 words)**:
-    *   **Introduction**: Start with a powerful hook and a clear thesis statement.
-    *   **Structured Sections**: Divide the body into several sections with **bold subheadings** for a visual-like, easy-to-scan structure.
-    *   **In-depth Analysis**: Provide real-world examples (e.g., specific policies, regulations, or case studies relevant to the topic).
-    *   **Comparative Table**: Insert a Markdown table comparing relevant models (e.g., taxation models, governance frameworks, policy approaches) across at least 4-5 key criteria.
-    *   **Policy Proposal**: Detail a clear, actionable policy proposal. Explain HOW it could be implemented, referencing relevant institutions or frameworks.
-    *   **Counterarguments & Rebuttals**: Dedicate a full paragraph to addressing at least two potential criticisms of your proposal and provide well-reasoned rebuttals.
-5.  **Implementation Roadmap**:
-    *   Provide a clear roadmap with three phases in **bullet form**:
-        *   **Short-term (1–2 years)**: [Actionable Step]
-        *   **Medium-term (3–5 years)**: [Actionable Step]
-        *   **Long-term (5–10 years)**: [Actionable Step]
-    *   For each phase, define specific Key Performance Indicators (KPIs) (e.g., rate of adoption, measurable impact, compliance levels).
-6.  **Cost Estimate**:
-    *   Provide a high-level cost estimate framework (e.g., low/medium/high) and identify who bears the cost (government, industry, etc.).
-7.  **Checklist for Policymakers**: Create a 3-item checklist with clear, actionable, one-liner bullet points.
-8.  **Conclusion**: End with a forward-looking, visionary conclusion.
-9.  **Visual Element Suggestion**: Suggest one visual element that could accompany the text (e.g., a policy roadmap diagram or a comparative analysis flowchart).
-10. **APA References**: Include at least **6 credible sources in APA style**.
-11. **Formatting**: The entire output must be a single, clean Markdown document.
+1.  **Title**: Create a formal, academic title.
+2.  **Abstract (200-250 words)**: Write a structured abstract covering: Background, Methods, Results, and Conclusion.
+3.  **Introduction**:
+    *   Start with a strong hook relevant to the academic field.
+    *   Provide background context and a clear problem statement.
+    *   End with a precise thesis statement outlining the paper's argument and structure.
+4.  **Literature Review**:
+    *   Synthesize findings from key academic and institutional sources.
+    *   Critically evaluate the existing literature, identifying gaps.
+    *   Cite credible reports from institutions like the OECD, World Economic Forum (WEF), and UNESCO.
+5.  **Methodology**: Briefly describe the research methodology (e.g., comparative case study, qualitative analysis).
+6.  **Main Body: Analysis & Findings (Multiple Sections)**:
+    *   Use **bold subheadings** for each thematic section.
+    *   **In-depth Comparative Case Study**: Include at least one comparative case study (e.g., analyzing policies in South Korea vs. the EU vs. the USA).
+    *   Provide rigorous analysis with evidence. Use **APA in-text citations** throughout the paper.
+7.  **Discussion**:
+    *   Interpret the findings and discuss their implications.
+    *   Address potential limitations of the research.
+8.  **Conclusion & Policy Recommendations**:
+    *   Summarize the key findings and reiterate the thesis.
+    *   Provide specific, actionable policy recommendations.
+    *   Include **Key Performance Indicators (KPIs)** and evaluation metrics to measure the success of the proposed policies.
+9.  **References**:
+    *   Provide a full reference list in **APA 7th edition style**.
+    *   Include at least 6-8 credible academic or institutional sources.
 
-**AI Analysis & Toolkit Task:**
-After generating the full policy brief, provide a separate analysis object with:
-1.  **Keywords**: 10 relevant keywords.
-2.  **Alternative Tones**: 3 alternative tones (e.g., "Op-Ed," "Internal Briefing," "Academic Journal Article").
-3.  **Policymaker Pitch**: A compelling 2-sentence pitch for policymakers.
+**AI Analysis & Toolkit Task (Append after the paper):**
+1.  **Keywords**: 10 relevant academic keywords.
+2.  **Alternative Tones**: 3 alternative tones (e.g., "Policy Brief," "Op-Ed," "Conference Paper").
+3.  **Policymaker Pitch**: A compelling 2-sentence pitch summarizing the key policy implication.
 
-Respond in the required JSON format.`,
+The entire output must be a single, clean Markdown document. Respond in the required JSON format.`,
 });
 
 const aiAssistedEssayWritingFlow = ai.defineFlow(
