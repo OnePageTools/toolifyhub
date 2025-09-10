@@ -155,7 +155,7 @@ export const tools: Tool[] = [
     href: '/tools/unit-converter',
     icon: Ruler,
     category: 'Utilities',
-    implemented: false,
+    implemented: true,
   },
   {
     name: 'Currency Converter',
