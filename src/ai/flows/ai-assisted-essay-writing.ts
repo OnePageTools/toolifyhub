@@ -23,11 +23,12 @@ const AiAssistedEssayInputSchema = z.object({
 export type AiAssistedEssayInput = z.infer<typeof AiAssistedEssayInputSchema>;
 
 const AiAssistedEssayOutputSchema = z.object({
-  essayMarkdown: z.string().describe('The generated essay in clean, formatted Markdown.'),
+  essayMarkdown: z.string().optional().describe('The generated essay in clean, formatted Markdown.'),
   suggestions: z.object({
       improvements: z.array(z.string()).describe('A list of possible improvements for the essay.'),
       alternativeTones: z.array(z.string()).describe('A list of alternative tones the user could adopt.'),
-  }).describe('Actionable suggestions to enhance the essay.'),
+  }).optional().describe('Actionable suggestions to enhance the essay.'),
+  error: z.string().optional().describe('An error message if the operation failed.'),
 });
 export type AiAssistedEssayOutput = z.infer<typeof AiAssistedEssayOutputSchema>;
 
@@ -38,7 +39,13 @@ export async function aiAssistedEssayWriting(input: AiAssistedEssayInput): Promi
 const prompt = ai.definePrompt({
   name: 'aiAssistedEssayPrompt',
   input: {schema: AiAssistedEssayInputSchema},
-  output: {schema: AiAssistedEssayOutputSchema},
+  output: {schema: z.object({
+      essayMarkdown: z.string().describe('The generated essay in clean, formatted Markdown.'),
+      suggestions: z.object({
+          improvements: z.array(z.string()).describe('A list of possible improvements for the essay.'),
+          alternativeTones: z.array(z.string()).describe('A list of alternative tones the user could adopt.'),
+      }).describe('Actionable suggestions to enhance the essay.'),
+  })},
   prompt: `You are a professional academic and creative essay writer. Your task is to generate a polished essay on the given topic, following all requirements meticulously.
 
 Topic: {{{topic}}}
@@ -69,8 +76,19 @@ const aiAssistedEssayWritingFlow = ai.defineFlow(
     inputSchema: AiAssistedEssayInputSchema,
     outputSchema: AiAssistedEssayOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async (input) => {
+    try {
+      const { output } = await prompt(input);
+      if (!output) {
+        throw new Error('AI failed to generate a response.');
+      }
+      return output;
+    } catch (err: any) {
+      console.error("Error in aiAssistedEssayWritingFlow:", err);
+      if (err.message && (err.message.includes('503') || err.message.includes('overloaded'))) {
+        return { error: "The AI service is currently busy due to high demand. Please try again in a few moments." };
+      }
+      return { error: "An unexpected error occurred while generating the essay. Please try again." };
+    }
   }
 );

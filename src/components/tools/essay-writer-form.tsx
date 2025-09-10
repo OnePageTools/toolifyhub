@@ -22,6 +22,7 @@ import {
 } from '@/ai/flows/ai-assisted-essay-writing';
 import { Bot, Loader2, Sparkles, Lightbulb } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   topic: z.string().min(5, { message: 'Topic must be at least 5 characters.' }),
@@ -32,6 +33,7 @@ export function EssayWriterForm() {
   const [result, setResult] = useState<AiAssistedEssayOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,9 +49,24 @@ export function EssayWriterForm() {
     setResult(null);
     try {
       const essay = await aiAssistedEssayWriting(values);
-      setResult(essay);
+      if (essay.error) {
+          setError(essay.error);
+           toast({
+            variant: "destructive",
+            title: "Error",
+            description: essay.error,
+          });
+      } else {
+        setResult(essay);
+      }
     } catch (e) {
-      setError('An error occurred while generating the essay. Please try again.');
+      const genericError = 'An unexpected error occurred. Please try again.';
+      setError(genericError);
+       toast({
+        variant: "destructive",
+        title: "Error",
+        description: genericError,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -111,7 +128,7 @@ export function EssayWriterForm() {
         </div>
       )}
 
-      {result && (
+      {result && result.essayMarkdown && result.suggestions && (
         <div className="grid md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
                 <Card>
@@ -151,8 +168,8 @@ export function EssayWriterForm() {
              </div>
          </div>
       )}
-       {error && (
-        <p className="text-sm text-destructive">{error}</p>
+       {error && !isLoading && (
+        <p className="text-sm text-center text-destructive">{error}</p>
       )}
     </div>
   );
