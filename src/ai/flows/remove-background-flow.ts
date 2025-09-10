@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A flow for removing the background from an image.
@@ -54,7 +55,8 @@ export async function removeBackground(
     return { imageDataUri: media.url };
   } catch (err: any) {
     if (err.message && err.message.includes('429')) {
-      return { error: "The AI Background Remover is busy due to high demand. Please try again in a few moments." };
+      // Return a specific error code for rate limiting that the client can handle silently.
+      return { error: "RATE_LIMIT_EXCEEDED" };
     }
     console.error("Error in removeBackground flow:", err);
     return { error: 'An unexpected error occurred while removing the background.' };

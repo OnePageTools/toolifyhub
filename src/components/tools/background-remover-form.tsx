@@ -104,17 +104,18 @@ export function BackgroundRemoverForm() {
       const photoDataUri = await fileToDataUri(selectedFile);
       const response = await removeBackground({ photoDataUri });
       
+      // If AI fails (especially on rate limits), silently fall back to client-side.
       if (response.error || !response.imageDataUri) {
-         toast({
-            variant: "destructive",
-            title: "AI Remover Failed",
-            description: `${response.error} Switching to standard background removal.`,
-        });
+        if (response.error && response.error !== 'RATE_LIMIT_EXCEEDED') {
+            toast({
+                variant: "destructive",
+                title: "AI Remover Failed",
+                description: `${response.error} Switching to standard background removal.`,
+            });
+        }
         
         // Dynamically import the client-side library
-        const removeBackgroundModule = await import("@imgly/background-removal");
-        const removeBackgroundClient = removeBackgroundModule.removeBackground;
-
+        const { removeBackground: removeBackgroundClient } = await import('@imgly/background-removal');
 
         // Fallback to client-side removal if AI fails
         const clientResultBlob = await removeBackgroundClient(selectedFile);
