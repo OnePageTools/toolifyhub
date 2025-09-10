@@ -30,6 +30,7 @@ import {
   Image as ImageIcon,
   Palette,
   FileDown,
+  RefreshCw,
 } from 'lucide-react';
 import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
 
@@ -186,28 +187,32 @@ const ResumePreview = () => {
     const [isClient, setIsClient] = useState(false);
     const [selectedTemplate, setSelectedTemplate] = useState(templates[0]);
     const [selectedColor, setSelectedColor] = useState('default');
+    const [previewData, setPreviewData] = useState<ResumeData | null>(null);
+    const [isGenerating, setIsGenerating] = useState(false);
     
     useEffect(() => {
         setIsClient(true);
     }, []);
 
-    const { control } = useFormContext<ResumeData>();
-    const formData = useWatch({ control });
-    
-    const isFormDataReady =
-      formData &&
-      formData.experience &&
-      formData.experience.length > 0 &&
-      formData.education &&
-      formData.education.length > 0;
+    const { control, getValues, trigger } = useFormContext<ResumeData>();
+    const currentValues = useWatch({ control });
 
+    const handleGeneratePreview = async () => {
+      setIsGenerating(true);
+      const isValid = await trigger();
+      if (isValid) {
+        setPreviewData(getValues());
+      }
+      setIsGenerating(false);
+    }
+    
     const ResumeTemplate = selectedTemplate.component;
     const colorTheme = colorThemes[selectedColor as keyof typeof colorThemes];
 
     return (
         <Card className="shadow-lg h-[80vh] flex flex-col">
             <CardHeader>
-                <CardTitle>Live Preview</CardTitle>
+                <CardTitle>Resume Preview</CardTitle>
                 <div className="flex flex-wrap gap-4 pt-2">
                     <Select value={selectedTemplate.id} onValueChange={id => setSelectedTemplate(templates.find(t => t.id === id) || templates[0])}>
                         <SelectTrigger className="w-full md:w-auto"><SelectValue/></SelectTrigger>
@@ -221,9 +226,9 @@ const ResumePreview = () => {
                             {Object.keys(colorThemes).map(key => <SelectItem key={key} value={key}>{key.charAt(0).toUpperCase() + key.slice(1)}</SelectItem>)}
                         </SelectContent>
                     </Select>
-                    {isClient && isFormDataReady && (
+                    {isClient && previewData && (
                         <PDFDownloadLink
-                            document={<ResumeTemplate data={formData} theme={colorTheme} />}
+                            document={<ResumeTemplate data={previewData} theme={colorTheme} />}
                             fileName="resume.pdf"
                         >
                             {({ loading }) => (
@@ -234,15 +239,18 @@ const ResumePreview = () => {
                         </PDFDownloadLink>
                     )}
                 </div>
+                 <Button onClick={handleGeneratePreview} disabled={isGenerating} className="mt-2">
+                   {isGenerating ? <Loader2 className="animate-spin"/> : <RefreshCw />} Generate Preview
+                </Button>
             </CardHeader>
             <CardContent className="flex-grow">
-             {isClient && isFormDataReady ? (
+             {isClient && previewData ? (
                 <PDFViewer width="100%" height="100%" showToolbar={false}>
-                  <ResumeTemplate data={formData} theme={colorTheme} />
+                  <ResumeTemplate data={previewData} theme={colorTheme} />
                 </PDFViewer>
               ) : (
                 <div className="h-full flex items-center justify-center bg-secondary rounded-md">
-                    <p className="text-muted-foreground text-center p-4">Fill out the form to see your resume preview.</p>
+                    <p className="text-muted-foreground text-center p-4">Click "Generate Preview" to see your resume.</p>
                 </div>
               )}
             </CardContent>
@@ -467,5 +475,7 @@ const OptionalSectionsForm = () => {
       </div>
     );
   };
+
+    
 
     
