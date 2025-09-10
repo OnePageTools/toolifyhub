@@ -2,18 +2,20 @@
 "use client";
 
 import * as React from 'react';
-import { differenceInWeeks, differenceInDays, format, isValid } from 'date-fns';
-import { Calendar as CalendarIcon, Zap, Gift, Cake, Sun } from 'lucide-react';
+import { differenceInWeeks, differenceInDays, isValid, getDaysInMonth } from 'date-fns';
+import { Zap, Gift, Cake, Sun, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { cn } from '@/lib/utils';
-import { Calendar } from '@/components/ui/calendar';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 type Age = {
   years: number;
@@ -41,87 +43,98 @@ const getZodiacSign = (date: Date): string => {
     if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return "Libra";
     if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return "Scorpio";
     if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return "Sagittarius";
-    return "Capricorn"; // Default
+    return "Capricorn";
 }
 
 export function AgeCalculatorForm() {
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
+  const [day, setDay] = React.useState<string>('');
+  const [month, setMonth] = React.useState<string>('');
+  const [year, setYear] = React.useState<string>('');
   const [age, setAge] = React.useState<Age | null>(null);
   const [funFacts, setFunFacts] = React.useState<FunFacts | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (date && isValid(date)) {
-      const now = new Date();
-      if (date > now) {
+    if (day && month && year) {
+      const date = new Date(parseInt(year), parseInt(month), parseInt(day));
+      if (isValid(date) && date <= new Date()) {
+        setError(null);
+        const now = new Date();
+        let years = now.getFullYear() - date.getFullYear();
+        let months = now.getMonth() - date.getMonth();
+        let days = now.getDate() - date.getDate();
+
+        if (days < 0) {
+          months--;
+          days += getDaysInMonth(new Date(now.getFullYear(), now.getMonth() - 1));
+        }
+        if (months < 0) {
+          years--;
+          months += 12;
+        }
+
+        setAge({ years, months, days });
+        setFunFacts({
+          totalDays: differenceInDays(now, date),
+          totalWeeks: differenceInWeeks(now, date),
+          zodiacSign: getZodiacSign(date),
+        })
+      } else {
+        setError("Please select a valid date in the past.");
         setAge(null);
         setFunFacts(null);
-        return;
       }
-      
-      let years = now.getFullYear() - date.getFullYear();
-      let months = now.getMonth() - date.getMonth();
-      let days = now.getDate() - date.getDate();
-
-      // Adjust months and years if the current date's month/day is before the birth date's
-      if (months < 0 || (months === 0 && days < 0)) {
-        years--;
-        months += 12;
-      }
-
-      // Adjust days and months if the current day is before the birth day
-      if (days < 0) {
-        // Borrow from the previous month
-        months--;
-        const prevMonthLastDay = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
-        days += prevMonthLastDay;
-        if (months < 0) {
-          months = 11;
-        }
-      }
-
-      setAge({ years, months, days });
-      setFunFacts({
-        totalDays: differenceInDays(now, date),
-        totalWeeks: differenceInWeeks(now, date),
-        zodiacSign: getZodiacSign(date),
-      })
     } else {
       setAge(null);
       setFunFacts(null);
+      setError(null);
     }
-  }, [date]);
+  }, [day, month, year]);
+
+  const years = Array.from({ length: 120 }, (_, i) => new Date().getFullYear() - i);
+  const months = Array.from({ length: 12 }, (_, i) => ({ value: i, name: new Date(0, i).toLocaleString('default', { month: 'long' }) }));
+  const daysInMonth = (year && month) ? getDaysInMonth(new Date(parseInt(year), parseInt(month))) : 31;
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   return (
     <div className="grid md:grid-cols-2 gap-8 items-start">
-      <div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <button
-              className={cn(
-                'w-full relative flex items-center justify-start text-left font-normal text-lg h-16 border-2 rounded-lg px-4 transition-colors',
-                'bg-secondary/30 border-primary/20 hover:border-primary/50'
-              )}
-            >
-                <div className="absolute top-1.5 left-4 text-xs text-muted-foreground">Select your date of birth</div>
-                <CalendarIcon className="mr-3 h-5 w-5 text-primary" />
-                <span className={cn("mt-2", !date && 'text-muted-foreground')}>
-                    {date ? format(date, 'PPP') : 'Pick a date'}
-                </span>
-            </button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              initialFocus
-              captionLayout="dropdown-buttons"
-              fromYear={1900}
-              toYear={new Date().getFullYear()}
-              disabled={(d) => d > new Date()}
-            />
-          </PopoverContent>
-        </Popover>
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-center text-primary">Select Your Date of Birth</h3>
+        <div className="grid grid-cols-3 gap-3 p-4 bg-secondary/50 rounded-lg border border-primary/20">
+            <div className="space-y-1">
+                <Label htmlFor="year">Year</Label>
+                <Select onValueChange={setYear} value={year}>
+                    <SelectTrigger id="year"><SelectValue placeholder="Year" /></SelectTrigger>
+                    <SelectContent>
+                        {years.map(y => <SelectItem key={y} value={y.toString()}>{y}</SelectItem>)}
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="space-y-1">
+                <Label htmlFor="month">Month</Label>
+                <Select onValueChange={setMonth} value={month}>
+                    <SelectTrigger id="month"><SelectValue placeholder="Month" /></SelectTrigger>
+                    <SelectContent>
+                        {months.map(m => <SelectItem key={m.value} value={m.value.toString()}>{m.name}</SelectItem>)}
+                    </SelectContent>
+                </Select>
+            </div>
+             <div className="space-y-1">
+                <Label htmlFor="day">Day</Label>
+                <Select onValueChange={setDay} value={day}>
+                    <SelectTrigger id="day"><SelectValue placeholder="Day" /></SelectTrigger>
+                    <SelectContent>
+                        {days.map(d => <SelectItem key={d} value={d.toString()}>{d}</SelectItem>)}
+                    </SelectContent>
+                </Select>
+            </div>
+        </div>
+        {error && 
+            <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+            </Alert>
+        }
       </div>
       
       <div className="space-y-6">
