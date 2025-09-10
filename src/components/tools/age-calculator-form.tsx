@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from 'react';
@@ -93,20 +94,21 @@ export function AgeCalculatorForm() {
 
   return (
     <div className="grid md:grid-cols-2 gap-8 items-start">
-      <div className="space-y-4">
-        <label className="text-lg font-semibold text-foreground">Select your date of birth</label>
+      <div>
         <Popover>
           <PopoverTrigger asChild>
-            <Button
-              variant={'outline'}
+            <button
               className={cn(
-                'w-full justify-start text-left font-normal text-lg h-12 border-2',
-                !date && 'text-muted-foreground'
+                'w-full relative flex items-center justify-start text-left font-normal text-lg h-16 border-2 rounded-lg px-4 transition-colors',
+                'bg-secondary/30 border-primary/20 hover:border-primary/50'
               )}
             >
-              <CalendarIcon className="mr-2 h-5 w-5" />
-              {date ? format(date, 'PPP') : <span>Pick a date</span>}
-            </Button>
+                <div className="absolute top-1.5 left-4 text-xs text-muted-foreground">Select your date of birth</div>
+                <CalendarIcon className="mr-3 h-5 w-5 text-primary" />
+                <span className={cn("mt-2", !date && 'text-muted-foreground')}>
+                    {date ? format(date, 'PPP') : 'Pick a date'}
+                </span>
+            </button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
             <Calendar
