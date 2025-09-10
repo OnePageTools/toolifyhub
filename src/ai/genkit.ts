@@ -1,9 +1,10 @@
 import {genkit} from 'genkit';
-import {googleAI} from '@genkit-ai/googleai';
+import {googleAI} from '@genkitorg/googleai';
+import { gemini15Flash } from '@genkit-ai/googleai';
 
 export const ai = genkit({
   plugins: [googleAI()],
-  model: 'googleai/gemini-2.5-flash',
+  model: gemini15Flash, // Use gemini-1.5-flash by default
   // Add safety settings to prevent model from being overloaded
   // and to handle high demand more gracefully.
   config: {

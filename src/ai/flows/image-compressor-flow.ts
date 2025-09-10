@@ -51,7 +51,7 @@ export async function compressImage(
     
     return { imageDataUri: media.url };
   } catch (err: any) {
-    if (err.message && err.message.includes('429')) {
+    if (err.message && (err.message.includes('429') || err.message.includes('503'))) {
       return { error: "The AI optimizer is busy due to high demand. Please try again later or use standard compression." };
     }
     console.error("Error in compressImage flow:", err);

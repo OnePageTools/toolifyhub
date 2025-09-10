@@ -77,7 +77,7 @@ const minifyCodeFlow = ai.defineFlow(
     } catch (err: any) {
       console.error("Error in minifyCodeFlow:", err);
       if (err.message && (err.message.includes('429') || err.message.includes('503'))) {
-        return { error: "The AI service is currently busy. Please try again in a few moments." };
+        return { error: "The AI service is currently experiencing high demand. Please try again in a few moments." };
       }
       return { error: "An unexpected error occurred while minifying the code." };
     }

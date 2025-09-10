@@ -85,7 +85,7 @@ const summarizeContentFlow = ai.defineFlow(
     } catch (err: any) {
       console.error("Error in summarizeContentFlow:", err);
       if (err.message && (err.message.includes('429') || err.message.includes('503'))) {
-        return { error: "The AI service is currently busy due to high demand. Please try again in a few moments." };
+        return { error: "The AI service is currently experiencing high demand. Please try again in a few moments." };
       }
       return { error: "An unexpected error occurred while generating the summary. Please try again." };
     }
