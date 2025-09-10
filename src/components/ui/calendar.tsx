@@ -78,7 +78,9 @@ function Calendar({
                   goToMonth(newDate);
                 }}
               >
-                <SelectTrigger className="w-[120px]">{month?.toLocaleString('default', { month: 'long' })}</SelectTrigger>
+                <SelectTrigger className="w-[120px]">
+                  <SelectValue>{month?.toLocaleString('default', { month: 'long' })}</SelectValue>
+                </SelectTrigger>
                 <SelectContent>
                   {months.map((m, i) => (
                     <SelectItem key={i} value={i.toString()}>
@@ -101,7 +103,9 @@ function Calendar({
                   goToMonth(newDate);
                 }}
               >
-                <SelectTrigger className="w-[80px]">{month?.getFullYear()}</SelectTrigger>
+                <SelectTrigger className="w-[80px]">
+                  <SelectValue>{month?.getFullYear()}</SelectValue>
+                </SelectTrigger>
                 <SelectContent>
                   <ScrollArea className="h-72">
                   {years.map((y) => (
