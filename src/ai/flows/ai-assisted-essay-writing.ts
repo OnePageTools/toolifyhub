@@ -49,39 +49,39 @@ const prompt = ai.definePrompt({
           policymakerPitch: z.string().describe('A 2-sentence pitch summarizing the key proposal for policymakers.'),
       }).describe('Additional AI-generated analysis and tools.'),
   })},
-  prompt: `You are an expert policy analyst and academic writer for a prestigious global institution like the World Bank or the UN. Your task is to generate a premium-quality, in-depth whitepaper on the given topic, adopting a diplomatic, academic, and professional tone.
+  prompt: `You are an expert consultant and policy analyst for a prestigious global institution like McKinsey or the World Economic Forum. Your task is to generate a premium-quality, in-depth policy brief on the given topic, adopting an authoritative, concise, and professional tone suitable for global leaders.
 
 Topic: {{{topic}}}
 {{#if instructions}}Instructions: {{{instructions}}}{{/if}}
 
-**Whitepaper Requirements:**
+**Policy Brief Requirements:**
 
 1.  **Title**: Create a compelling, professional title.
-2.  **Abstract (3 sentences, max 150 words)**: Write a concise, executive-style abstract. Incorporate at least one strong statistic or citation from a credible source (e.g., OECD, UNESCO, World Economic Forum).
-3.  **Executive Summary (150–200 words)**: Provide a polished summary of the key findings, analysis, and policy recommendations.
+2.  **Abstract (3 sentences, max 150 words)**: Write a concise, executive-style abstract. Incorporate at least one strong statistic or citation from a credible source (e.g., OECD, UNESCO, WEF).
+3.  **Executive Summary (150–200 words)**: Provide a polished summary of the key findings and recommendations, **using bullet points** for clarity.
 4.  **Main Body (1,200–1,500 words)**:
     *   **Introduction**: Start with a powerful hook and a clear thesis statement.
-    *   **Structured Sections**: Divide the body into several sections with **bold subheadings**.
-    *   **In-depth Analysis**: For each region (EU, US, China), provide real-world examples (e.g., specific articles from the EU AI Act, details from Biden’s 2023 AI Executive Order, China’s 2021 algorithm regulation).
-    *   **Comparative Table**: Insert a Markdown table comparing the regions across at least 5 criteria: Enforcement Strength, Innovation Impact, Ethics & Human Rights, Global Influence, and Flexibility/Adaptability.
-    *   **Policy Proposal**: Strengthen the proposal for a hybrid governance model. Explain HOW global cooperation could work, referencing institutions like UNESCO, OECD, and a G20 AI council or potential treaties.
-    *   **Counterarguments & Rebuttals**: Dedicate a full paragraph to addressing at least two potential criticisms (e.g., "too much regulation stifles innovation" or "global cooperation is unrealistic") and provide well-reasoned rebuttals.
+    *   **Structured Sections**: Divide the body into several sections with **bold subheadings** for a visual-like, easy-to-scan structure.
+    *   **In-depth Analysis**: Provide real-world examples (e.g., specific policies, regulations, or case studies relevant to the topic).
+    *   **Comparative Table**: Insert a Markdown table comparing relevant models (e.g., taxation models, governance frameworks, policy approaches) across at least 4-5 key criteria.
+    *   **Policy Proposal**: Detail a clear, actionable policy proposal. Explain HOW it could be implemented, referencing relevant institutions or frameworks.
+    *   **Counterarguments & Rebuttals**: Dedicate a full paragraph to addressing at least two potential criticisms of your proposal and provide well-reasoned rebuttals.
 5.  **Implementation Roadmap**:
-    *   Provide a clear roadmap with three phases:
-        *   **Short-term (1–2 years)**: Pilot regulatory sandboxes.
-        *   **Medium-term (3–5 years)**: Establish international treaties and certification standards.
-        *   **Long-term (10 years)**: Form a global AI safety authority.
-    *   For each phase, define specific Key Performance Indicators (KPIs) (e.g., number of cross-border agreements signed, reduction in reported bias incidents).
+    *   Provide a clear roadmap with three phases in **bullet form**:
+        *   **Short-term (1–2 years)**: [Actionable Step]
+        *   **Medium-term (3–5 years)**: [Actionable Step]
+        *   **Long-term (5–10 years)**: [Actionable Step]
+    *   For each phase, define specific Key Performance Indicators (KPIs) (e.g., rate of adoption, measurable impact, compliance levels).
 6.  **Cost Estimate**:
-    *   Provide a high-level cost estimate framework, considering government oversight costs, industry compliance costs, and expected economic benefits.
+    *   Provide a high-level cost estimate framework (e.g., low/medium/high) and identify who bears the cost (government, industry, etc.).
 7.  **Checklist for Policymakers**: Create a 3-item checklist with clear, actionable, one-liner bullet points.
-8.  **Conclusion**: End with a forward-looking, visionary conclusion. Reference the idea of this being a “new digital Bretton Woods moment.”
-9.  **Visual Element Suggestion**: Suggest one visual element that could accompany the text (e.g., a policy roadmap diagram or a global governance flowchart).
-10. **APA References**: Include at least **6 credible sources in APA style**. Sources must include the EU AI Act draft, the White House AI Executive Order 2023, China’s Cyberspace Administration guidelines, OECD AI principles, UNESCO AI ethics, and a recent World Economic Forum report.
+8.  **Conclusion**: End with a forward-looking, visionary conclusion.
+9.  **Visual Element Suggestion**: Suggest one visual element that could accompany the text (e.g., a policy roadmap diagram or a comparative analysis flowchart).
+10. **APA References**: Include at least **6 credible sources in APA style**.
 11. **Formatting**: The entire output must be a single, clean Markdown document.
 
 **AI Analysis & Toolkit Task:**
-After generating the full whitepaper, provide a separate analysis object with:
+After generating the full policy brief, provide a separate analysis object with:
 1.  **Keywords**: 10 relevant keywords.
 2.  **Alternative Tones**: 3 alternative tones (e.g., "Op-Ed," "Internal Briefing," "Academic Journal Article").
 3.  **Policymaker Pitch**: A compelling 2-sentence pitch for policymakers.
