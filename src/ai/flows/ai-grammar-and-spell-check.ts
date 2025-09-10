@@ -15,11 +15,18 @@ const CheckGrammarAndSpellingInputSchema = z.object({
 });
 export type CheckGrammarAndSpellingInput = z.infer<typeof CheckGrammarAndSpellingInputSchema>;
 
+const CorrectionSchema = z.object({
+    type: z.enum(['Spelling', 'Grammar', 'Punctuation', 'Style']).describe('The type of error found.'),
+    original: z.string().describe('The original text segment with the error.'),
+    corrected: z.string().describe('The suggested correction for the text segment.'),
+    explanation: z.string().describe('A brief explanation of why the change was made.'),
+});
+
 const CheckGrammarAndSpellingOutputSchema = z.object({
-  correctedText: z
-    .string()
-    .describe('The text corrected for grammar and spelling errors.'),
-  explanation: z.string().describe('Explanation of the changes made.'),
+  correctedText: z.string().describe('The full text corrected for all errors.'),
+  corrections: z.array(CorrectionSchema).describe('A list of all corrections made to the text.'),
+  summary: z.string().describe('A brief, overall summary of the changes made.'),
+  score: z.number().min(0).max(100).describe('A score from 0 to 100 representing the quality of the original text.'),
 });
 export type CheckGrammarAndSpellingOutput = z.infer<typeof CheckGrammarAndSpellingOutputSchema>;
 
@@ -33,9 +40,21 @@ const prompt = ai.definePrompt({
   name: 'checkGrammarAndSpellingPrompt',
   input: {schema: CheckGrammarAndSpellingInputSchema},
   output: {schema: CheckGrammarAndSpellingOutputSchema},
-  prompt: `You are a professional editor. You will correct the provided text for grammar and spelling errors. You will also provide a brief explanation of the changes you made.
+  prompt: `You are a professional editor and AI writing assistant. Your task is to analyze the provided text for errors and suggest improvements.
 
-Text: {{{text}}}`,
+Analyze the following text:
+"{{{text}}}"
+
+Follow these instructions carefully:
+1.  **Identify Errors**: Find all spelling, grammar, punctuation, and stylistic errors.
+2.  **Create Corrections List**: For each error, create a correction object with the 'type', 'original' text, 'corrected' text, and a concise 'explanation'.
+3.  **Generate Corrected Text**: Provide the full, corrected version of the text.
+4.  **Calculate Quality Score**: Based on the number and severity of errors relative to the text length, calculate a quality score between 0 (very poor) and 100 (perfect). A text with no errors should get 100.
+5.  **Write Summary**: Provide a brief, encouraging summary of the key improvements made.
+
+If the text is perfect, the 'corrections' array should be empty, the 'correctedText' should be the same as the original, and the score should be 100.
+
+Respond in the required JSON format.`,
 });
 
 const checkGrammarAndSpellingFlow = ai.defineFlow(
