@@ -31,7 +31,12 @@ export function CurrencyConverterForm() {
   const [inputValue, setInputValue] = useState('100');
   const [outputValue, setOutputValue] = useState('');
   const [isCopied, setIsCopied] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const currencies = Object.keys(currencyData) as Currency[];
 
@@ -148,29 +153,30 @@ export function CurrencyConverterForm() {
         1 {fromCurrency} = {exchangeRate.toFixed(4)} {toCurrency} (Last updated: {new Date().toLocaleDateString()})
       </p>
 
-      <Card>
-        <CardHeader>
-            <CardTitle className="flex items-center gap-2"><TrendingUp/> 7-Day Exchange Rate Trend</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <ChartContainer config={chartConfig} className="h-48 w-full">
-                <AreaChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                    <defs>
-                        <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="var(--color-rate)" stopOpacity={0.8}/>
-                            <stop offset="95%" stopColor="var(--color-rate)" stopOpacity={0.1}/>
-                        </linearGradient>
-                    </defs>
-                    <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                     <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={8} />
-                     <YAxis width={60} domain={['dataMin - 0.01', 'dataMax + 0.01']} tickLine={false} axisLine={false} />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Area type="monotone" dataKey="rate" stroke="var(--color-rate)" fillOpacity={1} fill="url(#colorRate)" />
-                </AreaChart>
-            </ChartContainer>
-        </CardContent>
-      </Card>
-
+      {isClient && (
+        <Card>
+          <CardHeader>
+              <CardTitle className="flex items-center gap-2"><TrendingUp/> 7-Day Exchange Rate Trend</CardTitle>
+          </CardHeader>
+          <CardContent>
+              <ChartContainer config={chartConfig} className="h-48 w-full">
+                  <AreaChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                      <defs>
+                          <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="var(--color-rate)" stopOpacity={0.8}/>
+                              <stop offset="95%" stopColor="var(--color-rate)" stopOpacity={0.1}/>
+                          </linearGradient>
+                      </defs>
+                      <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                       <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={8} />
+                       <YAxis width={60} domain={['dataMin - 0.01', 'dataMax + 0.01']} tickLine={false} axisLine={false} />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Area type="monotone" dataKey="rate" stroke="var(--color-rate)" fillOpacity={1} fill="url(#colorRate)" />
+                  </AreaChart>
+              </ChartContainer>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
