@@ -131,7 +131,7 @@ export const tools: Tool[] = [
     href: '/tools/resume-builder',
     icon: FileUser,
     category: 'Utilities',
-    implemented: false,
+    implemented: true,
   },
   {
     name: 'AI Essay Writer',
