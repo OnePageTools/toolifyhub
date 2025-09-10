@@ -1,7 +1,7 @@
 
 "use client";
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Font, Link, Image } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Font, Link } from '@react-pdf/renderer';
 import type { ResumeData } from '@/lib/schema/resume-schema';
 
 // Register fonts
@@ -17,6 +17,7 @@ Font.register({
 type ColorTheme = {
     primary: string;
     text: string;
+    secondary: string;
 };
 
 const createStyles = (theme: ColorTheme) => StyleSheet.create({
@@ -150,7 +151,7 @@ export const MinimalistTemplate = ({ data, theme }: TemplateProps) => {
           ))}
         </View>
 
-         {data.projects && data.projects.length > 0 && (
+         {data.projects && data.projects.length > 0 && data.projects[0]?.name && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Projects</Text>
               {data.projects.map((proj, index) => (

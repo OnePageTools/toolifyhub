@@ -87,7 +87,11 @@ export function ResumeBuilderForm() {
     const fields = steps[currentStep].fields;
     const output = await trigger(fields as any, { shouldFocus: true });
     if (!output) return;
-    if (currentStep < steps.length - 1) setCurrentStep(currentStep + 1);
+    if (currentStep < steps.length - 1) {
+       setCurrentStep(currentStep + 1);
+    } else {
+       await handleSubmit(onSubmit)();
+    }
   };
 
   const prevStep = () => {
@@ -101,7 +105,8 @@ export function ResumeBuilderForm() {
       const response = await buildResume(data);
       setResult(response);
     } catch (error: any) {
-       console.error(error);
+       console.error("Error building resume:", error);
+       // Add toast notification for the user
     } finally {
       setIsLoading(false);
     }
@@ -145,7 +150,10 @@ export function ResumeBuilderForm() {
             <div className="mt-8 pt-5 border-t">
               <div className="flex justify-between">
                 <Button type="button" variant="outline" onClick={prevStep} disabled={currentStep === 0}><ChevronLeft /> Back</Button>
-                <Button type="button" onClick={nextStep}>{currentStep === steps.length - 1 ? 'Finish & Review' : 'Next Step'} <ArrowRight /></Button>
+                <Button type="button" onClick={nextStep} disabled={isLoading}>
+                    {isLoading ? <Loader2 className="animate-spin" /> : (currentStep === steps.length - 1 ? 'Generate with AI' : 'Next Step')} 
+                    { !isLoading && currentStep < steps.length - 1 && <ArrowRight />}
+                </Button>
               </div>
             </div>
              {result && (
@@ -158,7 +166,7 @@ export function ResumeBuilderForm() {
                             {result.suggestions.map((s, i) => <li key={i}>{s}</li>)}
                         </ul>
                          <Button onClick={() => handleSubmit(onSubmit)()} disabled={isLoading} className="mt-4">
-                            {isLoading ? <Loader2 className="animate-spin" /> : <Wand2 />} Regenerate Suggestions
+                            {isLoading ? <Loader2 className="animate-spin" /> : <Wand2 />} Regenerate
                         </Button>
                     </CardContent>
                 </Card>
@@ -185,7 +193,7 @@ const ResumePreview = () => {
 
     const { control } = useFormContext<ResumeData>();
     const formData = useWatch({ control });
-    const isFormDataReady = formData && formData.experience && formData.education;
+    const isFormDataReady = formData && formData.experience && formData.education && formData.experience[0].jobTitle;
 
     const ResumeTemplate = selectedTemplate.component;
     const colorTheme = colorThemes[selectedColor as keyof typeof colorThemes];
@@ -194,15 +202,15 @@ const ResumePreview = () => {
         <Card className="shadow-lg h-[80vh] flex flex-col">
             <CardHeader>
                 <CardTitle>Live Preview</CardTitle>
-                <div className="flex gap-4 pt-2">
+                <div className="flex flex-wrap gap-4 pt-2">
                     <Select value={selectedTemplate.id} onValueChange={id => setSelectedTemplate(templates.find(t => t.id === id) || templates[0])}>
-                        <SelectTrigger><SelectValue/></SelectTrigger>
+                        <SelectTrigger className="w-full md:w-auto"><SelectValue/></SelectTrigger>
                         <SelectContent>
                             {templates.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
                      <Select value={selectedColor} onValueChange={setSelectedColor}>
-                        <SelectTrigger><Palette/> Color</SelectTrigger>
+                        <SelectTrigger className="w-full md:w-auto"><Palette/> Color</SelectTrigger>
                         <SelectContent>
                             {Object.keys(colorThemes).map(key => <SelectItem key={key} value={key}>{key.charAt(0).toUpperCase() + key.slice(1)}</SelectItem>)}
                         </SelectContent>
@@ -213,7 +221,7 @@ const ResumePreview = () => {
                             fileName="resume.pdf"
                         >
                             {({ loading }) => (
-                                <Button disabled={loading}>
+                                <Button disabled={loading} className="w-full md:w-auto">
                                     {loading ? <Loader2 className="animate-spin"/> : <FileDown />} Download PDF
                                 </Button>
                             )}
@@ -221,14 +229,14 @@ const ResumePreview = () => {
                     )}
                 </div>
             </CardHeader>
-            <CardContent className="h-[calc(100%-80px)]">
+            <CardContent className="flex-grow">
              {isClient && isFormDataReady ? (
                 <PDFViewer width="100%" height="100%" showToolbar={false}>
                   <ResumeTemplate data={formData} theme={colorTheme} />
                 </PDFViewer>
               ) : (
                 <div className="h-full flex items-center justify-center bg-secondary rounded-md">
-                    <p className="text-muted-foreground">Fill out the form to see your resume preview.</p>
+                    <p className="text-muted-foreground text-center p-4">Fill out the form to see your resume preview.</p>
                 </div>
               )}
             </CardContent>
@@ -254,22 +262,24 @@ const PersonalDetailsForm = () => {
     
     return (
         <ScrollArea className="h-[50vh] pr-4">
-        <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2 col-span-2 flex items-center gap-4">
-                <div className="w-24 h-24 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
-                    {profilePicture ? <img src={profilePicture} alt="Profile" className="w-full h-full object-cover"/> : <ImageIcon className="text-muted-foreground" />}
+        <div className="space-y-4">
+            <div className="col-span-2 flex items-center gap-4">
+                <div className="w-24 h-24 rounded-full bg-secondary flex items-center justify-center overflow-hidden border">
+                    {profilePicture ? <img src={profilePicture} alt="Profile" className="w-full h-full object-cover"/> : <ImageIcon className="text-muted-foreground w-10 h-10" />}
                 </div>
                 <div>
                     <Label htmlFor="profile-picture">Profile Picture</Label>
                     <Input id="profile-picture" type="file" accept="image/*" onChange={handleImageUpload} />
                 </div>
             </div>
-            <div className="space-y-2"><Label>Full Name</Label><Input {...register('fullName')} /><p className="text-destructive text-xs">{errors.fullName?.message}</p></div>
-            <div className="space-y-2"><Label>Email</Label><Input {...register('email')} /><p className="text-destructive text-xs">{errors.email?.message}</p></div>
-            <div className="space-y-2"><Label>Phone</Label><Input {...register('phone')} /><p className="text-destructive text-xs">{errors.phone?.message}</p></div>
-            <div className="space-y-2"><Label>Address</Label><Input {...register('address')} /><p className="text-destructive text-xs">{errors.address?.message}</p></div>
-            <div className="space-y-2"><Label>LinkedIn Profile URL</Label><Input {...register('linkedin')} /><p className="text-destructive text-xs">{errors.linkedin?.message}</p></div>
-            <div className="space-y-2"><Label>Portfolio/Website URL</Label><Input {...register('portfolio')} /><p className="text-destructive text-xs">{errors.portfolio?.message}</p></div>
+             <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2"><Label>Full Name</Label><Input {...register('fullName')} /><p className="text-destructive text-xs">{errors.fullName?.message}</p></div>
+                <div className="space-y-2"><Label>Email</Label><Input {...register('email')} /><p className="text-destructive text-xs">{errors.email?.message}</p></div>
+                <div className="space-y-2"><Label>Phone</Label><Input {...register('phone')} /><p className="text-destructive text-xs">{errors.phone?.message}</p></div>
+                <div className="space-y-2"><Label>Address</Label><Input {...register('address')} /><p className="text-destructive text-xs">{errors.address?.message}</p></div>
+                <div className="space-y-2"><Label>LinkedIn Profile URL</Label><Input {...register('linkedin')} /><p className="text-destructive text-xs">{errors.linkedin?.message}</p></div>
+                <div className="space-y-2"><Label>Portfolio/Website URL</Label><Input {...register('portfolio')} /><p className="text-destructive text-xs">{errors.portfolio?.message}</p></div>
+            </div>
         </div>
         </ScrollArea>
     );

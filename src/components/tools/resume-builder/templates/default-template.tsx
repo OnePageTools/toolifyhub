@@ -111,7 +111,7 @@ export const DefaultTemplate = ({ data, theme }: TemplateProps) => {
             ))}
           </View>
 
-           {data.languages && data.languages.length > 0 && (
+           {data.languages && data.languages.length > 0 && data.languages[0] && (
             <View style={{ marginTop: 20 }}>
               <Text style={styles.sectionTitle}>Languages</Text>
               {data.languages.map((lang, index) => (
@@ -149,7 +149,7 @@ export const DefaultTemplate = ({ data, theme }: TemplateProps) => {
             </View>
           ))}
 
-          {data.projects && data.projects.length > 0 && (
+          {data.projects && data.projects.length > 0 && data.projects[0]?.name && (
             <>
               <Text style={styles.sectionTitle}>Projects</Text>
               {data.projects.map((proj, index) => (
@@ -161,7 +161,7 @@ export const DefaultTemplate = ({ data, theme }: TemplateProps) => {
             </>
           )}
 
-           {data.certifications && data.certifications.length > 0 && (
+           {data.certifications && data.certifications.length > 0 && data.certifications[0] && (
             <>
               <Text style={styles.sectionTitle}>Certifications</Text>
               {data.certifications.map((cert, index) => (
