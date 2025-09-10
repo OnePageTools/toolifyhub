@@ -193,7 +193,13 @@ const ResumePreview = () => {
 
     const { control } = useFormContext<ResumeData>();
     const formData = useWatch({ control });
-    const isFormDataReady = formData && formData.experience && formData.education && formData.experience[0].jobTitle;
+    
+    const isFormDataReady =
+      formData &&
+      formData.experience &&
+      formData.experience.length > 0 &&
+      formData.education &&
+      formData.education.length > 0;
 
     const ResumeTemplate = selectedTemplate.component;
     const colorTheme = colorThemes[selectedColor as keyof typeof colorThemes];
@@ -461,3 +467,5 @@ const OptionalSectionsForm = () => {
       </div>
     );
   };
+
+    
