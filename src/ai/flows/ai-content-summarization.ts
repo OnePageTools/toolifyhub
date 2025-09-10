@@ -22,12 +22,15 @@ export type SummarizeContentInput = z.infer<typeof SummarizeContentInputSchema>;
 const SummarizeContentOutputSchema = z.object({
   summary: z
     .string()
+    .optional()
     .describe('The generated summary of the text. For detailed summaries, this will be a bulleted list.'),
   keywords: z
     .array(z.string())
+    .optional()
     .describe('A list of the most important keywords from the text.'),
-  originalWordCount: z.number().describe('The word count of the original text.'),
-  summaryWordCount: z.number().describe('The word count of the summary.'),
+  originalWordCount: z.number().optional().describe('The word count of the original text.'),
+  summaryWordCount: z.number().optional().describe('The word count of the summary.'),
+  error: z.string().optional().describe('An error message if summarization failed.'),
 });
 export type SummarizeContentOutput = z.infer<typeof SummarizeContentOutputSchema>;
 
@@ -40,7 +43,13 @@ export async function summarizeContent(
 const summarizeContentPrompt = ai.definePrompt({
   name: 'summarizeContentPrompt',
   input: {schema: SummarizeContentInputSchema},
-  output: {schema: SummarizeContentOutputSchema},
+  output: {schema: z.object({
+      summary: z.string().describe('The generated summary of the text. For detailed summaries, this will be a bulleted list.'),
+      keywords: z.array(z.string()).describe('A list of the most important keywords from the text.'),
+      originalWordCount: z.number().describe('The word count of the original text.'),
+      summaryWordCount: z.number().describe('The word count of the summary.'),
+    })
+  },
   prompt: `You are an expert text summarization AI. Analyze the following text and generate a summary based on the requested length.
 
 Text to analyze:
@@ -64,8 +73,18 @@ const summarizeContentFlow = ai.defineFlow(
     inputSchema: SummarizeContentInputSchema,
     outputSchema: SummarizeContentOutputSchema,
   },
-  async input => {
-    const {output} = await summarizeContentPrompt(input);
-    return output!;
+  async (input) => {
+    try {
+      const {output} = await summarizeContentPrompt(input);
+      return output!;
+    } catch (err: any) {
+      console.error("Error in summarizeContentFlow:", err);
+      // Check for specific error types, like rate limiting
+      if (err.message && (err.message.includes('429') || err.message.includes('503'))) {
+        return { error: "The AI service is currently busy due to high demand. Please try again in a few moments." };
+      }
+      // General error
+      return { error: "An unexpected error occurred while generating the summary. Please try again." };
+    }
   }
 );

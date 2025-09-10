@@ -24,7 +24,6 @@ import { Loader2, Zap, RefreshCw, Clipboard, ClipboardCheck, AlignLeft, AlignCen
 import { ScrollArea } from '../ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { Label } from '@/components/ui/label';
 
 const formSchema = z.object({
   text: z.string().min(100, { message: 'Please enter at least 100 characters to summarize.' }),
@@ -59,13 +58,23 @@ export function TextSummarizerForm() {
 
     try {
       const summary = await summarizeContent({ text, length });
-      setResult(summary);
+      if (summary.error) {
+          setError(summary.error);
+          toast({
+              variant: "destructive",
+              title: "Summarization Failed",
+              description: summary.error,
+          });
+      } else {
+        setResult(summary);
+      }
     } catch (e) {
-      setError('An error occurred while summarizing the text. Please try again.');
+      const errorMessage = 'An unexpected network error occurred. Please try again.';
+      setError(errorMessage);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to generate summary.",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -132,16 +141,15 @@ export function TextSummarizerForm() {
       
       {isLoading && <p className="text-center text-muted-foreground">AI is thinking...</p>}
 
-      {result && (
+      {result && result.summary && (
         <div className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Analysis Report</CardTitle>
             </CardHeader>
             <CardContent>
-                <Label className="text-sm">Keywords</Label>
                 <div className="flex flex-wrap gap-2 mt-1">
-                  {result.keywords.map(kw => <Badge key={kw} variant="secondary">{kw}</Badge>)}
+                  {result.keywords?.map(kw => <Badge key={kw} variant="secondary">{kw}</Badge>)}
                 </div>
             </CardContent>
           </Card>
@@ -170,7 +178,7 @@ export function TextSummarizerForm() {
                         <span className="sr-only">Regenerate</span>
                       </Button>
                       <Button variant="ghost" size="icon" onClick={handleCopy}>
-                        {isCopied ? <ClipboardCheck className="text-green-500" /> : <ClipboardCheck />}
+                        {isCopied ? <ClipboardCheck className="text-green-500" /> : <Clipboard />}
                         <span className="sr-only">Copy</span>
                       </Button>
                    </div>
@@ -186,7 +194,7 @@ export function TextSummarizerForm() {
         </div>
       )}
        {error && (
-        <p className="text-sm text-destructive">{error}</p>
+        <p className="text-sm text-center text-destructive">{error}</p>
       )}
     </div>
   );
