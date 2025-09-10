@@ -1,18 +1,19 @@
 
 "use client";
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Wand2, Upload, Download, Trash2, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Wand2, Upload, Download, Trash2, Image as ImageIcon, Eye } from 'lucide-react';
 import {
   removeBackground,
   type RemoveBackgroundOutput,
 } from '@/ai/flows/remove-background-flow';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { ImagePreviewDialog } from '@/components/common/image-preview-dialog';
 
 export function BackgroundRemoverForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -20,6 +21,7 @@ export function BackgroundRemoverForm() {
   const [result, setResult] = useState<RemoveBackgroundOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -104,14 +106,9 @@ export function BackgroundRemoverForm() {
       const photoDataUri = await fileToDataUri(selectedFile);
       const response = await removeBackground({ photoDataUri });
       
-      // If AI fails (especially on rate limits), silently fall back to client-side.
       if (response.error || !response.imageDataUri) {
         if (response.error && response.error !== 'RATE_LIMIT_EXCEEDED') {
-            toast({
-                variant: "destructive",
-                title: "AI Remover Failed",
-                description: `${response.error} Switching to standard background removal.`,
-            });
+            console.error("AI Remover Failed:", response.error);
         }
         
         // Dynamically import the client-side library
@@ -150,6 +147,14 @@ export function BackgroundRemoverForm() {
 
   return (
     <div className="space-y-6">
+       {result?.imageDataUri && (
+        <ImagePreviewDialog
+          isOpen={isPreviewOpen}
+          onOpenChange={setIsPreviewOpen}
+          imageUrl={result.imageDataUri}
+          imageAlt="Background removed result"
+        />
+      )}
       <div className="space-y-2">
         <Label htmlFor="image-upload">Upload Image</Label>
         <Input id="image-upload" type="file" accept="image/png, image/jpeg, image/webp" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
@@ -199,7 +204,9 @@ export function BackgroundRemoverForm() {
              <h3 className="text-sm font-semibold mb-2 text-center">Result</h3>
             {isLoading && <Loader2 className="w-10 h-10 animate-spin" />}
             {!isLoading && result?.imageDataUri ? (
-                <Image src={result.imageDataUri} alt="Background removed" width={256} height={256} className="max-h-64 w-auto object-contain rounded-md" />
+                <button onClick={() => setIsPreviewOpen(true)} className="cursor-zoom-in">
+                  <Image src={result.imageDataUri} alt="Background removed" width={256} height={256} className="max-h-64 w-auto object-contain rounded-md" />
+                </button>
             ) : !isLoading && (
                  <div className="flex flex-col items-center justify-center text-muted-foreground text-center">
                     <Wand2 className="w-10 h-10 mb-2" />
@@ -209,7 +216,7 @@ export function BackgroundRemoverForm() {
         </div>
       </div>
       
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
          <Button onClick={handleSubmit} disabled={isLoading || !selectedFile}>
             {isLoading ? (
                 <>
@@ -224,12 +231,18 @@ export function BackgroundRemoverForm() {
             )}
             </Button>
             {result && result.imageDataUri && (
+              <>
+                 <Button variant="outline" onClick={() => setIsPreviewOpen(true)}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    Preview
+                </Button>
                 <a href={result.imageDataUri} download="background-removed.png">
                     <Button variant="outline">
                         <Download className="mr-2 h-4 w-4" />
                         Download
                     </Button>
                 </a>
+              </>
             )}
       </div>
     </div>
