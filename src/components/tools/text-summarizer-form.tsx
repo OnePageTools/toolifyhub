@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,7 +23,6 @@ import {
 import { Loader2, Zap, RefreshCw, Clipboard, ClipboardCheck, AlignLeft, AlignCenter, List } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 
@@ -140,20 +138,11 @@ export function TextSummarizerForm() {
             <CardHeader>
               <CardTitle>Analysis Report</CardTitle>
             </CardHeader>
-            <CardContent className="grid md:grid-cols-2 gap-6">
-              <div>
-                <Label className="text-sm">Readability Score</Label>
-                <div className="flex items-center gap-3">
-                   <Progress value={result.readabilityScore} className="h-2" />
-                   <span className="font-bold text-lg text-primary">{result.readabilityScore}<span className="text-sm font-normal">/100</span></span>
-                </div>
-              </div>
-              <div>
+            <CardContent>
                 <Label className="text-sm">Keywords</Label>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {result.keywords.map(kw => <Badge key={kw} variant="secondary">{kw}</Badge>)}
                 </div>
-              </div>
             </CardContent>
           </Card>
           <div className="grid md:grid-cols-2 gap-6">

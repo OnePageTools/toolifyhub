@@ -26,13 +26,6 @@ const SummarizeContentOutputSchema = z.object({
   keywords: z
     .array(z.string())
     .describe('A list of the most important keywords from the text.'),
-  readabilityScore: z
-    .number()
-    .min(0)
-    .max(100)
-    .describe(
-      'A score from 0 to 100 representing the readability of the original text.'
-    ),
   originalWordCount: z.number().describe('The word count of the original text.'),
   summaryWordCount: z.number().describe('The word count of the summary.'),
 });
@@ -54,14 +47,13 @@ Text to analyze:
 "{{{text}}}"
 
 Follow these instructions precisely:
-1.  **Analyze Readability**: Calculate a readability score for the original text from 0 (very difficult) to 100 (very easy).
-2.  **Extract Keywords**: Identify the top 5-7 most important keywords or phrases from the text.
-3.  **Generate Summary**: Based on the 'length' parameter, create a summary:
+1.  **Extract Keywords**: Identify the top 5-7 most important keywords or phrases from the text.
+2.  **Generate Summary**: Based on the 'length' parameter, create a summary:
     *   If 'length' is "short", generate a concise 1-2 sentence summary.
     *   If 'length' is "medium", generate a comprehensive single paragraph summary.
     *   If 'length' is "detailed", generate a bulleted list of the main points.
-4.  **Count Words**: Calculate the word count for both the original text and the generated summary.
-5.  **Respond in JSON**: Provide your response in the required JSON format.
+3.  **Count Words**: Calculate the word count for both the original text and the generated summary.
+4.  **Respond in JSON**: Provide your response in the required JSON format.
 
 Requested summary length: {{{length}}}`,
 });
