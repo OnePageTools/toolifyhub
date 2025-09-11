@@ -10,7 +10,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { experimental_generate } from 'genkit/experimental';
+import { experimental } from 'genkit';
 
 const CaptureWebsiteScreenshotInputSchema = z.object({
   url: z.string().url().describe('The full URL of the website to capture.'),
@@ -55,7 +55,7 @@ export async function captureWebsiteScreenshot(
   input: CaptureWebsiteScreenshotInput
 ): Promise<CaptureWebsiteScreenshotOutput> {
     try {
-        const result = await experimental_generate({
+        const result = await experimental.generate({
             model: 'gemini-1.5-pro',
             tools: [fetchWebsiteContent],
             prompt: `
