@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   Sun,
   Moon,
@@ -28,7 +29,8 @@ import { Button } from "@/components/ui/button";
 import { tools as allTools } from '@/lib/tools';
 import type { Tool, ToolCategory } from "@/lib/tools";
 import { cn } from "@/lib/utils";
-import Footer from "@/components/common/footer";
+
+const Footer = dynamic(() => import('@/components/common/footer'), { ssr: false });
 
 const MotionLink = motion(Link);
 
@@ -40,6 +42,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<ToolCategory | "All">("All");
 
   const filteredTools = allTools
+    .filter((tool) => tool.implemented)
     .filter((tool) =>
       selectedCategory === "All" ? true : tool.category === selectedCategory
     )
@@ -55,7 +58,7 @@ export default function Home() {
       <motion.div
         animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="absolute inset-0 bg-gradient-to-r from-purple-600 via-fuchsia-500 to-orange-400 bg-[length:300%_300%]"
+        className="absolute inset-0 bg-gradient-to-r from-blue-900 via-indigo-800 to-purple-900 bg-[length:300%_300%]"
       />
 
       <div className="relative z-10 min-h-screen flex flex-col">
