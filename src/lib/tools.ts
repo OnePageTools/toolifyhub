@@ -203,6 +203,6 @@ export const tools: Tool[] = [
     href: '/tools/temp-email-generator',
     icon: Mail,
     category: 'Utilities',
-    implemented: false,
+    implemented: true,
   },
 ];
