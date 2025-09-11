@@ -11,7 +11,7 @@ export default function Footer() {
             
             {/* About Section */}
             <div className="md:col-span-2">
-              <h3 className="font-bold text-lg mb-2 text-white">VIP All-in-One Tools</h3>
+              <h3 className="font-bold text-lg mb-2 text-white">ToolifyHub</h3>
               <p className="text-sm opacity-80 max-w-md mx-auto md:mx-0">
                 Your one-stop solution for professional, fast, and free online utilities to boost your productivity.
               </p>
@@ -45,7 +45,7 @@ export default function Footer() {
 
           </div>
           <div className="border-t border-white/20 mt-8 pt-6 text-center text-sm opacity-70">
-            <p>© {new Date().getFullYear()} VIP All-in-One Tools. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} ToolifyHub. All rights reserved.</p>
           </div>
         </div>
       </div>

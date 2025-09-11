@@ -16,7 +16,7 @@ export default function AboutPage() {
         </CardHeader>
         <CardContent className="space-y-4 prose prose-sm dark:prose-invert max-w-none">
           <p>
-            Welcome to VIP All-in-One Tools! Our mission is to provide a comprehensive suite of free, fast, and professional online tools to boost your productivity.
+            Welcome to ToolifyHub! Our mission is to provide a comprehensive suite of free, fast, and professional online tools to boost your productivity.
           </p>
           <p>
             Whether you are a developer, a student, a writer, or just someone looking to get things done more efficiently, our collection of utilities is designed to help you save time and effort. No sign-up is required, and all our tools are mobile-friendly.

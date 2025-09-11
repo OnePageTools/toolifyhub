@@ -6,7 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Poppins, Inter } from 'next/font/google';
 
 export const metadata: Metadata = {
-  title: 'Toolbox AI - Free All-in-One Tools for Productivity',
+  title: 'ToolifyHub - Free All-in-One Tools for Productivity',
   description:
     'Your ultimate suite of 20+ free, professional online tools. Featuring AI-powered utilities like PDF converters, image compressors, text summarizers, and a resume builder. No sign-up required, 100% free.',
 };
