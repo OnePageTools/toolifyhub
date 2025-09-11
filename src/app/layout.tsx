@@ -6,9 +6,9 @@ import { Toaster } from '@/components/ui/toaster';
 import { Poppins, Inter } from 'next/font/google';
 
 export const metadata: Metadata = {
-  title: 'All-in-One Free Tools - Your Ultimate Productivity Suite',
+  title: 'Toolbox AI - Free All-in-One Tools for Productivity',
   description:
-    'A collection of 20+ free, fast, and professional online tools including AI-powered utilities for text, images, and more. No sign-up required.',
+    'Your ultimate suite of 20+ free, professional online tools. Featuring AI-powered utilities like PDF converters, image compressors, text summarizers, and a resume builder. No sign-up required, 100% free.',
 };
 
 const poppins = Poppins({
