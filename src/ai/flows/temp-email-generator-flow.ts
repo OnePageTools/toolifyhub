@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI flow for generating temporary email addresses and simulating an inbox.
@@ -54,7 +55,7 @@ const fetchEmailsPrompt = ai.definePrompt({
       - A third could be a notification of some kind (e.g., "New login to your account").
   3.  **Vary Senders and Subjects**: Use different, plausible senders and subject lines.
   4.  **Timestamps**: Generate realistic ISO 8601 timestamps for each email, spread out over the last 5 minutes.
-  5.  **Unique IDs**: Create a unique string ID for each email.
+  5.  **Unique IDs**: Create a unique string ID for each email. It is CRITICAL that every ID is completely unique. Use a combination of a random string and the index to guarantee uniqueness (e.g., "email-0-adj291", "email-1-k293nd").
 
   Respond in the required JSON format.`,
   config: {
