@@ -10,6 +10,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -22,10 +23,14 @@ import {
 import { Loader2, Wand2, Copy, ClipboardCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
-  topic: z.string().min(10, { message: 'Topic must be at least 10 characters.' }),
+  pageTitle: z.string().min(5, { message: 'Page title must be at least 5 characters.' }).max(60, { message: 'Title should be under 60 characters.'}),
+  description: z.string().min(10, { message: 'Description must be at least 10 characters.' }).max(155, { message: 'Description should be under 155 characters.'}),
+  keywords: z.string().optional(),
   url: z.string().url({ message: 'Please enter a valid URL.' }),
+  imageUrl: z.string().url({ message: 'Please enter a valid image URL.' }).optional().or(z.literal('')),
 });
 
 export function MetaTagGeneratorForm() {
@@ -37,8 +42,11 @@ export function MetaTagGeneratorForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      topic: '',
+      pageTitle: '',
+      description: '',
+      keywords: '',
       url: '',
+      imageUrl: '',
     },
   });
 
@@ -82,32 +90,76 @@ export function MetaTagGeneratorForm() {
     <div className="space-y-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
+           <FormField
             control={form.control}
-            name="topic"
+            name="pageTitle"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Page Topic or Description</FormLabel>
+                <FormLabel>Page Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., An online store selling handmade ceramic mugs" {...field} />
+                  <Input placeholder="e.g., Handmade Ceramic Mugs for Sale" {...field} />
                 </FormControl>
+                 <FormDescription>The main title of the page (50-60 characters).</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <FormField
+           <FormField
             control={form.control}
-            name="url"
+            name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Full Page URL</FormLabel>
+                <FormLabel>Short Description</FormLabel>
                 <FormControl>
-                  <Input placeholder="https://example.com/mugs" {...field} />
+                  <Textarea placeholder="e.g., Discover unique, handcrafted ceramic mugs. Perfect for coffee lovers and as a special gift." {...field} />
                 </FormControl>
+                <FormDescription>A compelling summary (120-155 characters).</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
+           <FormField
+            control={form.control}
+            name="keywords"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Keywords / Focus Phrase (Optional)</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g., pottery, handmade mugs, coffee cups" {...field} />
+                </FormControl>
+                <FormDescription>Comma-separated keywords relevant to your page.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="grid md:grid-cols-2 gap-4">
+             <FormField
+                control={form.control}
+                name="url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Page URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com/mugs" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="imageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Social Image URL (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com/image.jpg" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+          </div>
           <Button type="submit" disabled={isLoading} size="lg">
             {isLoading ? (
               <>

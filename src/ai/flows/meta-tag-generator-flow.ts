@@ -1,8 +1,8 @@
 'use server';
 /**
- * @fileOverview An AI flow for generating SEO and social media meta tags.
+ * @fileOverview An AI flow for generating a full suite of SEO-optimized meta tags, including JSON-LD.
  *
- * - generateMetaTags - A function that takes a topic and URL and returns a full set of meta tags.
+ * - generateMetaTags - A function that takes detailed page info and returns a full set of meta tags.
  * - GenerateMetaTagsInput - The input type for the function.
  * - GenerateMetaTagsOutput - The return type for the function.
  */
@@ -11,8 +11,11 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const GenerateMetaTagsInputSchema = z.object({
-  topic: z.string().describe('A description of the webpage content or topic.'),
+  pageTitle: z.string().describe('The main title of the webpage (e.g., "Handmade Ceramic Mugs for Sale").'),
+  description: z.string().describe('A short, 1-2 line description of the webpage content.'),
+  keywords: z.string().optional().describe('A comma-separated list of focus keywords or phrases (e.g., "pottery, handmade mugs, coffee cups").'),
   url: z.string().url().describe('The full, canonical URL of the webpage.'),
+  imageUrl: z.string().url().optional().describe('The full URL for the social media preview image (og:image and twitter:image).'),
 });
 export type GenerateMetaTagsInput = z.infer<typeof GenerateMetaTagsInputSchema>;
 
@@ -30,25 +33,35 @@ const metaTagPrompt = ai.definePrompt({
   name: 'metaTagGeneratorPrompt',
   input: { schema: GenerateMetaTagsInputSchema },
   output: { schema: z.object({ metaTagsHtml: z.string().describe('A single string containing all the generated HTML meta tags, formatted with proper indentation.') }) },
-  prompt: `You are an expert SEO and digital marketing specialist. Your task is to generate a comprehensive and professional set of HTML meta tags for a webpage based on the provided topic and URL.
+  prompt: `You are an expert SEO assistant and professional web meta tag generator. Your job is to create a FULL set of optimized meta tags for the given webpage details, ensuring best practices in SEO, Open Graph (Facebook, LinkedIn), Twitter Cards, and JSON-LD structured data.
 
-**Webpage Details:**
-- **Topic/Description:** {{{topic}}}
-- **URL:** {{{url}}}
+### Webpage Details:
+- **Page Title**: {{{pageTitle}}}
+- **Description**: {{{description}}}
+{{#if keywords}}- **Keywords**: {{{keywords}}}{{/if}}
+- **URL**: {{{url}}}
+- **Image URL**: {{#if imageUrl}}{{{imageUrl}}}{{else}}https://picsum.photos/seed/social/1200/630{{/if}}
 
-**Instructions:**
-1.  **Analyze the Topic**: Understand the core subject and intent of the webpage.
-2.  **Generate a Compelling Title Tag**: Create a concise, SEO-friendly title under 60 characters.
-3.  **Write an Engaging Meta Description**: Write a description under 160 characters that entices users to click.
-4.  **Extract Keywords**: Identify 5-7 relevant keywords.
-5.  **Create Social Media Tags**: Generate a full set of Open Graph (for Facebook, LinkedIn, etc.) and Twitter Card tags. Use the provided URL for 'og:url'. For 'og:image' and 'twitter:image', use a placeholder URL: 'https://picsum.photos/seed/seo/1200/630'.
-6.  **Include Technical Tags**: Add essential tags like 'viewport', 'charset', and a standard 'robots' tag ('index, follow').
-7.  **Format as HTML**: Combine all generated tags into a single block of clean, well-indented HTML code.
+### Your Output MUST include:
+1.  **<title> tag**: 50–60 characters, keyword-rich but natural.
+2.  **<meta name="description">**: 120–155 characters, persuasive, no keyword stuffing.
+3.  **<meta name="keywords">**: Only if keywords were provided in the input.
+4.  **Canonical URL**: <link rel="canonical" href="{{{url}}}">
+5.  **<meta name="robots">**: Default to "index, follow".
+6.  **Open Graph tags**: og:title, og:description, og:url, og:site_name, og:type (website), og:image, og:image:width (1200), og:image:height (630).
+7.  **Twitter Card tags**: card (summary_large_image), title, description, image.
+8.  **JSON-LD schema**: Generate an "Article" schema. Include headline, description, image, author (name: "Site Author"), publisher (name: "Your Site Name", logo: "https://example.com/logo.png"), url, datePublished, and dateModified (use today's date in YYYY-MM-DD format for both).
+9.  **Standard tags**: charset="UTF-8", viewport, theme-color.
 
-The final output must be a single string containing all the HTML code for the meta tags.
-`,
+### Rules:
+-   Strictly adhere to character limits for title and description.
+-   Titles must be engaging and unique.
+-   Descriptions should be compelling and invite clicks.
+-   The final output must be a single, clean, well-indented HTML code block, ready to be pasted into a website's <head> section.
+
+Generate the full HTML code block now.`,
   config: {
-    temperature: 0.5,
+    temperature: 0.4,
   },
 });
 

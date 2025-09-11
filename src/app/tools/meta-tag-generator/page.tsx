@@ -19,10 +19,10 @@ export default function MetaTagGeneratorPage() {
                 <Tag className="w-10 h-10 text-primary" />
              </div>
             <CardTitle className="font-headline text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
-              AI Meta Tag Generator
+              Advanced Meta Tag Generator
             </CardTitle>
             <CardDescription className="text-lg mt-2">
-              Generate a full set of professional SEO and social media meta tags for your website.
+              Generate a full set of professional SEO, Social Media, and JSON-LD meta tags for your website.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6 md:p-8">
@@ -30,7 +30,7 @@ export default function MetaTagGeneratorPage() {
           </CardContent>
         </Card>
       </div>
-      <AIHelper toolName="AI Meta Tag Generator" />
+      <AIHelper toolName="Advanced Meta Tag Generator" />
     </div>
   );
 }
