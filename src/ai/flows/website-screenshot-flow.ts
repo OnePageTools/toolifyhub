@@ -10,6 +10,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import { experimental_generate } from 'genkit/experimental';
 
 const CaptureWebsiteScreenshotInputSchema = z.object({
   url: z.string().url().describe('The full URL of the website to capture.'),
@@ -27,36 +28,67 @@ const CaptureWebsiteScreenshotOutputSchema = z.object({
 });
 export type CaptureWebsiteScreenshotOutput = z.infer<typeof CaptureWebsiteScreenshotOutputSchema>;
 
+const fetchWebsiteContent = ai.defineTool(
+    {
+        name: 'fetchWebsiteContent',
+        description: 'Fetches the HTML content of a given URL.',
+        inputSchema: z.object({ url: z.string().url() }),
+        outputSchema: z.object({ content: z.string() }),
+    },
+    async ({ url }) => {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return { content: await response.text() };
+        } catch (error: any) {
+            console.error('Failed to fetch website content:', error);
+            // Return a string that indicates failure, which the model can interpret.
+            return { content: `Error: Could not fetch content from ${url}. ${error.message}` };
+        }
+    }
+);
+
+
 export async function captureWebsiteScreenshot(
   input: CaptureWebsiteScreenshotInput
 ): Promise<CaptureWebsiteScreenshotOutput> {
-  try {
-    const { media } = await ai.generate({
-      model: 'gemini-1.5-flash',
-      prompt: `You are an expert web page renderer. Your task is to access the given URL and provide a high-quality, full-page screenshot of it.
+    try {
+        const result = await experimental_generate({
+            model: 'gemini-1.5-pro',
+            tools: [fetchWebsiteContent],
+            prompt: `
+                You are an expert web page renderer. Your task is to generate a high-quality screenshot of the given URL.
+                1. Use the 'fetchWebsiteContent' tool to get the HTML of the URL: ${input.url}
+                2. Analyze the HTML content.
+                3. Render the content into a single, high-quality image with a viewport of ${input.width}x${input.height} pixels.
+                Ensure all elements, images referenced via absolute URLs, and styles are loaded correctly. The final output must be only the image of the rendered webpage.
+                If the fetch tool returns an error, your output should be a text description of the error, not an image.
+            `,
+            config: {
+                responseModalities: ['IMAGE', 'TEXT'],
+            },
+        });
 
-URL: ${input.url}
+        const imagePart = result.output?.message.content.find(part => part.media);
 
-Render the page with a viewport of ${input.width}x${input.height} pixels. Ensure all elements, images, and styles are loaded correctly before taking the screenshot. The final output must be only the image of the rendered webpage. If the website is inaccessible or blocks you, you must state that in the error output, not in the image.`,
-      config: {
-        responseModalities: ['IMAGE'],
-      },
-    });
+        if (!imagePart || !imagePart.media?.url) {
+            const textPart = result.output?.message.content.find(part => part.text)?.text;
+            const errorMessage = textPart || 'Image generation failed. The website might be blocking AI access or is temporarily unavailable.';
+            return { error: errorMessage };
+        }
 
-    if (!media?.url) {
-      return { error: 'Image generation failed. The website might be blocking AI access or is temporarily unavailable.' };
+        return { imageDataUri: imagePart.media.url };
+
+    } catch (err: any) {
+        console.error("Error in captureWebsiteScreenshot flow:", err);
+        if (err.message && (err.message.includes('429') || err.message.includes('503'))) {
+            return { error: "The screenshot service is currently experiencing high demand. Please try again in a few moments." };
+        }
+        if (err.message && (err.message.includes('parse') || err.message.includes('URL'))) {
+            return { error: 'The provided URL seems to be invalid or inaccessible. Please check it and try again.' };
+        }
+        return { error: 'An unexpected error occurred while capturing the screenshot. The site may be down or blocking automated access.' };
     }
-    
-    return { imageDataUri: media.url };
-
-  } catch (err: any) {
-    console.error("Error in captureWebsiteScreenshot flow:", err);
-    if (err.message && (err.message.includes('429') || err.message.includes('503'))) {
-      return { error: "The screenshot service is currently experiencing high demand. Please try again in a few moments." };
-    }
-    if (err.message && (err.message.includes('parse') || err.message.includes('URL'))) {
-         return { error: 'The provided URL seems to be invalid or inaccessible. Please check it and try again.' };
-    }
-    return { error: 'An unexpected error occurred while capturing the screenshot. The site may be down or blocking automated access.' };
-  }
 }
