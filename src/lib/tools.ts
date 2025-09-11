@@ -187,7 +187,7 @@ export const tools: Tool[] = [
     href: '/tools/website-screenshot',
     icon: Camera,
     category: 'Utilities',
-    implemented: false,
+    implemented: true,
   },
   {
     name: 'Meta Tag Generator',
@@ -195,7 +195,7 @@ export const tools: Tool[] = [
     href: '/tools/meta-tag-generator',
     icon: Tag,
     category: 'Dev',
-    implemented: false,
+    implemented: true,
   },
   {
     name: 'Temp Email Generator',

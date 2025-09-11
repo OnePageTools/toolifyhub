@@ -13,5 +13,6 @@ import '@/ai/flows/image-to-text-flow.ts';
 import '@/ai/flows/ai-resume-builder-flow.ts';
 import '@/ai/flows/ai-code-minifier-flow.ts';
 import '@/ai/flows/website-screenshot-flow.ts';
+import '@/ai/flows/meta-tag-generator-flow.ts';
 // Note: The flow for background removal is used directly and doesn't need to be started in dev mode.
 // Note: The Word to PDF converter now runs entirely on the client-side.
