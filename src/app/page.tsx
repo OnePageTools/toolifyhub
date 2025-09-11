@@ -44,7 +44,7 @@ export default function Home() {
   const filteredTools = allTools
     .filter((tool) => tool.implemented)
     .filter((tool) =>
-      selectedCategory === "All" ? true : tool.category === selectedCategory
+      selectedCategory === "All" ? true : tool.category === selected
     )
     .filter(
       (tool) =>
@@ -58,7 +58,7 @@ export default function Home() {
       <motion.div
         animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="absolute inset-0 bg-gradient-to-r from-blue-900 via-indigo-800 to-purple-900 bg-[length:300%_300%]"
+        className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-[length:300%_300%]"
       />
 
       <div className="relative z-10 min-h-screen flex flex-col">

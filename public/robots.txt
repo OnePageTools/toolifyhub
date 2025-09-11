@@ -1,8 +1,4 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
-#
-# Allow crawling of all content
+# See https://www.robotstxt.org/robotstxt.html for syntax and directives
 User-agent: *
 Allow: /
-
-# Sitemap File
-Sitemap: https://your-domain.com/sitemap.xml
+Sitemap: https://ToolifyHub.com/sitemap.xml
