@@ -26,7 +26,12 @@ const GenerateMetaTagsOutputSchema = z.object({
 export type GenerateMetaTagsOutput = z.infer<typeof GenerateMetaTagsOutputSchema>;
 
 export async function generateMetaTags(input: GenerateMetaTagsInput): Promise<GenerateMetaTagsOutput> {
-  return generateMetaTagsFlow(input);
+  // Ensure imageUrl is not an empty string before passing to the flow, as an empty string is not a valid URL.
+  const flowInput = { ...input };
+  if (!flowInput.imageUrl) {
+    delete flowInput.imageUrl;
+  }
+  return generateMetaTagsFlow(flowInput);
 }
 
 const metaTagPrompt = ai.definePrompt({
