@@ -30,6 +30,8 @@ const formSchema = z.object({
   description: z.string().min(10, { message: 'Description must be at least 10 characters.' }).max(155, { message: 'Description should be under 155 characters.'}),
   keywords: z.string().optional(),
   url: z.string().url({ message: 'Please enter a valid URL.' }),
+  authorOrBrandName: z.string().min(2, { message: 'Author or Brand Name is required.'}),
+  twitterHandle: z.string().optional(),
   imageUrl: z.string().url({ message: 'Please enter a valid image URL.' }).optional().or(z.literal('')),
 });
 
@@ -46,6 +48,8 @@ export function MetaTagGeneratorForm() {
       description: '',
       keywords: '',
       url: '',
+      authorOrBrandName: '',
+      twitterHandle: '',
       imageUrl: '',
     },
   });
@@ -132,6 +136,34 @@ export function MetaTagGeneratorForm() {
               </FormItem>
             )}
           />
+          <div className="grid md:grid-cols-2 gap-4">
+             <FormField
+                control={form.control}
+                name="authorOrBrandName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Author / Brand Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., My Pottery Studio" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="twitterHandle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Twitter Handle (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., @MyPottery" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+          </div>
           <div className="grid md:grid-cols-2 gap-4">
              <FormField
                 control={form.control}

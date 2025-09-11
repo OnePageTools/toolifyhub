@@ -15,6 +15,8 @@ const GenerateMetaTagsInputSchema = z.object({
   description: z.string().describe('A short, 1-2 line description of the webpage content.'),
   keywords: z.string().optional().describe('A comma-separated list of focus keywords or phrases (e.g., "pottery, handmade mugs, coffee cups").'),
   url: z.string().url().describe('The full, canonical URL of the webpage.'),
+  authorOrBrandName: z.string().describe('The author or brand name for the webpage.'),
+  twitterHandle: z.string().optional().describe('The Twitter handle, including the @ symbol (e.g., @MyBrand).'),
   imageUrl: z.string().url().optional().describe('The full URL for the social media preview image (og:image and twitter:image).'),
 });
 export type GenerateMetaTagsInput = z.infer<typeof GenerateMetaTagsInputSchema>;
@@ -38,33 +40,60 @@ const metaTagPrompt = ai.definePrompt({
   name: 'metaTagGeneratorPrompt',
   input: { schema: GenerateMetaTagsInputSchema },
   output: { schema: z.object({ metaTagsHtml: z.string().describe('A single string containing all the generated HTML meta tags, formatted with proper indentation.') }) },
-  prompt: `You are an expert SEO assistant and professional web meta tag generator. Your job is to create a FULL set of optimized meta tags for the given webpage details, ensuring best practices in SEO, Open Graph (Facebook, LinkedIn), Twitter Cards, and JSON-LD structured data.
+  prompt: `You are a professional SEO and Web Metadata Generator. Your task is to generate a COMPLETE <head> section for the given webpage, fully optimized for SEO, social media previews, and structured data.
 
-### Webpage Details:
-- **Page Title**: {{{pageTitle}}}
-- **Description**: {{{description}}}
-{{#if keywords}}- **Keywords**: {{{keywords}}}{{/if}}
-- **URL**: {{{url}}}
-- **Image URL**: {{#if imageUrl}}{{{imageUrl}}}{{else}}https://picsum.photos/seed/social/1200/630{{/if}}
+### Input Details:
+- Page Title: {{{pageTitle}}}
+- Short Description: {{{description}}}
+{{#if keywords}}- Keywords: {{{keywords}}}{{/if}}
+- Page URL: {{{url}}}
+- Author/Brand Name: {{{authorOrBrandName}}}
+{{#if twitterHandle}}- Twitter Handle: {{{twitterHandle}}}{{/if}}
+- Social Image URL: {{#if imageUrl}}{{{imageUrl}}}{{else}}https://picsum.photos/seed/social/1200/630{{/if}}
 
 ### Your Output MUST include:
-1.  **<title> tag**: 50–60 characters, keyword-rich but natural.
-2.  **<meta name="description">**: 120–155 characters, persuasive, no keyword stuffing.
-3.  **<meta name="keywords">**: Only if keywords were provided in the input.
-4.  **Canonical URL**: <link rel="canonical" href="{{{url}}}">
-5.  **<meta name="robots">**: Default to "index, follow".
-6.  **Open Graph tags**: og:title, og:description, og:url, og:site_name, og:type (website), og:image, og:image:width (1200), og:image:height (630).
-7.  **Twitter Card tags**: card (summary_large_image), title, description, image.
-8.  **JSON-LD schema**: Generate an "Article" schema. Include headline, description, image, author (name: "Site Author"), publisher (name: "Your Site Name", logo: "https://example.com/logo.png"), url, datePublished, and dateModified (use today's date in YYYY-MM-DD format for both).
-9.  **Standard tags**: charset="UTF-8", viewport, theme-color.
+1. Standard HTML Meta Tags:
+   - <title> (50–60 characters, keyword-rich, engaging)
+   - <meta name="description"> (120–155 characters, click-worthy)
+   - <meta name="keywords"> (only if provided)
+   - <meta name="author"> (using the Author/Brand Name)
+   - <link rel="canonical">
+   - <meta name="robots"> (default: index, follow)
+   - <meta name="theme-color"> (use a sensible default like #FFFFFF)
+   - <link rel="icon"> (use a default /favicon.ico)
+
+2. Open Graph Tags (Facebook, LinkedIn):
+   - og:locale (default: en_US)
+   - og:type (assume "article")
+   - og:site_name (using the Author/Brand Name)
+   - og:title
+   - og:description
+   - og:url
+   - og:image + dimensions (1200x630)
+
+3. Twitter Card Tags:
+   - twitter:card (summary_large_image)
+   - twitter:site (from the provided handle, if available)
+   - twitter:creator (from the provided handle, if available)
+   - twitter:title
+   - twitter:description
+   - twitter:image
+
+4. JSON-LD Structured Data (Schema.org):
+   - Use @type "Article".
+   - Include headline, description, image, author, publisher (with logo), url.
+   - Add datePublished and dateModified (use current date in YYYY-MM-DD format).
+   - Add mainEntityOfPage with @type WebPage.
 
 ### Rules:
--   Strictly adhere to character limits for title and description.
--   Titles must be engaging and unique.
--   Descriptions should be compelling and invite clicks.
--   The final output must be a single, clean, well-indented HTML code block, ready to be pasted into a website's <head> section.
+- Ensure <title> and <meta description> never exceed recommended lengths.
+- Always return a clean, indented, ready-to-paste <head> block.
+- Fill missing fields with safe defaults (e.g., publisher logo).
+- Always optimize for both SEO ranking and attractive social media preview.
 
-Generate the full HTML code block now.`,
+### Output Format:
+Return the complete <head> HTML block only. Do not include <html> or <body>.
+`,
   config: {
     temperature: 0.4,
   },
