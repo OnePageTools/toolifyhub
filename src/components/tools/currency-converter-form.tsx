@@ -246,9 +246,9 @@ export function CurrencyConverterForm() {
 
   return (
     <div className="space-y-6">
-      <div className="grid md:grid-cols-[1fr_auto_1fr] items-start gap-4">
+      <div className="flex flex-col md:flex-row items-center gap-4">
         {/* From Section */}
-        <Card className="shadow-inner">
+        <Card className="shadow-inner w-full">
           <CardContent className="p-4 space-y-2">
             <label className="text-sm text-muted-foreground">Amount</label>
             <Input 
@@ -270,14 +270,12 @@ export function CurrencyConverterForm() {
         </Card>
         
         {/* Swap Button */}
-        <div className="flex justify-center items-center h-full">
-            <Button variant="ghost" size="icon" onClick={handleSwap} className="mt-6">
-              <ArrowRightLeft className="h-6 w-6 text-primary" />
-            </Button>
-        </div>
+        <Button variant="ghost" size="icon" onClick={handleSwap} className="rotate-90 md:rotate-0">
+          <ArrowRightLeft className="h-6 w-6 text-primary" />
+        </Button>
         
         {/* To Section */}
-        <Card className="shadow-inner">
+        <Card className="shadow-inner w-full">
           <CardContent className="p-4 space-y-2">
             <label className="text-sm text-muted-foreground">Converted Amount</label>
              <div className="relative">

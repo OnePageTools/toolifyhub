@@ -108,7 +108,7 @@ export default function Home() {
         </header>
 
         {/* Hero */}
-        <div className="px-6 py-8 text-center">
+        <div className="px-4 py-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-extrabold drop-shadow-xl flex items-center justify-center gap-2 text-gray-800 dark:text-white">
             <Sparkles className="text-pink-400 w-6 h-6" />
             Your All-in-One Free Toolkit
@@ -116,7 +116,7 @@ export default function Home() {
         </div>
 
         {/* Search */}
-        <div className="px-6">
+        <div className="px-4 sm:px-6">
           <div className="flex items-center gap-2 backdrop-blur-lg bg-white/30 dark:bg-black/40 rounded-3xl px-4 py-3 shadow-xl border border-white/20 dark:border-white/10">
             <Search className="w-5 h-5 opacity-70 text-gray-700 dark:text-gray-300" />
             <input
@@ -131,7 +131,7 @@ export default function Home() {
         </div>
 
         {/* Category Filters */}
-        <div className="px-6 pt-6">
+        <div className="px-4 pt-6 sm:px-6">
           <div className="flex flex-wrap items-center justify-center gap-2">
             <button
               onClick={() => setSelectedCategory("All")}
@@ -162,17 +162,17 @@ export default function Home() {
         </div>
 
         {/* Tools Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 px-6 py-8 flex-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 px-4 py-8 sm:px-6 flex-1">
           {filteredTools.map((tool: Tool) => (
             <MotionLink
               href={tool.href}
               key={tool.name}
               whileHover={{ scale: 1.06, y: -3 }}
               whileTap={{ scale: 0.97 }}
-              className="rounded-3xl backdrop-blur-xl bg-white/40 dark:bg-black/40 p-5 shadow-xl flex flex-col justify-between cursor-pointer transition-all duration-300 border border-white/20 dark:border-white/10 hover:shadow-2xl hover:bg-white/60 dark:hover:bg-black/60"
+              className="rounded-2xl backdrop-blur-xl bg-white/40 dark:bg-black/40 p-4 shadow-xl flex flex-col justify-between cursor-pointer transition-all duration-300 border border-white/20 dark:border-white/10 hover:shadow-2xl hover:bg-white/60 dark:hover:bg-black/60"
             >
               <div className="flex items-center gap-3">
-                {tool.icon && <tool.icon className="w-7 h-7 text-indigo-500 dark:text-pink-400" />}
+                {tool.icon && <tool.icon className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-500 dark:text-pink-400" />}
                 <div>
                   <h3 className="font-bold text-base drop-shadow-sm text-gray-800 dark:text-white">{tool.name}</h3>
                   <p className="text-xs opacity-75 mt-1 leading-snug text-gray-700 dark:text-gray-300">{tool.description}</p>
@@ -186,7 +186,7 @@ export default function Home() {
         </div>
 
         {/* Banner Ad Placeholder */}
-        <div className="mx-6 mb-4 rounded-2xl bg-black/10 dark:bg-white/10 h-14 flex items-center justify-center border border-white/20">
+        <div className="mx-4 sm:mx-6 mb-4 rounded-2xl bg-black/10 dark:bg-white/10 h-14 flex items-center justify-center border border-white/20">
           <span className="font-medium text-sm text-gray-700 dark:text-gray-300">Banner Ad Placeholder</span>
         </div>
         

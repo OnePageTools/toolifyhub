@@ -226,7 +226,7 @@ const ResumePreview = () => {
     const isFormDataReady = previewData && previewData.experience && previewData.education;
     
     return (
-        <Card className="shadow-lg h-[80vh] flex flex-col">
+        <Card className="shadow-lg h-[50vh] lg:h-[80vh] flex flex-col">
             <CardHeader>
                 <CardTitle>Resume Preview</CardTitle>
                 <div className="flex flex-wrap gap-4 pt-2">

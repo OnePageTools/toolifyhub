@@ -1,3 +1,4 @@
+
 import { AgeCalculatorForm } from '@/components/tools/age-calculator-form';
 import {
   Card,
@@ -18,7 +19,7 @@ export default function AgeCalculatorPage() {
              <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
                 <CalendarClock className="w-10 h-10 text-primary" />
              </div>
-            <CardTitle className="font-headline text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
+            <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
               Age Calculator
             </CardTitle>
             <CardDescription className="text-lg mt-2">

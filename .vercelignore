@@ -1,0 +1,6 @@
+node_modules
+.next
+.firebase
+mysite.zip
+mysite.tar.gz
+.git

@@ -21,7 +21,7 @@ export default function BackgroundRemoverPage() {
              <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
                 <Wand2 className="w-10 h-10 text-primary" />
              </div>
-            <CardTitle className="font-headline text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
+            <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
               AI Background Remover
             </CardTitle>
             <CardDescription className="text-lg mt-2">
