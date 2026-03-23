@@ -1,4 +1,4 @@
-
+import type { Metadata } from 'next';
 import { JsonFormatterForm } from '@/components/tools/json-formatter-form';
 import {
   Card,
@@ -9,6 +9,12 @@ import {
 } from '@/components/ui/card';
 import AIHelper from '@/components/ai-assistant';
 import { Braces } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'JSON Formatter & Validator - Free Online Tool',
+  description: 'Format, validate, and beautify your JSON data with our free online tool. Provides real-time feedback and makes your JSON readable in seconds.',
+  keywords: 'json formatter, json validator, json beautifier, format json, pretty print json',
+};
 
 export default function JsonFormatterPage() {
   return (
@@ -26,7 +32,7 @@ export default function JsonFormatterPage() {
               A professional tool to format, validate, and beautify your JSON data with real-time feedback.
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-0 md:p-2">
+          <CardContent className="p-0 md:p-2 h-[75vh] md:h-auto">
             <JsonFormatterForm />
           </CardContent>
         </Card>

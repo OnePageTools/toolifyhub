@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { ImageToTextForm } from '@/components/tools/image-to-text-form';
 import {
   Card,
@@ -9,6 +10,12 @@ import {
 import AIHelper from '@/components/ai-assistant';
 import { Type } from 'lucide-react';
 
+export const metadata: Metadata = {
+  title: 'Image to Text Converter (OCR) - Free Online Tool',
+  description: 'Extract text from any image with our powerful and free AI-powered OCR tool. Convert pictures to editable text instantly. Accurate and easy to use.',
+  keywords: 'image to text, ocr online, picture to text, extract text from image, image text extractor',
+};
+
 export default function ImageToTextPage() {
   return (
     <div className="container mx-auto py-10 px-4">
@@ -18,8 +25,8 @@ export default function ImageToTextPage() {
              <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
                 <Type className="w-10 h-10 text-primary" />
              </div>
-            <CardTitle className="font-headline text-3xl">Image to Text (OCR)</CardTitle>
-            <CardDescription className="text-lg">
+            <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">Image to Text (OCR)</CardTitle>
+            <CardDescription className="text-lg mt-2">
               Extract text from any image with our AI-powered OCR tool.
             </CardDescription>
           </CardHeader>

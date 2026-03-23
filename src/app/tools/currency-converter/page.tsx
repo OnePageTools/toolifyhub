@@ -1,4 +1,4 @@
-
+import type { Metadata } from 'next';
 import { CurrencyConverterForm } from '@/components/tools/currency-converter-form';
 import {
   Card,
@@ -9,6 +9,12 @@ import {
 } from '@/components/ui/card';
 import AIHelper from '@/components/ai-assistant';
 import { DollarSign } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Currency Converter - Live Exchange Rates for All Currencies',
+  description: 'Get real-time exchange rates and convert all major world currencies with our free online currency converter. Includes a 7-day trend chart. Fast and accurate.',
+  keywords: 'currency converter, exchange rate, money converter, currency exchange, fx rates',
+};
 
 export default function CurrencyConverterPage() {
   return (

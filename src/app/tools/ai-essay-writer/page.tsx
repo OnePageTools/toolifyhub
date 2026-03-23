@@ -1,4 +1,4 @@
-
+import type { Metadata } from 'next';
 import { EssayWriterForm } from '@/components/tools/essay-writer-form';
 import {
   Card,
@@ -9,6 +9,12 @@ import {
 } from '@/components/ui/card';
 import AIHelper from '@/components/ai-assistant';
 import { PenTool } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Free AI Essay Writer & Generator - Professional Essay Writing Tool',
+  description: 'Generate high-quality, structured essays on any topic with our advanced AI essay writer. Get a polished draft, analysis, and improvement suggestions for free.',
+  keywords: 'ai essay writer, essay generator, ai writing assistant, free essay writer, write an essay with ai',
+};
 
 export default function AIEssayWriterPage() {
   return (

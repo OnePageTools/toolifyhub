@@ -1,4 +1,4 @@
-
+import type { Metadata } from 'next';
 import { MetaTagGeneratorForm } from '@/components/tools/meta-tag-generator-form';
 import {
   Card,
@@ -9,6 +9,12 @@ import {
 } from '@/components/ui/card';
 import AIHelper from '@/components/ai-assistant';
 import { Tag } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Advanced Meta Tag Generator - Free SEO & Social Media Tool',
+  description: 'Generate a full suite of professional meta tags for SEO, Open Graph, and Twitter Cards. Includes JSON-LD structured data for better search engine visibility.',
+  keywords: 'meta tag generator, seo meta tags, open graph generator, twitter card generator, json-ld generator',
+};
 
 export default function MetaTagGeneratorPage() {
   return (

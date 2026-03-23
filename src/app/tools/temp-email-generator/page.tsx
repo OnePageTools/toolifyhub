@@ -1,4 +1,4 @@
-
+import type { Metadata } from 'next';
 import { TempEmailGeneratorForm } from '@/components/tools/temp-email-generator-form';
 import {
   Card,
@@ -9,6 +9,12 @@ import {
 } from '@/components/ui/card';
 import AIHelper from '@/components/ai-assistant';
 import { Mail } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Free Temporary Email Generator - Disposable & Anonymous Email',
+  description: 'Instantly create a secure, private, and disposable email address with a simulated real-time inbox. Protect your privacy and avoid spam. Free and no sign-up required.',
+  keywords: 'temp email, temporary email, disposable email, fake email generator, throwaway email',
+};
 
 export default function TempEmailGeneratorPage() {
   return (

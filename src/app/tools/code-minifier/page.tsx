@@ -1,4 +1,4 @@
-
+import type { Metadata } from 'next';
 import { CodeMinifierForm } from '@/components/tools/code-minifier-form';
 import {
   Card,
@@ -9,6 +9,12 @@ import {
 } from '@/components/ui/card';
 import AIHelper from '@/components/ai-assistant';
 import { Code } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Code Minifier Online - Minify JS, CSS, HTML & JSON for Free',
+  description: 'Reduce file size and improve website performance with our free online code minifier. Supports JavaScript, CSS, HTML, and JSON. Fast, secure, and AI-powered.',
+  keywords: 'code minifier, minify javascript, minify css, minify html, minify json, js compressor',
+};
 
 export default function CodeMinifierPage() {
   return (
@@ -26,7 +32,7 @@ export default function CodeMinifierPage() {
               An advanced tool to minify JavaScript, CSS, HTML, and JSON to reduce file size and improve performance.
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-2 md:p-4">
+          <CardContent className="p-2 md:p-4 h-[75vh] md:h-auto">
             <CodeMinifierForm />
           </CardContent>
         </Card>

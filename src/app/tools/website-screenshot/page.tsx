@@ -1,4 +1,4 @@
-
+import type { Metadata } from 'next';
 import { WebsiteScreenshotForm } from '@/components/tools/website-screenshot-form';
 import {
   Card,
@@ -9,6 +9,12 @@ import {
 } from '@/components/ui/card';
 import AIHelper from '@/components/ai-assistant';
 import { Camera } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Free Website Screenshot Generator - Capture High-Quality Screenshots',
+  description: 'Enter any URL to capture a high-quality, full-page screenshot of any website. Our free tool provides screenshots in different resolutions. Fast and easy.',
+  keywords: 'website screenshot, screenshot generator, capture website, webpage screenshot, url to image',
+};
 
 export default function WebsiteScreenshotPage() {
   return (

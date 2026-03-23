@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { PdfToWordForm } from '@/components/tools/pdf-to-word-form';
 import {
   Card,
@@ -9,17 +10,23 @@ import {
 import AIHelper from '@/components/ai-assistant';
 import { FileText } from 'lucide-react';
 
+export const metadata: Metadata = {
+  title: 'Free PDF to Word Converter Online - No Sign Up Required',
+  description: 'Easily convert your PDF files into editable Word documents (.docx) for free. Our AI-powered converter preserves formatting, tables, and text.',
+  keywords: 'pdf to word, pdf to docx, convert pdf to word, free pdf to word converter, pdf to word online',
+};
+
 export default function PdfToWordPage() {
   return (
     <div className="container mx-auto py-10 px-4">
       <div className="max-w-4xl mx-auto">
         <Card>
-          <CardHeader>
+          <CardHeader className="text-center">
              <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
                 <FileText className="w-10 h-10 text-primary" />
              </div>
-            <CardTitle className="font-headline text-center text-3xl">PDF to Word Converter</CardTitle>
-            <CardDescription className="text-center text-lg">
+            <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">PDF to Word Converter</CardTitle>
+            <CardDescription className="text-lg mt-2">
               Upload your PDF and our AI will extract the content into an editable format.
             </CardDescription>
           </CardHeader>

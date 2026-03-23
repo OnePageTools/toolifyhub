@@ -1,4 +1,4 @@
-
+import type { Metadata } from 'next';
 "use client";
 
 import { BackgroundRemoverForm } from '@/components/tools/background-remover-form';
@@ -11,6 +11,12 @@ import {
 } from '@/components/ui/card';
 import AIHelper from '@/components/ai-assistant';
 import { Wand2 } from 'lucide-react';
+
+export const metadata: Metadata = {
+    title: 'Free AI Background Remover - Remove Background from Image Online',
+    description: 'Instantly remove the background from any image for free with our AI-powered tool. Get a transparent background in seconds. No sign-up required.',
+    keywords: 'background remover, remove background from image, free background remover, transparent background, png maker',
+};
 
 export default function BackgroundRemoverPage() {
   return (

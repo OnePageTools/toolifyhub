@@ -1,4 +1,4 @@
-
+import type { Metadata } from 'next';
 import { AgeCalculatorForm } from '@/components/tools/age-calculator-form';
 import {
   Card,
@@ -9,6 +9,12 @@ import {
 } from '@/components/ui/card';
 import AIHelper from '@/components/ai-assistant';
 import { CalendarClock } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Age Calculator - Calculate Your Age in Years, Months, Days',
+  description: 'Instantly calculate your age in years, months, and days with our free online age calculator. Find out fun facts about your life journey.',
+  keywords: 'age calculator, calculate age, date of birth calculator, how old am i, chronological age calculator',
+};
 
 export default function AgeCalculatorPage() {
   return (

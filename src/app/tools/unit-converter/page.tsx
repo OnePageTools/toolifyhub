@@ -1,4 +1,4 @@
-
+import type { Metadata } from 'next';
 import { UnitConverterForm } from '@/components/tools/unit-converter-form';
 import {
   Card,
@@ -9,6 +9,12 @@ import {
 } from '@/components/ui/card';
 import AIHelper from '@/components/ai-assistant';
 import { Ruler } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Unit Converter Online - Free & Instant Conversions',
+  description: 'Instantly convert between various units for length, weight, temperature, volume, speed, time, and more with our free and easy-to-use online unit converter.',
+  keywords: 'unit converter, conversion calculator, convert units, measurement converter, metric converter',
+};
 
 export default function UnitConverterPage() {
   return (
