@@ -177,7 +177,7 @@ export function WordToPdfForm() {
       {/* Hidden div for rendering HTML to be captured by html2canvas */}
       <div 
         ref={previewRef} 
-        className="absolute -z-10 -left-[9999px] top-0 w-[8.5in] p-[1in] bg-white"
+        className="absolute -z-10 -left-[9999px] top-0 w-[8.5in] p-[1in] bg-white text-black"
         aria-hidden="true"
       />
     </>

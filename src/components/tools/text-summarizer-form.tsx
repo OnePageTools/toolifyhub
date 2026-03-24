@@ -8,7 +8,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
@@ -17,7 +16,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useState } from 'react';
 import {
   summarizeContent,
-  type SummarizeContentInput,
   type SummarizeContentOutput,
 } from '@/ai/flows/ai-content-summarization';
 import { Loader2, Zap, RefreshCw, Clipboard, ClipboardCheck, AlignLeft, AlignCenter, List } from 'lucide-react';
@@ -101,7 +99,6 @@ export function TextSummarizerForm() {
             name="text"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Text to Summarize</FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="Paste your long text or article here..."

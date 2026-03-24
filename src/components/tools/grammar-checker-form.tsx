@@ -115,7 +115,6 @@ export function GrammarCheckerForm() {
               name="text"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Your Text</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Enter the text you want to check here..."

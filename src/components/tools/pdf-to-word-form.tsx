@@ -3,9 +3,8 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload, FileText, Wand2, Copy, ClipboardCheck } from 'lucide-react';
+import { Loader2, Upload, Wand2, Copy, ClipboardCheck } from 'lucide-react';
 import { convertPdfToWord, type ConvertPdfToWordOutput } from '@/ai/flows/pdf-to-word-flow';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -142,12 +141,12 @@ export function PdfToWordForm() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 flex flex-col items-center">
        <input id="pdf-upload" type="file" accept="application/pdf" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
        <label
             htmlFor="pdf-upload"
             className={cn(
-                "group relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary",
+                "group relative flex w-full max-w-lg cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary",
                 isDragging && "border-primary bg-primary/10",
             )}
             onDragEnter={onDragEnter}
@@ -181,7 +180,7 @@ export function PdfToWordForm() {
       </div>
       
       {result && result.textContent && (
-        <Card>
+        <Card className="w-full max-w-4xl">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Editable Text Content</CardTitle>
             <Button variant="ghost" size="icon" onClick={handleCopy}>

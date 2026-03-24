@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
@@ -18,7 +17,7 @@ import {
 } from '@/components/ui/select';
 
 export function QrCodeGeneratorForm() {
-  const [value, setValue] = useState('https://toolbox-ai.com');
+  const [value, setValue] = useState('https://ToolifyHub.com');
   const [size, setSize] = useState(256);
   const [level, setLevel] = useState<'L' | 'M' | 'Q' | 'H'>('M');
   const [isShareSupported, setIsShareSupported] = useState(false);
@@ -127,13 +126,13 @@ export function QrCodeGeneratorForm() {
         </div>
       </div>
       <div className="flex items-center justify-center">
-        <Card className="p-6 inline-block bg-white">
+        <Card className="p-6 inline-block bg-white shadow-lg rounded-xl">
           <div ref={qrRef}>
             <QRCode
               value={value}
               size={size}
-              bgColor={resolvedTheme === 'dark' ? '#ffffff' : '#ffffff'}
-              fgColor={resolvedTheme === 'dark' ? '#000000' : '#000000'}
+              bgColor={'#ffffff'}
+              fgColor={'#000000'}
               level={level}
               includeMargin={true}
             />

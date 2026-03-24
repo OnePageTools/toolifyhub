@@ -20,8 +20,8 @@ export default function WordToPdfPage() {
   return (
     <div className="container mx-auto py-10 px-4">
       <div className="max-w-4xl mx-auto">
-        <Card>
-          <CardHeader className="text-center">
+        <Card className="shadow-lg border-primary/20">
+          <CardHeader className="text-center bg-secondary/50 p-8">
              <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
                 <FileDown className="w-10 h-10 text-primary" />
              </div>
@@ -30,7 +30,7 @@ export default function WordToPdfPage() {
               Upload your .docx file and convert it to a high-quality, professional PDF.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6 md:p-8">
             <WordToPdfForm />
           </CardContent>
         </Card>

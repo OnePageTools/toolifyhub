@@ -8,7 +8,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
@@ -124,7 +123,7 @@ export function PlagiarismCheckerForm() {
 
   return (
     <div className="space-y-6">
-      {!result && (
+      {!result ? (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -132,7 +131,6 @@ export function PlagiarismCheckerForm() {
               name="text"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Your Text</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Paste your text here to check for plagiarism. We recommend at least 50 characters for an accurate analysis."
@@ -159,9 +157,7 @@ export function PlagiarismCheckerForm() {
             </Button>
           </form>
         </Form>
-      )}
-
-      {result && (
+      ) : (
         <div className="space-y-6">
             <div className="flex flex-wrap gap-2 justify-end">
                 <Button onClick={handleDownloadPdf} variant="outline">

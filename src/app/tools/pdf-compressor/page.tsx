@@ -20,8 +20,8 @@ export default function PdfCompressorPage() {
   return (
     <div className="container mx-auto py-10 px-4">
       <div className="max-w-4xl mx-auto">
-        <Card>
-          <CardHeader className="text-center">
+        <Card className="shadow-lg border-primary/20">
+          <CardHeader className="text-center bg-secondary/50 p-8">
              <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
                 <FileArchive className="w-10 h-10 text-primary" />
              </div>
@@ -30,7 +30,7 @@ export default function PdfCompressorPage() {
               Reduce the file size of your PDF documents while maintaining the best possible quality.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6 md:p-8">
             <PdfCompressorForm />
           </CardContent>
         </Card>
