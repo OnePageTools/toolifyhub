@@ -1,4 +1,3 @@
-import type { Metadata } from 'next';
 "use client";
 
 import { BackgroundRemoverForm } from '@/components/tools/background-remover-form';
