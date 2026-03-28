@@ -32,8 +32,6 @@
     --border: 220 13% 91%;
     --input: 220 13% 91%;
     --ring: 216 100% 52%;
-
-    --radius: 0.5rem;
   }
 
   .dark {
@@ -76,4 +74,24 @@
   }
 }
 
+@layer utilities {
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    .print-container, .print-container * {
+      visibility: visible;
+    }
+    .print-container {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+  }
+}
     
