@@ -4,7 +4,7 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { createWorker, PSM } from 'tesseract.js';
+import Tesseract from 'tesseract.js';
 import { Loader2, Upload, Type, Copy, ClipboardCheck, Image as ImageIcon, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -72,25 +72,22 @@ export function ImageToTextForm() {
     setProgress(0);
     setStatus('Initializing OCR engine...');
 
-    const worker = await createWorker({
-      logger: m => {
-        if (m.status === 'recognizing text') {
-          setStatus('Recognizing text...');
-          setProgress(Math.round(m.progress * 100));
-        } else {
-            setStatus(m.status.charAt(0).toUpperCase() + m.status.slice(1) + '...');
-            setProgress(0); // Reset for different stages
-        }
-      }
-    });
-
     try {
-      await worker.loadLanguage('eng');
-      await worker.initialize('eng');
-      await worker.setParameters({
-        tessedit_pageseg_mode: PSM.AUTO,
-      });
-      const { data: { text } } = await worker.recognize(selectedFile);
+      const { data: { text } } = await Tesseract.recognize(
+        selectedFile,
+        'eng',
+        {
+          logger: m => {
+            if (m.status === 'recognizing text') {
+              setStatus('Recognizing text...');
+              setProgress(Math.round(m.progress * 100));
+            } else {
+                setStatus(m.status.charAt(0).toUpperCase() + m.status.slice(1) + '...');
+            }
+          }
+        }
+      );
+      
       setExtractedText(text);
       if (!text.trim()) {
          toast({
@@ -112,7 +109,6 @@ export function ImageToTextForm() {
         description: "Failed to extract text. The image might be corrupted or in an unsupported format.",
       });
     } finally {
-      await worker.terminate();
       setIsLoading(false);
       setProgress(100);
       setStatus('Completed.');
