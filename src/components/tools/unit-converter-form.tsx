@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 
-type UnitCategory = 'length' | 'weight' | 'temperature' | 'volume' | 'speed' | 'time';
+type UnitCategory = 'length' | 'weight' | 'temperature' | 'volume' | 'speed' | 'time' | 'area' | 'data';
 
 const conversionFactors: Record<UnitCategory, Record<string, number>> = {
   length: {
@@ -20,17 +20,39 @@ const conversionFactors: Record<UnitCategory, Record<string, number>> = {
     grams: 1, kilograms: 1000, milligrams: 0.001, metric_tons: 1000000,
     pounds: 453.592, ounces: 28.3495,
   },
-  temperature: { celsius: 1, fahrenheit: 1, kelvin: 1 },
+  temperature: { celsius: 1, fahrenheit: 1, kelvin: 1 }, // Special handling
   volume: {
     liters: 1, milliliters: 0.001, cubic_meters: 1000,
     gallons: 3.78541, quarts: 0.946353, pints: 0.473176, cups: 0.24,
   },
   speed: {
-    mps: 1, kph: 3.6, mph: 2.23694, knots: 1.94384,
+    mps: 1, 
+    kph: 1 / 3.6, 
+    mph: 0.44704, 
+    knots: 0.514444,
   },
   time: {
     seconds: 1, minutes: 60, hours: 3600, days: 86400,
-    weeks: 604800, months: 2628000, years: 31536000,
+    weeks: 604800, months: 2629800, // Avg month
+    years: 31557600, // Avg year
+  },
+  area: {
+    square_meters: 1,
+    square_kilometers: 1e6,
+    square_feet: 0.092903,
+    square_yards: 0.836127,
+    square_miles: 2.59e6,
+    acres: 4046.86,
+    hectares: 10000,
+  },
+  data: {
+    bytes: 1,
+    bits: 0.125,
+    kilobytes: 1024,
+    megabytes: 1024 ** 2,
+    gigabytes: 1024 ** 3,
+    terabytes: 1024 ** 4,
+    petabytes: 1024 ** 5,
   }
 };
 
@@ -55,7 +77,25 @@ const unitLabels: Record<UnitCategory, Record<string, string>> = {
   time: {
     seconds: 'Seconds', minutes: 'Minutes', hours: 'Hours', days: 'Days',
     weeks: 'Weeks', months: 'Months', years: 'Years',
-  }
+  },
+  area: {
+    square_meters: 'Square Meters',
+    square_kilometers: 'Square Kilometers',
+    square_feet: 'Square Feet',
+    square_yards: 'Square Yards',
+    square_miles: 'Square Miles',
+    acres: 'Acres',
+    hectares: 'Hectares',
+  },
+  data: {
+    bytes: 'Bytes',
+    bits: 'Bits',
+    kilobytes: 'Kilobytes (KB)',
+    megabytes: 'Megabytes (MB)',
+    gigabytes: 'Gigabytes (GB)',
+    terabytes: 'Terabytes (TB)',
+    petabytes: 'Petabytes (PB)',
+  },
 };
 
 const categories: { value: UnitCategory; label: string }[] = [
@@ -65,6 +105,8 @@ const categories: { value: UnitCategory; label: string }[] = [
     { value: 'volume', label: 'Volume' },
     { value: 'speed', label: 'Speed' },
     { value: 'time', label: 'Time' },
+    { value: 'area', label: 'Area' },
+    { value: 'data', label: 'Data Storage' },
 ];
 
 export function UnitConverterForm() {
@@ -85,7 +127,7 @@ export function UnitConverterForm() {
   }, [category]);
 
   useEffect(() => {
-    const inputNum = parseFloat(inputValue);
+    const inputNum = parseFloat(inputValue.replace(/,/g, ''));
     if (isNaN(inputNum)) {
       setOutputValue('');
       return;
@@ -104,10 +146,10 @@ export function UnitConverterForm() {
     } else {
       const fromFactor = conversionFactors[category][fromUnit];
       const toFactor = conversionFactors[category][toUnit];
-      result = inputNum * (fromFactor / toFactor);
+      result = inputNum * fromFactor / toFactor;
     }
     
-    setOutputValue(result.toLocaleString(undefined, { maximumFractionDigits: 5 }));
+    setOutputValue(result.toLocaleString(undefined, { maximumFractionDigits: 5, useGrouping: false }));
   }, [inputValue, fromUnit, toUnit, category]);
   
   const handleSwap = () => {
