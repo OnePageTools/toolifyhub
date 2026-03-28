@@ -67,41 +67,77 @@ export function WordToPdfForm() {
 
     try {
       // Dynamically import libraries
+      setStatus('Loading conversion engine...');
       const { default: mammoth } = await import('mammoth');
-      const { default: jsPDF } = await import('jspdf');
-      
-      setStatus('Reading file...');
+      const { PDFDocument, rgb, StandardFonts, PageSizes } = await import('pdf-lib');
+
+      setStatus('Reading Word file...');
       const arrayBuffer = await selectedFile.arrayBuffer();
       
-      setStatus('Converting to HTML...');
-      const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
+      setStatus('Extracting text content...');
+      const { value: rawText } = await mammoth.extractRawText({ arrayBuffer });
+      console.log("Extracted text from Mammoth:", rawText);
+
+      if (!rawText.trim()) {
+        throw new Error("Could not extract any text from the document. The file might be empty, password-protected, or in an unsupported format.");
+      }
       
-      if (!html || html.trim() === "") {
-        throw new Error("Mammoth.js could not extract any content from the document. The file might be empty or corrupted.");
+      setStatus('Creating PDF document...');
+      const pdfDoc = await PDFDocument.create();
+      let page = pdfDoc.addPage(PageSizes.A4);
+      const { width, height } = page.getSize();
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      const fontSize = 12;
+      const margin = 50;
+      const usableWidth = width - 2 * margin;
+      const lineHeight = fontSize * 1.2;
+
+      let y = height - margin;
+
+      const lines = rawText.split('\n');
+
+      for (const line of lines) {
+          let words = line.split(' ');
+          let currentLine = '';
+
+          for(const word of words) {
+              const testLine = currentLine ? `${currentLine} ${word}` : word;
+              const textWidth = font.widthOfTextAtSize(testLine, fontSize);
+
+              if (textWidth > usableWidth) {
+                  // The line is too long, draw the current line and start a new one
+                  page.drawText(currentLine, { x: margin, y, font, size: fontSize, color: rgb(0, 0, 0) });
+                  y -= lineHeight;
+                  if (y < margin) {
+                      page = pdfDoc.addPage(PageSizes.A4);
+                      y = height - margin;
+                  }
+                  currentLine = word;
+              } else {
+                  currentLine = testLine;
+              }
+          }
+
+          // Draw the last line of the paragraph
+          page.drawText(currentLine, { x: margin, y, font, size: fontSize, color: rgb(0, 0, 0) });
+          y -= lineHeight;
+          
+          if (y < margin) {
+              page = pdfDoc.addPage(PageSizes.A4);
+              y = height - margin;
+          }
       }
 
-      setStatus('Generating PDF...');
-      const pdf = new jsPDF({
-        orientation: 'p',
-        unit: 'mm',
-        format: 'a4',
-      });
+      setStatus('Saving PDF...');
+      const pdfBytes = await pdfDoc.save();
+      const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(pdfBlob);
       
-      pdf.html(html, {
-          callback: function (doc) {
-            const url = doc.output('bloburl');
-            setPdfUrl(url);
-            setStatus('Conversion complete!');
-            toast({
-                title: "Success!",
-                description: "Your file has been converted and is ready for download.",
-            });
-            setIsLoading(false);
-          },
-          margin: [10, 10, 10, 10],
-          autoPaging: 'slice',
-          width: 190,
-          windowWidth: 700,
+      setPdfUrl(url);
+      setStatus('Conversion complete!');
+      toast({
+          title: "Success!",
+          description: "Your file has been converted to PDF.",
       });
 
     } catch (error: any) {
@@ -110,9 +146,10 @@ export function WordToPdfForm() {
       toast({
         variant: "destructive",
         title: "An error occurred",
-        description: error.message || "Failed to convert the document. It might be corrupted or use unsupported features.",
+        description: error.message || "Failed to convert the document.",
       });
-      setIsLoading(false);
+    } finally {
+        setIsLoading(false);
     }
   };
 
