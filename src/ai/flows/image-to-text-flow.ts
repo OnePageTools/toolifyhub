@@ -69,11 +69,22 @@ const extractTextFromImageFlow = ai.defineFlow(
       return { extractedText };
     } catch (error: any) {
       console.error("Error processing image with AI for OCR:", error);
-      // Provide a more specific error message if possible
-      if (error.message && error.message.includes('media')) {
-         return { error: "Failed to process the image. It might be corrupted or in an unsupported format. Please try again." };
+      
+      const errorMessage = error.message || '';
+
+      if (errorMessage.includes('429') || errorMessage.includes('503') || errorMessage.includes('resource exhausted')) {
+        return { error: "The AI service is currently busy. Please try again in a moment." };
       }
-      return { error: "An unexpected error occurred while extracting text from the image." };
+
+      if (errorMessage.includes('media') || errorMessage.includes('invalid image')) {
+         return { error: "Failed to process the image. It might be corrupted or in an unsupported format. Please try a different image." };
+      }
+
+      if (errorMessage.includes('API key')) {
+        return { error: "The AI service is not configured correctly. Please contact support." };
+      }
+
+      return { error: "An unexpected error occurred while extracting text. Please check the image and try again." };
     }
   }
 );
