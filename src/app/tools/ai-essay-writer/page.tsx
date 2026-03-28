@@ -11,9 +11,9 @@ import AIHelper from '@/components/ai-assistant';
 import { PenTool } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Free AI Essay Writer & Generator - Professional Essay Writing Tool',
-  description: 'Generate high-quality, structured essays on any topic with our advanced AI essay writer. Get a polished draft, analysis, and improvement suggestions for free.',
-  keywords: 'ai essay writer, essay generator, ai writing assistant, free essay writer, write an essay with ai',
+  title: 'Free Essay Writer & Generator - Professional Essay Writing Tool',
+  description: 'Generate a structured essay draft on any topic with our free template-based tool. Get a formatted essay with introduction, body, and conclusion in seconds.',
+  keywords: 'essay writer, essay generator, free essay writer, essay template, writing tool',
 };
 
 export default function AIEssayWriterPage() {
@@ -26,10 +26,10 @@ export default function AIEssayWriterPage() {
                 <PenTool className="w-10 h-10 text-primary" />
              </div>
             <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
-              AI Essay Writer
+              Essay Draft Generator
             </CardTitle>
             <CardDescription className="text-lg mt-2">
-              Generate a high-quality essay on any topic with the help of AI.
+              Instantly generate a structured essay draft from a template.
               Enter your topic and optional instructions to get started.
             </CardDescription>
           </CardHeader>

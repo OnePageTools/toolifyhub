@@ -1,219 +1,173 @@
-
 "use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useState } from 'react';
-import {
-  aiAssistedEssayWriting,
-  type AiAssistedEssayOutput,
-} from '@/ai/flows/ai-assisted-essay-writing';
-import { Bot, Loader2, Sparkles, Lightbulb, Tags, Mic, Palette, Copy, ClipboardCheck, Download } from 'lucide-react';
-import { ScrollArea } from '../ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Copy, ClipboardCheck, Download, Wand2, RefreshCw } from 'lucide-react';
+import { ScrollArea } from '../ui/scroll-area';
+import { Loader2 } from 'lucide-react';
 
-const formSchema = z.object({
-  topic: z.string().min(5, { message: 'Topic must be at least 5 characters.' }),
-  instructions: z.string().optional(),
-});
+type EssayResult = {
+  title: string;
+  content: string;
+  wordCount: number;
+};
+
+// Basic list of English stop words
+const stopWords = new Set([
+    'a', 'an', 'the', 'in', 'on', 'at', 'for', 'to', 'of', 'and', 'or', 'but', 'is', 'are', 'was', 'were',
+    'it', 'this', 'that', 'its', 'with', 'by', 'from', 'as', 'about', 'into', 'over', 'after', 'beneath',
+    'under', 'above', 'through', 'out', 'up', 'down', 'with', 'without'
+]);
+
 
 export function EssayWriterForm() {
-  const [result, setResult] = useState<AiAssistedEssayOutput | null>(null);
+  const [topic, setTopic] = useState('');
+  const [instructions, setInstructions] = useState('');
+  const [result, setResult] = useState<EssayResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      topic: '',
-      instructions: '',
-    },
-  });
+  const getKeywords = (text: string): string[] => {
+      if (!text) return ['your topic', 'this subject', 'this area'];
+      const words = text.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/);
+      const keywords = words.filter(word => word && !stopWords.has(word));
+      return keywords.length ? keywords : ['your topic'];
+  };
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    setError(null);
-    setResult(null);
-    try {
-      const essay = await aiAssistedEssayWriting(values);
-      if (essay.error) {
-          setError(essay.error);
-           toast({
-            variant: "destructive",
-            title: "Error",
-            description: essay.error,
-          });
-      } else {
-        setResult(essay);
-      }
-    } catch (e) {
-      const genericError = 'An unexpected error occurred. Please try again.';
-      setError(genericError);
-       toast({
-        variant: "destructive",
-        title: "Error",
-        description: genericError,
+  const generateTemplateEssay = (topicStr: string, instrStr: string): EssayResult => {
+    const keywords = getKeywords(topicStr);
+    const primaryKeyword = keywords[0] || 'the main issue';
+    const secondaryKeyword = keywords[1] || 'a related concept';
+    const tertiaryKeyword = keywords[2] || 'another key aspect';
+
+    const title = `An Analysis of ${topicStr}`;
+
+    const intro = `The subject of ${topicStr} has emerged as a significant point of discussion in contemporary times. This essay aims to explore the multifaceted nature of ${primaryKeyword}, examining its fundamental characteristics, its wider implications, and its potential future trajectory. A clear understanding of ${topicStr} is essential as it influences various facets of modern life.`;
+
+    const body1 = `To begin, a core element of ${topicStr} is its intricate relationship with ${secondaryKeyword}. Many observers concur that ${primaryKeyword} directly impacts ${secondaryKeyword} in a multitude of ways. For example, historical data suggests that when ${topicStr} is properly addressed, there is often a corresponding improvement in related fields. This underscores the necessity of a proactive and well-considered approach to ${primaryKeyword}.`;
+    
+    const body2 = `Furthermore, the ramifications of ${topicStr} extend beyond its immediate sphere of influence. The societal impact, especially concerning ${tertiaryKeyword}, cannot be understated. The methodology used to approach ${topicStr} may establish a model for handling future challenges in analogous domains. Consequently, a comprehensive and adaptable strategy is required to navigate the evolution of ${primaryKeyword} and its connection with ${secondaryKeyword}.`;
+
+    const body3 = `In addition, adopting a long-term perspective is crucial when analyzing ${topicStr}. The future of ${primaryKeyword} will likely be molded by continuous innovation, public discourse, and policy adjustments. Ongoing debates surrounding ${topicStr} frequently bring to light the conflict between pioneering new methods and maintaining established norms. It is apparent that ${tertiaryKeyword} will remain a central theme in these important conversations.`;
+
+    const conclusion = `In conclusion, ${topicStr} represents a complex and influential field of study. Having considered its primary components, such as its connection with ${primaryKeyword} and ${secondaryKeyword}, and its broader societal ramifications, it is clear that a thoughtful and informed strategy is indispensable. The future development of ${topicStr} will ultimately hinge on our collective capacity to address its challenges while capitalizing on its potential for positive change.`;
+    
+    const content = `## Introduction\n\n${intro}\n\n## Body Paragraph 1\n\n${body1}\n\n## Body Paragraph 2\n\n${body2}\n\n## Body Paragraph 3\n\n${body3}\n\n## Conclusion\n\n${conclusion}`;
+    const wordCount = content.split(/\s+/).length;
+
+    return { title, content, wordCount };
+  };
+
+  const handleGenerate = () => {
+    if (topic.trim().length < 3) {
+      toast({
+        variant: 'destructive',
+        title: 'Topic is too short',
+        description: 'Please enter a more descriptive topic.',
       });
-    } finally {
-      setIsLoading(false);
+      return;
     }
-  }
-  
+
+    setIsLoading(true);
+    setResult(null);
+
+    setTimeout(() => {
+      const essay = generateTemplateEssay(topic, instructions);
+      setResult(essay);
+      setIsLoading(false);
+      toast({
+        title: 'Essay Generated!',
+        description: 'Your essay draft is ready.',
+      });
+    }, 500); // Simulate processing time for better UX
+  };
+
   const handleCopy = () => {
-    if (!result?.essayMarkdown) return;
-    navigator.clipboard.writeText(result.essayMarkdown).then(() => {
-        setIsCopied(true);
-        setTimeout(() => setIsCopied(false), 2000);
-        toast({ title: "Copied!", description: "Essay content copied to clipboard."});
+    if (!result) return;
+    const fullText = `# ${result.title}\n\n${result.content}`;
+    navigator.clipboard.writeText(fullText).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+      toast({ title: 'Copied!', description: 'Essay content copied to clipboard.' });
     }).catch(err => {
-        toast({ variant: "destructive", title: "Copy Failed", description: "Could not copy text."});
-    })
-  }
-  
+      toast({ variant: 'destructive', title: 'Copy Failed', description: 'Could not copy text.' });
+    });
+  };
+
   const handleDownload = () => {
-      if (!result?.essayMarkdown) return;
-      const blob = new Blob([result.essayMarkdown], { type: 'text/markdown;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'ai-generated-essay.md';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-  }
+    if (!result) return;
+    const fullText = `# ${result.title}\n\n${result.content}`;
+    const blob = new Blob([fullText], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${topic.replace(/\s+/g, '_')}_essay.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
+   const handleReset = () => {
+    setTopic('');
+    setInstructions('');
+    setResult(null);
+    setIsCopied(false);
+  };
 
   return (
     <div className="space-y-6">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="topic"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Essay Topic</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g., The Impact of AI on Society" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="instructions"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Optional Instructions</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="e.g., Focus on positive impacts, 500 words, include a conclusion."
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Sparkles className="mr-2 h-4 w-4" />
-                Generate Essay
-              </>
-            )}
+      {!result ? (
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="topic">Essay Topic</Label>
+            <Input id="topic" placeholder="e.g., The Impact of Renewable Energy" value={topic} onChange={e => setTopic(e.target.value)} />
+          </div>
+          <div>
+            <Label htmlFor="instructions">Optional Instructions</Label>
+            <Textarea id="instructions" placeholder="e.g., Focus on positive impacts, mention solar and wind power." value={instructions} onChange={e => setInstructions(e.target.value)} />
+          </div>
+          <Button onClick={handleGenerate} disabled={isLoading} size="lg">
+            {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</>
+              : <><Wand2 className="mr-2 h-4 w-4" /> Generate Essay</>}
           </Button>
-        </form>
-      </Form>
-      
-      {isLoading && (
-        <div className="flex flex-col items-center justify-center gap-4 p-8 min-h-[40vh]">
-          <Loader2 className="h-12 w-12 animate-spin text-primary" />
-          <p className="text-lg text-muted-foreground">Our AI is writing your essay...</p>
         </div>
-      )}
-
-      {result && result.essayMarkdown && result.analysis && (
-        <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-                <Card className="shadow-md">
-                  <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle className="flex items-center gap-2">
-                      <Bot />
-                      Generated Document
-                    </CardTitle>
-                     <div className="flex gap-2">
-                        <Button variant="ghost" size="icon" onClick={handleCopy}>
-                            {isCopied ? <ClipboardCheck className="text-green-500" /> : <Copy />}
-                        </Button>
-                         <Button variant="ghost" size="icon" onClick={handleDownload}>
-                            <Download />
-                        </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <ScrollArea className="h-[70vh] rounded-md border p-4 bg-secondary/30">
-                      <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: result.essayMarkdown.replace(/\\n/g, '<br />') }} />
-                    </ScrollArea>
-                  </CardContent>
-                </Card>
-            </div>
-             <div className="lg:col-span-1 space-y-6">
-                <Card className="shadow-md">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-xl"><Lightbulb /> AI Analysis & Toolkit</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div>
-                            <h4 className="font-semibold text-md mb-3 flex items-center gap-2 text-primary"><Tags/> Keywords</h4>
-                            <div className="flex flex-wrap gap-2">
-                                {result.analysis.keywords.map((s, i) => <Badge variant="secondary" key={i} className="text-sm">{s}</Badge>)}
-                            </div>
-                        </div>
-                        <Separator/>
-                         <div>
-                            <h4 className="font-semibold text-md mb-3 flex items-center gap-2 text-primary"><Palette/> Alternative Tones</h4>
-                            <div className="flex flex-wrap gap-2">
-                               {result.analysis.alternativeTones.map((s, i) => <Badge variant="outline" key={i} className="text-sm">{s}</Badge>)}
-                            </div>
-                        </div>
-                        <Separator/>
-                         <div>
-                            <h4 className="font-semibold text-md mb-3 flex items-center gap-2 text-primary"><Mic/> Policymaker Pitch</h4>
-                            <p className="text-sm text-muted-foreground italic p-3 bg-secondary/50 rounded-md">"{result.analysis.policymakerPitch}"</p>
-                        </div>
-                    </CardContent>
-                </Card>
-             </div>
-         </div>
-      )}
-       {error && !isLoading && (
-        <p className="text-sm text-center text-destructive">{error}</p>
+      ) : (
+        <div className="space-y-4">
+          <Card>
+            <CardHeader className="flex-row items-center justify-between">
+              <div>
+                <CardTitle>Generated Essay</CardTitle>
+                <CardDescription>Word Count: {result.wordCount}</CardDescription>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={handleCopy}>
+                  {isCopied ? <ClipboardCheck /> : <Copy />} Copy
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleDownload}>
+                  <Download /> Download (.txt)
+                </Button>
+                 <Button variant="default" size="sm" onClick={handleReset}>
+                  <RefreshCw /> Start Over
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[60vh] rounded-md border p-4 bg-secondary/30">
+                <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
+                    <h1>{result.title}</h1>
+                    <div dangerouslySetInnerHTML={{ __html: result.content.replace(/## (.*?)\n/g, '<h2>$1</h2>').replace(/\n/g, '<br/>') }} />
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );
 }
-
-  
