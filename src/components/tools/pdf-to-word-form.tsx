@@ -7,9 +7,11 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Upload, Wand2, FileCheck, CheckCircle, FileDown, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
-import { Document, Packer, Paragraph, TextRun } from 'docx';
-import { saveAs } from 'file-saver';
-import * as pdfjsLib from 'pdfjs-dist';
+
+// These will be dynamically imported
+import type { Document, Packer, Paragraph, TextRun } from 'docx';
+import type { saveAs } from 'file-saver';
+import type * as pdfjsLib from 'pdfjs-dist';
 
 export function PdfToWordForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -23,8 +25,11 @@ export function PdfToWordForm() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Set up the worker source for pdf.js on the client side
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+    // Dynamically set workerSrc to avoid SSR issues
+    (async () => {
+      const pdfjs = await import('pdfjs-dist');
+      pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+    })();
   }, []);
 
   const handleFileSelect = (file: File | undefined) => {
@@ -69,39 +74,41 @@ export function PdfToWordForm() {
     setProgress(0);
 
     try {
+      setStatusText('Loading conversion engine...');
+      const { Document, Packer, Paragraph, TextRun } = await import('docx');
+      const pdfjsLib = await import('pdfjs-dist');
+      
       setStatusText('Reading PDF file...');
       const arrayBuffer = await selectedFile.arrayBuffer();
       const loadingTask = pdfjsLib.getDocument(arrayBuffer);
       const pdf = await loadingTask.promise;
       
-      const paragraphs: Paragraph[] = [];
       const numPages = pdf.numPages;
+      const paragraphs: InstanceType<typeof Paragraph>[] = [];
+      let allExtractedTextForLog = '';
 
       for (let i = 1; i <= numPages; i++) {
         setStatusText(`Processing page ${i} of ${numPages}...`);
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
         
-        let lastY: number | null = null;
-        let pageText = '';
-        
-        textContent.items.forEach((item: any) => {
-           if (lastY !== null && item.transform[5] < lastY) {
-               pageText += '\n'; // New paragraph
-           }
-           pageText += item.str + ' ';
-           lastY = item.transform[5];
-        });
-        
-        pageText.split('\n').forEach(line => {
-            if(line.trim()) {
-                paragraphs.push(new Paragraph({
-                    children: [new TextRun(line.trim())],
-                }));
-            }
-        });
+        const pageText = textContent.items.map((item: any) => item.str).join(' ');
+
+        if (pageText.trim()) {
+          paragraphs.push(new Paragraph({ children: [new TextRun(pageText)] }));
+          allExtractedTextForLog += pageText + '\n\n';
+        }
 
         setProgress(((i / numPages) * 100));
+      }
+      
+      // As requested for debugging: log the full extracted text.
+      console.log("--- Extracted Text from PDF.js ---");
+      console.log(allExtractedTextForLog);
+      console.log("------------------------------------");
+
+      if (paragraphs.length === 0) {
+          throw new Error("Could not extract any text from the document. The file might be image-based, password-protected, or empty.");
       }
 
       setStatusText('Creating .docx file...');
@@ -118,21 +125,22 @@ export function PdfToWordForm() {
       toast({ title: "Success!", description: "Your PDF has been converted to a Word document." });
 
     } catch (error: any) {
-      console.error(error);
+      console.error("PDF to Word Conversion Error:", error);
+      setStatusText('Conversion failed.');
       toast({
         variant: "destructive",
         title: "An error occurred",
-        description: "Failed to convert PDF. The file might be corrupted or in an unsupported format.",
+        description: error.message || "Failed to convert PDF. The file might be corrupted or in an unsupported format.",
       });
-      setStatusText('Conversion failed.');
       setProgress(0);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!docxBlob || !selectedFile) return;
+    const { saveAs } = await import('file-saver');
     const docxName = selectedFile.name.replace(/\.pdf$/i, '.docx');
     saveAs(docxBlob, docxName);
   };
