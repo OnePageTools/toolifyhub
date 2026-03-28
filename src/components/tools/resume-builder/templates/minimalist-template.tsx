@@ -44,6 +44,7 @@ const createStyles = (theme: ColorTheme) => StyleSheet.create({
     justifyContent: 'center',
     marginTop: 5,
     fontSize: 9,
+    flexWrap: 'wrap',
   },
   contactItem: {
     marginHorizontal: 8,
@@ -101,30 +102,28 @@ export const MinimalistTemplate = ({ data, theme }: TemplateProps) => {
         <View style={styles.header}>
             <Text style={styles.name}>{data.fullName}</Text>
             <View style={styles.contactInfo}>
-                <Text style={styles.contactItem}>{data.email}</Text>
-                <Text style={styles.contactItem}> | </Text>
-                <Text style={styles.contactItem}>{data.phone}</Text>
-                 <Text style={styles.contactItem}> | </Text>
-                <Text style={styles.contactItem}>{data.address}</Text>
-                 {data.linkedin && <><Text style={styles.contactItem}> | </Text><Link style={styles.contactItem} src={data.linkedin}>LinkedIn</Link></>}
+                {data.email && <Text style={styles.contactItem}>{data.email}</Text>}
+                {data.phone && <><Text style={styles.contactItem}> | </Text><Text style={styles.contactItem}>{data.phone}</Text></>}
+                {data.address && <><Text style={styles.contactItem}> | </Text><Text style={styles.contactItem}>{data.address}</Text></>}
+                {data.linkedin && <><Text style={styles.contactItem}> | </Text><Link style={styles.contactItem} src={data.linkedin}>LinkedIn</Link></>}
             </View>
         </View>
         
-        <View style={styles.section}>
+        {data.summary && <View style={styles.section}>
           <Text style={styles.sectionTitle}>Summary</Text>
           <Text style={styles.text}>{data.summary}</Text>
-        </View>
+        </View>}
 
-        <View style={styles.section}>
+        {data.skills && data.skills.length > 0 && <View style={styles.section}>
             <Text style={styles.sectionTitle}>Skills</Text>
             <View style={styles.skillsContainer}>
                 {data.skills?.map((skill, index) => (
                     <Text key={index} style={styles.skill}>{skill}</Text>
                 ))}
             </View>
-        </View>
+        </View>}
         
-        <View style={styles.section}>
+        {data.experience && data.experience.length > 0 && <View style={styles.section}>
           <Text style={styles.sectionTitle}>Experience</Text>
           {data.experience?.map((exp, index) => (
             <View key={index} style={{ marginBottom: 15 }}>
@@ -137,9 +136,9 @@ export const MinimalistTemplate = ({ data, theme }: TemplateProps) => {
               ))}
             </View>
           ))}
-        </View>
+        </View>}
 
-        <View style={styles.section}>
+        {data.education && data.education.length > 0 && <View style={styles.section}>
           <Text style={styles.sectionTitle}>Education</Text>
           {data.education?.map((edu, index) => (
             <View key={index} style={{ marginBottom: 10 }}>
@@ -149,9 +148,9 @@ export const MinimalistTemplate = ({ data, theme }: TemplateProps) => {
               </View>
             </View>
           ))}
-        </View>
+        </View>}
 
-         {data.projects && data.projects.length > 0 && data.projects[0]?.name && (
+         {data.projects && data.projects.length > 0 && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Projects</Text>
               {data.projects.map((proj, index) => (

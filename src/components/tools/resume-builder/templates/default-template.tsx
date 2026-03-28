@@ -98,20 +98,22 @@ export const DefaultTemplate = ({ data, theme }: TemplateProps) => {
         <View style={styles.leftColumn}>
           {data.profilePicture && <Image style={styles.profileImage} src={data.profilePicture} />}
           <Text style={styles.sectionTitle}>Contact</Text>
-          <Text style={styles.contactItem}>{data.email}</Text>
-          <Text style={styles.contactItem}>{data.phone}</Text>
-          <Text style={styles.contactItem}>{data.address}</Text>
+          {data.email && <Text style={styles.contactItem}>{data.email}</Text>}
+          {data.phone && <Text style={styles.contactItem}>{data.phone}</Text>}
+          {data.address && <Text style={styles.contactItem}>{data.address}</Text>}
           {data.linkedin && <Text style={styles.contactItem}>{data.linkedin}</Text>}
           {data.portfolio && <Text style={styles.contactItem}>{data.portfolio}</Text>}
           
-          <View style={{ marginTop: 20 }}>
-            <Text style={styles.sectionTitle}>Skills</Text>
-            {data.skills?.map((skill, index) => (
-              <Text key={index} style={styles.skill}>- {skill}</Text>
-            ))}
-          </View>
+          {data.skills && data.skills.length > 0 && (
+            <View style={{ marginTop: 20 }}>
+              <Text style={styles.sectionTitle}>Skills</Text>
+              {data.skills?.map((skill, index) => (
+                <Text key={index} style={styles.skill}>- {skill}</Text>
+              ))}
+            </View>
+          )}
 
-           {data.languages && data.languages.length > 0 && data.languages[0] && (
+           {data.languages && data.languages.length > 0 && (
             <View style={{ marginTop: 20 }}>
               <Text style={styles.sectionTitle}>Languages</Text>
               {data.languages.map((lang, index) => (
@@ -126,29 +128,35 @@ export const DefaultTemplate = ({ data, theme }: TemplateProps) => {
           <Text style={styles.name}>{data.fullName}</Text>
           {data.experience?.[0]?.jobTitle && <Text style={styles.title}>{data.experience[0].jobTitle}</Text>}
           
-          <Text style={styles.sectionTitle}>Summary</Text>
-          <Text style={styles.text}>{data.summary}</Text>
+          {data.summary && <>
+            <Text style={styles.sectionTitle}>Summary</Text>
+            <Text style={styles.text}>{data.summary}</Text>
+          </>}
           
-          <Text style={styles.sectionTitle}>Experience</Text>
-          {data.experience?.map((exp, index) => (
-            <View key={index} style={{ marginBottom: 15 }}>
-              <Text style={styles.subheading}>{exp.jobTitle}</Text>
-              <Text style={styles.text}>{exp.company} | {exp.location} | {exp.startDate} - {exp.endDate}</Text>
-              {exp.responsibilities?.map((resp, i) => (
-                <Text key={i} style={styles.listItem}>• {resp}</Text>
-              ))}
-            </View>
-          ))}
+          {data.experience && data.experience.length > 0 && <>
+            <Text style={styles.sectionTitle}>Experience</Text>
+            {data.experience?.map((exp, index) => (
+              <View key={index} style={{ marginBottom: 15 }}>
+                <Text style={styles.subheading}>{exp.jobTitle}</Text>
+                <Text style={styles.text}>{exp.company} | {exp.location} | {exp.startDate} - {exp.endDate}</Text>
+                {exp.responsibilities?.map((resp, i) => (
+                  <Text key={i} style={styles.listItem}>• {resp}</Text>
+                ))}
+              </View>
+            ))}
+          </>}
 
-          <Text style={styles.sectionTitle}>Education</Text>
-          {data.education?.map((edu, index) => (
-            <View key={index} style={{ marginBottom: 10 }}>
-              <Text style={styles.subheading}>{edu.degree}</Text>
-              <Text style={styles.text}>{edu.school} | {edu.location} | {edu.gradDate}</Text>
-            </View>
-          ))}
+          {data.education && data.education.length > 0 && <>
+            <Text style={styles.sectionTitle}>Education</Text>
+            {data.education?.map((edu, index) => (
+              <View key={index} style={{ marginBottom: 10 }}>
+                <Text style={styles.subheading}>{edu.degree}</Text>
+                <Text style={styles.text}>{edu.school} | {edu.location} | {edu.gradDate}</Text>
+              </View>
+            ))}
+          </>}
 
-          {data.projects && data.projects.length > 0 && data.projects[0]?.name && (
+          {data.projects && data.projects.length > 0 && (
             <>
               <Text style={styles.sectionTitle}>Projects</Text>
               {data.projects.map((proj, index) => (
@@ -160,7 +168,7 @@ export const DefaultTemplate = ({ data, theme }: TemplateProps) => {
             </>
           )}
 
-           {data.certifications && data.certifications.length > 0 && data.certifications[0] && (
+           {data.certifications && data.certifications.length > 0 && (
             <>
               <Text style={styles.sectionTitle}>Certifications</Text>
               {data.certifications.map((cert, index) => (

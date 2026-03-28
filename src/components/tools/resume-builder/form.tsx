@@ -34,8 +34,7 @@ import {
 } from 'lucide-react';
 import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
 
-import { buildResume } from '@/ai/flows/ai-resume-builder-flow';
-import type { ResumeData, ResumeOutput } from '@/lib/schema/resume-schema';
+import type { ResumeData } from '@/lib/schema/resume-schema';
 import { resumeFormSchema } from '@/lib/schema/resume-schema';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -67,18 +66,17 @@ const colorThemes = {
 
 export function ResumeBuilderForm() {
   const [currentStep, setCurrentStep] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<ResumeOutput | null>(null);
-  const { toast } = useToast();
-
+  const [isGenerating, setIsGenerating] = useState(false);
+  
   const methods = useForm<ResumeData>({
     resolver: zodResolver(resumeFormSchema),
     defaultValues: {
-      fullName: '', email: '', phone: '', address: '', linkedin: '', portfolio: '', summary: '',
+      fullName: 'Your Name', email: 'your.email@example.com', phone: '123-456-7890', address: 'Your City, State',
       profilePicture: null,
-      experience: [{ jobTitle: '', company: '', location: '', startDate: '', endDate: '', responsibilities: [''] }],
-      education: [{ degree: '', school: '', location: '', gradDate: '' }],
-      skills: [''],
+      summary: 'A brief professional summary about your skills, experience, and career goals. Aim for 2-3 impactful sentences.',
+      experience: [{ jobTitle: 'Software Engineer', company: 'Tech Solutions Inc.', location: 'San Francisco, CA', startDate: 'Jan 2020', endDate: 'Present', responsibilities: ['Developed and maintained web applications.', 'Collaborated with cross-functional teams.'] }],
+      education: [{ degree: 'B.S. in Computer Science', school: 'State University', location: 'Anytown, USA', gradDate: 'May 2020' }],
+      skills: ['JavaScript', 'React', 'Node.js', 'Teamwork'],
       projects: [], certifications: [], languages: [],
     },
   });
@@ -91,40 +89,11 @@ export function ResumeBuilderForm() {
     if (!output) return;
     if (currentStep < steps.length - 1) {
        setCurrentStep(currentStep + 1);
-    } else {
-       await handleSubmit(onSubmit)();
     }
   };
 
   const prevStep = () => {
     if (currentStep > 0) setCurrentStep(currentStep - 1);
-  };
-  
-  const onSubmit = async (data: ResumeData) => {
-    setIsLoading(true);
-    setResult(null);
-    try {
-      const response = await buildResume(data);
-       if (response.error) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: response.error,
-        });
-        setResult(null);
-      } else {
-        setResult(response);
-      }
-    } catch (error: any) {
-       console.error("Error building resume:", error);
-        toast({
-            variant: 'destructive',
-            title: 'An unexpected error occurred',
-            description: 'Please try again.',
-        });
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (
@@ -132,8 +101,8 @@ export function ResumeBuilderForm() {
       <div className="grid lg:grid-cols-2 gap-8">
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="font-headline text-3xl">AI Resume Builder</CardTitle>
-            <CardDescription>Create a professional resume in minutes with AI assistance.</CardDescription>
+            <CardTitle className="font-headline text-3xl">Live Resume Builder</CardTitle>
+            <CardDescription>Create and preview your professional resume in real-time.</CardDescription>
           </CardHeader>
           <CardContent>
             {/* Stepper */}
@@ -149,43 +118,25 @@ export function ResumeBuilderForm() {
               ))}
             </div>
 
-            <form className="mt-8" onSubmit={handleSubmit(onSubmit)}>
-              <AnimatePresence mode="wait">
-                <motion.div key={currentStep} initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }} transition={{ duration: 0.3 }}>
-                  {currentStep === 0 && <PersonalDetailsForm />}
-                  {currentStep === 1 && <SummaryForm />}
-                  {currentStep === 2 && <ExperienceForm />}
-                  {currentStep === 3 && <EducationForm />}
-                  {currentStep === 4 && <SkillsForm />}
-                  {currentStep === 5 && <OptionalSectionsForm />}
-                </motion.div>
-              </AnimatePresence>
-            </form>
+            <AnimatePresence mode="wait">
+              <motion.div key={currentStep} initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }} transition={{ duration: 0.3 }}>
+                {currentStep === 0 && <PersonalDetailsForm />}
+                {currentStep === 1 && <SummaryForm />}
+                {currentStep === 2 && <ExperienceForm />}
+                {currentStep === 3 && <EducationForm />}
+                {currentStep === 4 && <SkillsForm />}
+                {currentStep === 5 && <OptionalSectionsForm />}
+              </motion.div>
+            </AnimatePresence>
 
             <div className="mt-8 pt-5 border-t">
               <div className="flex justify-between">
                 <Button type="button" variant="outline" onClick={prevStep} disabled={currentStep === 0}><ChevronLeft /> Back</Button>
-                <Button type="button" onClick={nextStep} disabled={isLoading}>
-                    {isLoading ? <Loader2 className="animate-spin" /> : (currentStep === steps.length - 1 ? 'Generate with AI' : 'Next Step')} 
-                    { !isLoading && currentStep < steps.length - 1 && <ArrowRight />}
-                </Button>
+                {currentStep < steps.length - 1 && 
+                    <Button type="button" onClick={nextStep}><ArrowRight /> Next Step</Button>
+                }
               </div>
             </div>
-             {result && result.suggestions && (
-                <Card className="mt-6">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Lightbulb /> AI Suggestions</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <ul className="space-y-3 list-disc pl-5 text-sm">
-                            {result.suggestions.map((s, i) => <li key={i}>{s}</li>)}
-                        </ul>
-                         <Button onClick={() => handleSubmit(onSubmit)()} disabled={isLoading} className="mt-4">
-                            {isLoading ? <Loader2 className="animate-spin" /> : <Wand2 />} Regenerate
-                        </Button>
-                    </CardContent>
-                </Card>
-            )}
           </CardContent>
         </Card>
         
@@ -208,12 +159,14 @@ const ResumePreview = () => {
         setIsClient(true);
     }, []);
 
-    const { getValues, trigger } = useFormContext<ResumeData>();
+    const { getValues, trigger, formState: { isValid, isDirty } } = useFormContext<ResumeData>();
+    const formData = useWatch();
 
     const handleGeneratePreview = async () => {
       setIsGenerating(true);
-      const isValid = await trigger();
-      if (isValid) {
+      // Trigger validation for all fields
+      const isValidForm = await trigger(); 
+      if (isValidForm) {
         setPreviewData(getValues());
       } else {
         setPreviewData(null);
@@ -221,15 +174,24 @@ const ResumePreview = () => {
       setIsGenerating(false);
     }
     
+    // Auto-update preview on data change if preview is already visible
+    useEffect(() => {
+        if(previewData && isDirty) {
+            const timeoutId = setTimeout(handleGeneratePreview, 500); // Debounce
+            return () => clearTimeout(timeoutId);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formData, isDirty]);
+
     const ResumeTemplate = selectedTemplate.component;
     const colorTheme = colorThemes[selectedColor as keyof typeof colorThemes];
-    const isFormDataReady = previewData && previewData.experience && previewData.education;
+    const isDataAvailable = !!previewData;
     
     return (
-        <Card className="shadow-lg h-[50vh] lg:h-[80vh] flex flex-col">
+        <Card className="shadow-lg h-[60vh] lg:h-[85vh] flex flex-col">
             <CardHeader>
                 <CardTitle>Resume Preview</CardTitle>
-                <div className="flex flex-wrap gap-4 pt-2">
+                <div className="flex flex-wrap gap-2 pt-2 items-center">
                     <Select value={selectedTemplate.id} onValueChange={id => setSelectedTemplate(templates.find(t => t.id === id) || templates[0])}>
                         <SelectTrigger className="w-full md:w-auto"><SelectValue/></SelectTrigger>
                         <SelectContent>
@@ -237,30 +199,32 @@ const ResumePreview = () => {
                         </SelectContent>
                     </Select>
                      <Select value={selectedColor} onValueChange={setSelectedColor}>
-                        <SelectTrigger className="w-full md:w-auto"><Palette/> Color</SelectTrigger>
+                        <SelectTrigger className="w-full md:w-auto"><Palette className="h-4 w-4 mr-2"/> Color</SelectTrigger>
                         <SelectContent>
                             {Object.keys(colorThemes).map(key => <SelectItem key={key} value={key}>{key.charAt(0).toUpperCase() + key.slice(1)}</SelectItem>)}
                         </SelectContent>
                     </Select>
-                    {isClient && isFormDataReady && (
+                    {isClient && isDataAvailable && (
                         <PDFDownloadLink
                             document={<ResumeTemplate data={previewData} theme={colorTheme} />}
                             fileName="resume.pdf"
                         >
                             {({ loading }) => (
                                 <Button disabled={loading} className="w-full md:w-auto">
-                                    {loading ? <Loader2 className="animate-spin"/> : <FileDown />} Download PDF
+                                    {loading ? <Loader2 className="animate-spin"/> : <FileDown />}
                                 </Button>
                             )}
                         </PDFDownloadLink>
                     )}
+                    {!isDataAvailable && (
+                        <Button onClick={handleGeneratePreview} disabled={isGenerating} className="w-full md:w-auto">
+                            {isGenerating ? <Loader2 className="animate-spin"/> : <RefreshCw />} Generate Preview
+                        </Button>
+                    )}
                 </div>
-                 <Button onClick={handleGeneratePreview} disabled={isGenerating} className="mt-2">
-                   {isGenerating ? <Loader2 className="animate-spin"/> : <RefreshCw />} Generate Preview
-                </Button>
             </CardHeader>
-            <CardContent className="flex-grow">
-             {isClient && isFormDataReady ? (
+            <CardContent className="flex-grow min-h-0">
+             {isClient && isDataAvailable ? (
                 <PDFViewer width="100%" height="100%" showToolbar={false}>
                   <ResumeTemplate data={previewData} theme={colorTheme} />
                 </PDFViewer>
@@ -284,7 +248,7 @@ const PersonalDetailsForm = () => {
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setValue('profilePicture', reader.result as string);
+                setValue('profilePicture', reader.result as string, { shouldDirty: true });
             };
             reader.readAsDataURL(file);
         }
@@ -347,7 +311,7 @@ const ExperienceForm = () => {
                         </div>
                     </div>
                      <ResponsibilitiesArray index={index} />
-                    {fields.length > 1 && <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => remove(index)}><Trash2 className="h-4 w-4" /></Button>}
+                    <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => remove(index)}><Trash2 className="h-4 w-4" /></Button>
                 </div>
             ))}
              <Button type="button" variant="outline" onClick={() => append({ jobTitle: '', company: '', location: '', startDate: '', endDate: '', responsibilities: [''] })}><Plus /> Add Experience</Button>
@@ -389,7 +353,7 @@ const EducationForm = () => {
                         <div className="space-y-2"><Label>Location</Label><Input {...register(`education.${index}.location`)} /><p className="text-destructive text-xs">{errors.education?.[index]?.location?.message}</p></div>
                         <div className="space-y-2"><Label>Graduation Date</Label><Input {...register(`education.${index}.gradDate`)} /><p className="text-destructive text-xs">{errors.education?.[index]?.gradDate?.message}</p></div>
                     </div>
-                     {fields.length > 1 && <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => remove(index)}><Trash2 className="h-4 w-4" /></Button>}
+                     <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => remove(index)}><Trash2 className="h-4 w-4" /></Button>
                 </div>
             ))}
              <Button type="button" variant="outline" onClick={() => append({ degree: '', school: '', location: '', gradDate: '' })}><Plus /> Add Education</Button>
