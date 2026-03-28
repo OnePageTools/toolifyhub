@@ -18,7 +18,7 @@ import {
   aiPlagiarismCheck,
   type AIPlagiarismCheckOutput,
 } from '@/ai/flows/ai-plagiarism-detection';
-import { Loader2, ShieldCheck, ShieldAlert, FileDown, Search, ExternalLink, RefreshCw } from 'lucide-react';
+import { Loader2, ShieldCheck, ShieldAlert, FileDown, Search, MessageSquare, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -59,7 +59,7 @@ export function PlagiarismCheckerForm() {
         setResult(checkResult);
         toast({
           title: "Analysis Complete",
-          description: "Your plagiarism report is ready.",
+          description: "Your originality report is ready.",
         });
       }
     } catch (e: any) {
@@ -96,7 +96,7 @@ export function PlagiarismCheckerForm() {
         format: [canvas.width, canvas.height],
       });
       pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      pdf.save('plagiarism-report.pdf');
+      pdf.save('originality-report.pdf');
     } catch (error) {
       console.error("Error generating PDF:", error);
       toast({
@@ -116,10 +116,12 @@ export function PlagiarismCheckerForm() {
     const originalText = form.getValues('text');
     let highlighted = originalText;
 
-    if (result.plagiarizedSegments) {
-        result.plagiarizedSegments.forEach(segment => {
-          const regex = new RegExp(segment.segment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
-          highlighted = highlighted.replace(regex, `<span class="bg-red-200 dark:bg-red-900/50 rounded px-1">${segment.segment}</span>`);
+    if (result.similarSegments) {
+        result.similarSegments.forEach(segment => {
+          // Use a more robust regex that handles special characters
+          const escapedSegment = segment.segment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const regex = new RegExp(escapedSegment, 'g');
+          highlighted = highlighted.replace(regex, `<span class="bg-yellow-200 dark:bg-yellow-900/50 rounded px-1">${segment.segment}</span>`);
         });
     }
 
@@ -132,6 +134,10 @@ export function PlagiarismCheckerForm() {
     setResult(null);
     setError(null);
   };
+  
+  const uniquenessScore = result?.uniquenessScore ?? 0;
+  const plagiarismPercentage = 100 - uniquenessScore;
+  const isOriginal = uniquenessScore > 95;
 
   return (
     <div className="space-y-6">
@@ -145,7 +151,7 @@ export function PlagiarismCheckerForm() {
                 <FormItem>
                   <FormControl>
                     <Textarea
-                      placeholder="Paste your text here to check for plagiarism. We recommend at least 50 characters for an accurate analysis."
+                      placeholder="Paste your text here to check for originality. We recommend at least 50 characters for an accurate analysis."
                       className="min-h-60"
                       {...field}
                     />
@@ -163,7 +169,7 @@ export function PlagiarismCheckerForm() {
               ) : (
                 <>
                   <Search className="mr-2" />
-                  Check for Plagiarism
+                  Check Originality
                 </>
               )}
             </Button>
@@ -181,25 +187,25 @@ export function PlagiarismCheckerForm() {
             </div>
           <div ref={reportRef} className="p-8 border rounded-lg bg-background printable-area">
              <header className="mb-8">
-                 <h1 className="text-3xl font-bold text-foreground">Plagiarism Report</h1>
+                 <h1 className="text-3xl font-bold text-foreground">Originality Report</h1>
                  <p className="text-muted-foreground">Analysis completed on: {new Date().toLocaleString()}</p>
              </header>
             <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <Card className="col-span-1 flex flex-col justify-center">
                     <CardHeader>
-                        <CardTitle className="text-xl">Overall Score</CardTitle>
+                        <CardTitle className="text-xl">Uniqueness Score</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="text-center text-4xl font-bold">
-                            {result.uniquePercentage?.toFixed(0) ?? 0}%
+                            {uniquenessScore.toFixed(0)}%
                             <span className="text-lg font-normal text-muted-foreground"> Unique</span>
                         </div>
                          <div>
                             <div className="flex justify-between text-sm text-muted-foreground mb-1">
-                                <span>Plagiarized</span>
-                                <span>{result.plagiarismPercentage?.toFixed(0) ?? 0}%</span>
+                                <span>Similar Content</span>
+                                <span>{plagiarismPercentage.toFixed(0)}%</span>
                             </div>
-                            <Progress value={result.plagiarismPercentage ?? 0} className="h-2 [&>div]:bg-destructive" />
+                            <Progress value={plagiarismPercentage} className="h-2 [&>div]:bg-yellow-500" />
                         </div>
                     </CardContent>
                 </Card>
@@ -207,22 +213,22 @@ export function PlagiarismCheckerForm() {
                  <Card className="md:col-span-2">
                     <CardHeader>
                          <CardTitle className="text-xl flex items-center gap-2">
-                            {result.isPlagiarized ? <ShieldAlert className="text-destructive" /> : <ShieldCheck className="text-green-500" />}
+                            {isOriginal ? <ShieldCheck className="text-green-500" /> : <ShieldAlert className="text-yellow-500" />}
                             Analysis Details
                          </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="flex justify-between items-center text-sm p-3 bg-secondary rounded-md">
-                            <span className="font-medium text-muted-foreground">Plagiarized</span>
-                            <span className="font-bold text-destructive">{result.plagiarismPercentage?.toFixed(0) ?? 0}%</span>
+                            <span className="font-medium text-muted-foreground">Similar Segments Found</span>
+                            <span className="font-bold text-yellow-500">{result.similarSegments?.length ?? 0}</span>
                         </div>
                         <div className="flex justify-between items-center text-sm p-3 bg-secondary rounded-md">
-                            <span className="font-medium text-muted-foreground">Unique</span>
-                            <span className="font-bold text-green-500">{result.uniquePercentage?.toFixed(0) ?? 0}%</span>
+                            <span className="font-medium text-muted-foreground">Est. Uniqueness</span>
+                            <span className="font-bold text-green-500">{uniquenessScore.toFixed(0)}%</span>
                         </div>
                         <div>
-                             <h4 className="font-semibold mb-1">AI Justification</h4>
-                             <p className="text-sm text-muted-foreground italic">"{result.justification}"</p>
+                             <h4 className="font-semibold mb-1">AI Summary</h4>
+                             <p className="text-sm text-muted-foreground italic">"{result.summary}"</p>
                         </div>
                     </CardContent>
                  </Card>
@@ -231,7 +237,7 @@ export function PlagiarismCheckerForm() {
             <Card>
                 <CardHeader>
                     <CardTitle className="text-xl">Analyzed Text</CardTitle>
-                    <CardDescription>Plagiarized segments are highlighted in red.</CardDescription>
+                    <CardDescription>Segments with high similarity to common sources are highlighted in yellow.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div
@@ -241,32 +247,32 @@ export function PlagiarismCheckerForm() {
                 </CardContent>
             </Card>
 
-            {result.plagiarizedSegments && result.plagiarizedSegments.length > 0 && (
+            {result.similarSegments && result.similarSegments.length > 0 && (
                 <Card className="mt-6">
                     <CardHeader>
-                        <CardTitle className="text-xl">Detected Sources</CardTitle>
-                        <CardDescription>We found matches from the following sources.</CardDescription>
+                        <CardTitle className="text-xl">Flagged Segments</CardTitle>
+                        <CardDescription>These segments show similarity to common phrases or known text.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <ul className="space-y-3">
-                            {result.plagiarizedSegments.map((segment, index) => (
+                            {result.similarSegments.map((segment, index) => (
                                 <li key={index} className="p-3 border rounded-md bg-secondary">
                                     <p className="italic text-sm">"...{segment.segment}..."</p>
-                                    <a href={segment.source} target="_blank" rel="noopener noreferrer" className="text-primary text-xs hover:underline flex items-center gap-1 truncate">
-                                        <ExternalLink className="h-3 w-3" /> {segment.source}
-                                    </a>
+                                    <p className="text-primary text-xs flex items-center gap-1 mt-1 font-medium">
+                                        <MessageSquare className="h-3 w-3" /> 
+                                        Reason: {segment.explanation} (Similarity: {(segment.similarityScore * 100).toFixed(0)}%)
+                                    </p>
                                 </li>
                             ))}
                         </ul>
                     </CardContent>
                 </Card>
             )}
-
           </div>
         </div>
       )}
 
-       {error && (
+       {error && !isLoading && (
         <p className="text-sm text-destructive text-center">{error}</p>
       )}
     </div>
