@@ -3,197 +3,212 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload, Wand2, Copy, ClipboardCheck } from 'lucide-react';
-import { convertPdfToWord, type ConvertPdfToWordOutput } from '@/ai/flows/pdf-to-word-flow';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Loader2, Upload, Wand2, FileCheck, CheckCircle, FileDown, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Progress } from '@/components/ui/progress';
+import { Document, Packer, Paragraph, TextRun } from 'docx';
+import { saveAs } from 'file-saver';
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Set up the worker source for pdf.js
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 export function PdfToWordForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [result, setResult] = useState<ConvertPdfToWordOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [statusText, setStatusText] = useState('');
+  const [docxBlob, setDocxBlob] = useState<Blob | null>(null);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleFileSelect = (file: File | undefined) => {
     if (file) {
       if (file.type !== 'application/pdf') {
-        toast({
-            variant: "destructive",
-            title: "Invalid file type",
-            description: "Please upload a PDF file.",
-        });
+        toast({ variant: "destructive", title: "Invalid file type", description: "Please upload a PDF file." });
         return;
       }
       if (file.size > 100 * 1024 * 1024) { // 100MB limit
-        toast({
-            variant: "destructive",
-            title: "File too large",
-            description: "Please upload a PDF smaller than 100MB.",
-        });
+        toast({ variant: "destructive", title: "File too large", description: "Please upload a PDF smaller than 100MB." });
         return;
       }
       setSelectedFile(file);
-      setResult(null);
+      setDocxBlob(null);
+      setProgress(0);
+      setStatusText('');
     }
   };
-  
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleFileSelect(event.target.files?.[0]);
-  };
-  
-  const onDragEnter = (e: React.DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-  
-  const onDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
-  
-  const onDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-  
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => handleFileSelect(e.target.files?.[0]);
+  const onDragEnter = (e: React.DragEvent<HTMLLabelElement>) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
+  const onDragLeave = (e: React.DragEvent<HTMLLabelElement>) => { e.preventDefault(); e.stopPropagation(); setIsDragging(false); };
+  const onDragOver = (e: React.DragEvent<HTMLLabelElement>) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
   const onDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
     if(e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        handleFileSelect(e.dataTransfer.files[0]);
-        e.dataTransfer.clearData();
+      handleFileSelect(e.dataTransfer.files[0]);
+      e.dataTransfer.clearData();
     }
   };
 
-  const fileToDataUri = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const handleSubmit = async () => {
+  const handleConvert = async () => {
     if (!selectedFile) {
-      toast({
-        variant: "destructive",
-        title: "No file selected",
-        description: "Please select a PDF file first.",
-      });
+      toast({ variant: "destructive", title: "No file selected" });
       return;
     }
 
     setIsLoading(true);
-    setResult(null);
+    setDocxBlob(null);
+    setProgress(0);
 
     try {
-      const pdfDataUri = await fileToDataUri(selectedFile);
-      const response = await convertPdfToWord({ pdfDataUri });
+      setStatusText('Reading PDF file...');
+      const arrayBuffer = await selectedFile.arrayBuffer();
+      const loadingTask = pdfjsLib.getDocument(arrayBuffer);
+      const pdf = await loadingTask.promise;
       
-      if (response.error) {
-        toast({
-          variant: "destructive",
-          title: "Conversion Failed",
-          description: response.error,
+      const paragraphs: Paragraph[] = [];
+      const numPages = pdf.numPages;
+
+      for (let i = 1; i <= numPages; i++) {
+        setStatusText(`Processing page ${i} of ${numPages}...`);
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        
+        let lastY: number | null = null;
+        let pageText = '';
+        
+        textContent.items.forEach((item: any) => {
+           if (lastY !== null && item.transform[5] < lastY) {
+               pageText += '\n'; // New paragraph
+           }
+           pageText += item.str + ' ';
+           lastY = item.transform[5];
         });
-      } else {
-        setResult(response);
+        
+        pageText.split('\n').forEach(line => {
+            if(line.trim()) {
+                paragraphs.push(new Paragraph({
+                    children: [new TextRun(line.trim())],
+                }));
+            }
+        });
+
+        setProgress(((i / numPages) * 100));
       }
 
-    } catch (error) {
+      setStatusText('Creating .docx file...');
+      const doc = new Document({
+          sections: [{
+              properties: {},
+              children: paragraphs,
+          }]
+      });
+
+      const blob = await Packer.toBlob(doc);
+      setDocxBlob(blob);
+      setStatusText('Conversion complete!');
+      toast({ title: "Success!", description: "Your PDF has been converted to a Word document." });
+
+    } catch (error: any) {
       console.error(error);
       toast({
         variant: "destructive",
         title: "An error occurred",
-        description:
-          "An unexpected error occurred. Please try again.",
+        description: "Failed to convert PDF. The file might be corrupted or in an unsupported format.",
       });
+      setStatusText('Conversion failed.');
+      setProgress(0);
     } finally {
       setIsLoading(false);
     }
   };
-  
-  const handleCopy = () => {
-    if (!result?.textContent) return;
-    navigator.clipboard.writeText(result.textContent).then(() => {
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
-      toast({
-        title: 'Copied!',
-        description: 'Converted text copied to clipboard.',
-      });
-    }).catch(err => {
-        toast({
-            variant: "destructive",
-            title: 'Error',
-            description: 'Failed to copy to clipboard.',
-        });
-    });
+
+  const handleDownload = () => {
+    if (!docxBlob || !selectedFile) return;
+    const docxName = selectedFile.name.replace(/\.pdf$/i, '.docx');
+    saveAs(docxBlob, docxName);
   };
+  
+  const handleReset = () => {
+      setSelectedFile(null);
+      setDocxBlob(null);
+      setProgress(0);
+      setStatusText('');
+      if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+      }
+  }
+  
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
 
   return (
     <div className="space-y-6 flex flex-col items-center">
-       <input id="pdf-upload" type="file" accept="application/pdf" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
-       <label
+      {!docxBlob ? (
+        <>
+          <input id="pdf-upload" type="file" accept="application/pdf" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
+          <label
             htmlFor="pdf-upload"
             className={cn(
-                "group relative flex w-full max-w-lg cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary",
-                isDragging && "border-primary bg-primary/10",
+              "group relative flex w-full max-w-lg cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary",
+              isDragging && "border-primary bg-primary/10",
+              !selectedFile && 'min-h-[200px]',
             )}
-            onDragEnter={onDragEnter}
-            onDragLeave={onDragLeave}
-            onDragOver={onDragOver}
-            onDrop={onDrop}
-        >
-             <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                <Upload className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
-                <span className="font-semibold text-primary">
-                    {selectedFile ? selectedFile.name : "Click to upload or drag & drop"}
-                </span>
-                <p className="text-xs">PDF only (Max 100MB)</p>
-            </div>
-        </label>
-
-      <div className="flex justify-center">
-         <Button onClick={handleSubmit} disabled={isLoading || !selectedFile} size="lg">
-            {isLoading ? (
-                <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Converting...
-                </>
+            onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}
+          >
+            {selectedFile ? (
+                <div className="text-center">
+                    <FileCheck className="h-12 w-12 text-green-500 mx-auto mb-2" />
+                    <p className="font-semibold text-foreground truncate">{selectedFile.name}</p>
+                    <p className="text-sm text-muted-foreground">{formatBytes(selectedFile.size)}</p>
+                </div>
             ) : (
-                <>
-                <Wand2 className="mr-2 h-4 w-4" />
-                Convert PDF
-                </>
+              <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                <Upload className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
+                <span className="font-semibold text-primary">Click to upload or drag & drop</span>
+                <p className="text-xs">PDF only (Max 100MB)</p>
+              </div>
             )}
-        </Button>
-      </div>
-      
-      {result && result.textContent && (
-        <Card className="w-full max-w-4xl">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Editable Text Content</CardTitle>
-            <Button variant="ghost" size="icon" onClick={handleCopy}>
-                {isCopied ? <ClipboardCheck className="text-green-500" /> : <Copy />}
-                <span className="sr-only">Copy</span>
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-96 rounded-md border">
-              <pre className="p-4 text-sm whitespace-pre-wrap font-sans">{result.textContent}</pre>
-            </ScrollArea>
-          </CardContent>
-        </Card>
+          </label>
+
+          {selectedFile && (
+            <div className="w-full max-w-lg space-y-4">
+              <Button onClick={handleConvert} disabled={isLoading} size="lg" className="w-full">
+                <Wand2 className="mr-2 h-4 w-4" /> Convert to Word
+              </Button>
+              {isLoading && (
+                <div className="space-y-2 text-center">
+                    <Progress value={progress} />
+                    <p className="text-sm text-muted-foreground">{statusText}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="text-center w-full max-w-lg space-y-4">
+            <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
+            <h3 className="text-2xl font-bold">Conversion Successful!</h3>
+            <p className="text-muted-foreground">Your Word document is ready for download.</p>
+            <div className="flex gap-4 justify-center">
+                <Button onClick={handleDownload} size="lg">
+                    <FileDown className="mr-2 h-4 w-4" /> Download .docx
+                </Button>
+                <Button onClick={handleReset} variant="outline" size="lg">
+                    <RefreshCw className="mr-2 h-4 w-4" /> Convert Another
+                </Button>
+            </div>
+        </div>
       )}
     </div>
   );

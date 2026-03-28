@@ -27,7 +27,7 @@ export default function PdfToWordPage() {
              </div>
             <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">PDF to Word Converter</CardTitle>
             <CardDescription className="text-lg mt-2">
-              Upload your PDF and our AI will extract the content into an editable format.
+              Drag and drop your PDF to convert it into a high-quality, editable Word (.docx) file.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6 md:p-8">
