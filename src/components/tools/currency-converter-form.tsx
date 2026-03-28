@@ -302,6 +302,12 @@ export function CurrencyConverterForm() {
         </Card>
       </div>
       
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <span className="text-sm font-medium text-muted-foreground">Quick Conversions:</span>
+        <Button variant="outline" size="sm" onClick={() => { setFromCurrency('USD'); setToCurrency('PKR'); }}>USD to PKR</Button>
+        <Button variant="outline" size="sm" onClick={() => { setFromCurrency('EUR'); setToCurrency('USD'); }}>EUR to USD</Button>
+      </div>
+
       <p className="text-center text-muted-foreground">
         1 {fromCurrency} = {exchangeRate.toFixed(4)} {toCurrency} (Last updated: {new Date().toLocaleDateString()})
       </p>
