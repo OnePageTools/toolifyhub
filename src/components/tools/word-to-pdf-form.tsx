@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef } from 'react';
@@ -14,7 +15,6 @@ export function WordToPdfForm() {
   const [status, setStatus] = useState<string>('');
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const previewRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const handleFileSelect = (file: File | undefined) => {
@@ -63,17 +63,12 @@ export function WordToPdfForm() {
 
     setIsLoading(true);
     setPdfUrl(null);
-    const renderContainer = previewRef.current;
+    setStatus('');
 
     try {
-      if (!renderContainer) {
-        throw new Error("Preview container not found.");
-      }
-
-      // Dynamically import libraries only on the client-side
+      // Dynamically import libraries
       const { default: mammoth } = await import('mammoth');
       const { default: jsPDF } = await import('jspdf');
-      await import('jspdf/dist/polyfills.es.js');
       
       setStatus('Reading file...');
       const arrayBuffer = await selectedFile.arrayBuffer();
@@ -81,11 +76,11 @@ export function WordToPdfForm() {
       setStatus('Converting to HTML...');
       const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
 
-      // Prepare hidden div for rendering
-      renderContainer.innerHTML = `<div style="width: 210mm; padding: 10mm; background-color: white; color: black;">${html}</div>`;
-
-      // Give browser time to render content, especially images
-      await new Promise(r => setTimeout(r, 200)); 
+      // As per your debugging request, let's log the extracted HTML.
+      console.log("Extracted HTML from Mammoth:", html);
+      if (!html || html.trim() === "") {
+        throw new Error("Mammoth.js could not extract any content from the document.");
+      }
 
       setStatus('Generating PDF...');
       const pdf = new jsPDF({
@@ -94,18 +89,23 @@ export function WordToPdfForm() {
         format: 'a4',
       });
       
-      await pdf.html(renderContainer, {
+      // Use the callback pattern for jsPDF's html method for reliability
+      pdf.html(html, {
+          callback: function (doc) {
+            // This function is called once the PDF is generated and ready
+            const url = doc.output('bloburl');
+            setPdfUrl(url);
+            setStatus('Conversion complete!');
+            toast({
+                title: "Success!",
+                description: "Your file has been converted and is ready for download.",
+            });
+            setIsLoading(false); // Set loading to false only after PDF is ready
+          },
+          margin: [10, 10, 10, 10], // [top, right, bottom, left]
           autoPaging: 'text',
-          margin: [10, 0, 10, 0], // top, right, bottom, left
-      });
-
-      const url = pdf.output('bloburl');
-      setPdfUrl(url);
-
-      setStatus('Conversion complete!');
-      toast({
-        title: "Success!",
-        description: "Your file has been converted and is ready for download.",
+          width: 190, // A4 width (210mm) - margins (10mm * 2)
+          windowWidth: 700, // A virtual window width for rendering the HTML
       });
 
     } catch (error: any) {
@@ -116,12 +116,7 @@ export function WordToPdfForm() {
         title: "An error occurred",
         description: error.message || "Failed to convert the document. It might be corrupted or use unsupported features.",
       });
-    } finally {
       setIsLoading(false);
-      // Clean up the hidden div
-      if (renderContainer) {
-        renderContainer.innerHTML = '';
-      }
     }
   };
 
@@ -133,60 +128,52 @@ export function WordToPdfForm() {
   };
   
   return (
-    <>
-      <div className="space-y-6 flex flex-col items-center">
-        <input id="docx-upload" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
-        <label
-          htmlFor="docx-upload"
-          className={cn("group relative flex w-full max-w-lg cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary", isDragging && "border-primary bg-primary/10")}
-          onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}
-        >
-          <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <Upload className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
-            <span className="font-semibold text-primary">{selectedFile ? selectedFile.name : "Click to upload or drag & drop"}</span>
-            <p className="text-xs">.docx only (Max 20MB)</p>
-          </div>
-        </label>
+    <div className="space-y-6 flex flex-col items-center">
+      <input id="docx-upload" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
+      <label
+        htmlFor="docx-upload"
+        className={cn("group relative flex w-full max-w-lg cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary", isDragging && "border-primary bg-primary/10")}
+        onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}
+      >
+        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+          <Upload className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
+          <span className="font-semibold text-primary">{selectedFile ? selectedFile.name : "Click to upload or drag & drop"}</span>
+          <p className="text-xs">.docx only (Max 20MB)</p>
+        </div>
+      </label>
 
-        {selectedFile && (
-          <div className="w-full max-w-lg space-y-4">
-            <Button onClick={handleConvert} disabled={isLoading || !!pdfUrl} className="w-full" size="lg">
-              <Settings className="mr-2 h-4 w-4" /> Convert to PDF
-            </Button>
+      {selectedFile && (
+        <div className="w-full max-w-lg space-y-4">
+          <Button onClick={handleConvert} disabled={isLoading || !!pdfUrl} className="w-full" size="lg">
+            <Settings className="mr-2 h-4 w-4" /> Convert to PDF
+          </Button>
 
-            {isLoading && (
-              <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>{status}</span>
-              </div>
-            )}
+          {isLoading && (
+            <div className="flex items-center justify-center gap-2 text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>{status}</span>
+            </div>
+          )}
 
-            {pdfUrl && (
-              <Card className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
-                <CardContent className="p-4 flex flex-col md:flex-row items-center justify-center gap-4">
-                   <p className="font-semibold text-green-800 dark:text-green-300 flex-1 text-center md:text-left">{status}</p>
-                   <div className="flex gap-2">
-                     <a href={pdfUrl} download={selectedFile.name.replace('.docx', '.pdf')}>
-                        <Button variant="default">
-                            <FileDown className="mr-2 h-4 w-4" /> Download PDF
-                        </Button>
-                     </a>
-                     <Button variant="outline" onClick={handleReset}>
-                        <RefreshCw className="mr-2 h-4 w-4" /> Convert Another
-                     </Button>
-                   </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        )}
-      </div>
-      {/* Hidden div for rendering HTML to be captured by jsPDF.html */}
-      <div 
-        ref={previewRef} 
-        className="absolute -z-10 -left-[9999px] top-0"
-        aria-hidden="true"
-      />
-    </>
+          {pdfUrl && (
+            <Card className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+              <CardContent className="p-4 flex flex-col md:flex-row items-center justify-center gap-4">
+                 <p className="font-semibold text-green-800 dark:text-green-300 flex-1 text-center md:text-left">{status}</p>
+                 <div className="flex gap-2">
+                   <a href={pdfUrl} download={selectedFile.name.replace('.docx', '.pdf')}>
+                      <Button variant="default">
+                          <FileDown className="mr-2 h-4 w-4" /> Download PDF
+                      </Button>
+                   </a>
+                   <Button variant="outline" onClick={handleReset}>
+                      <RefreshCw className="mr-2 h-4 w-4" /> Convert Another
+                   </Button>
+                 </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
