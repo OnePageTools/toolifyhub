@@ -88,6 +88,7 @@ export function PdfToWordForm() {
       
       const numPages = pdf.numPages;
       let allExtractedText = '';
+      const paragraphs: Paragraph[] = [];
 
       for (let i = 1; i <= numPages; i++) {
         const currentProgress = (i / numPages) * 50; // Standard extraction is first 50%
@@ -99,7 +100,7 @@ export function PdfToWordForm() {
         
         const pageText = textContent.items.map((item: any) => item.str).join(' ');
         if (pageText.trim()) {
-            allExtractedText += pageText + '\n\n';
+            allExtractedText += pageText + '\n';
         }
       }
       
@@ -127,13 +128,20 @@ export function PdfToWordForm() {
           const aiResult = await convertPdfToWord({ pdfDataUri: fileDataUri });
 
           if (aiResult.error || !aiResult.textContent) {
-              throw new Error(aiResult.error || "AI OCR failed to extract text from the document.");
+              const errorMessage = aiResult.error || "AI OCR failed to extract text from the document.";
+              setStatusText('Conversion failed.');
+              toast({
+                  variant: "destructive",
+                  title: "Conversion Error",
+                  description: errorMessage,
+              });
+              setProgress(0);
+              return; // Stop execution, finally block will run
           }
           allExtractedText = aiResult.textContent;
           setStatusText('AI OCR successful. Creating document...');
           console.log("--- Extracted Text from AI OCR ---");
           console.log(allExtractedText);
-          console.log("------------------------------------");
       }
 
       if (!allExtractedText.trim()) {
@@ -143,14 +151,14 @@ export function PdfToWordForm() {
       setStatusText('Creating .docx file...');
       setProgress(95);
 
-      const paragraphs = allExtractedText.split('\n').map(text => 
+      const docParagraphs = allExtractedText.split('\n').map(text => 
           new Paragraph({ children: [new TextRun(text)] })
       );
 
       const doc = new Document({
           sections: [{
               properties: {},
-              children: paragraphs,
+              children: docParagraphs,
           }]
       });
 

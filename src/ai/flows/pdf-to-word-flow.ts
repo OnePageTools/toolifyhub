@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A flow for converting PDF content to editable text using OCR.
@@ -62,11 +63,17 @@ const convertPdfToWordFlow = ai.defineFlow(
       const { output } = await prompt({ pdfDataUri: input.pdfDataUri });
 
       // The prompt's output schema now includes textContent, so we can return it directly.
-      return { textContent: output?.textContent };
+      if (!output?.textContent?.trim()) {
+        return { error: "The AI model could not find any text to extract from the document." };
+      }
+      return { textContent: output.textContent };
 
-    } catch (error) {
+    } catch (error: any) {
        console.error("Error processing PDF with AI:", error);
-       return { error: "Failed to process the PDF file. It might be corrupted or an unsupported format." };
+       const errorMessage = error.message && error.message.includes('media')
+         ? "The provided PDF seems to be invalid, password-protected, or in an unsupported format for the AI."
+         : error.message || "Failed to process the PDF file. It might be corrupted or an unsupported format.";
+       return { error: errorMessage };
     }
   }
 );
