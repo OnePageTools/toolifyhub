@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview This file defines a Genkit flow for AI-powered originality analysis.
@@ -64,23 +65,36 @@ const aiPlagiarismCheckFlow = ai.defineFlow(
     inputSchema: AIPlagiarismCheckInputSchema,
     outputSchema: AIPlagiarismCheckOutputSchema,
   },
-  async input => {
+  async (input) => {
+    if (!input.text || input.text.trim().length < 50) {
+      return { error: 'Please provide at least 50 characters for an accurate analysis.' };
+    }
+
     try {
-        const {output} = await prompt(input);
-        if (output?.uniquenessScore === undefined) {
-            return { error: "The AI model did not return a valid analysis. The content might be too complex or in an unsupported language." };
-        }
-        return output;
+      const { output } = await prompt(input);
+
+      if (!output || typeof output.uniquenessScore !== 'number') {
+        return { error: 'The AI model returned an invalid analysis. This can happen with very complex or unusual text. Please try rephrasing or using a different text.' };
+      }
+
+      return output;
     } catch (err: any) {
-        console.error("Error in aiPlagiarismCheckFlow:", err);
-        if (err.message && (err.message.includes('429') || err.message.includes('503'))) {
-            return { error: "The AI service is currently experiencing high demand. Please try again in a few moments." };
+      console.error('Error in aiPlagiarismCheckFlow:', err.message || err);
+
+      if (err.message) {
+        const lowerCaseError = err.message.toLowerCase();
+        if (lowerCaseError.includes('429') || lowerCaseError.includes('503') || lowerCaseError.includes('resource has been exhausted')) {
+          return { error: 'The AI service is currently experiencing high demand. Please try again in a few moments.' };
         }
-        // Add a more specific check for model safety/blockage issues
-        if (err.message && (err.message.includes('SAFETY') || err.message.includes('blocked'))) {
-            return { error: "The analysis was blocked. The provided text may contain content that violates safety policies." };
+        if (lowerCaseError.includes('safety') || lowerCaseError.includes('blocked')) {
+          return { error: 'The analysis was blocked because the provided text may contain content that violates safety policies. Please review your text.' };
         }
-        return { error: "An unexpected error occurred during the analysis. Please check your text and try again." };
+        if (lowerCaseError.includes('json') || lowerCaseError.includes('schema')) {
+          return { error: 'The AI failed to produce a valid report structure. This can happen with very complex text. Please try simplifying your input.' };
+        }
+      }
+
+      return { error: 'An unexpected error occurred during the analysis. The AI may be temporarily unavailable.' };
     }
   }
 );
