@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useForm, useFieldArray, FormProvider, useFormContext } from 'react-hook-form';
@@ -15,7 +14,7 @@ import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { templates, type TemplateKey, type TemplateProps } from './templates';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 // Theme definitions
 const colorThemes = {
@@ -323,5 +322,3 @@ const ResumePreview = ({ data, template, theme }: ResumePreviewProps) => {
         </div>
     );
 };
-
-    
