@@ -1,39 +1,24 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload, Wand2, FileCheck, CheckCircle, FileDown, RefreshCw } from 'lucide-react';
+import { Loader2, Upload, FileDown, Wand2, CheckCircle, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { saveAs } from 'file-saver';
 import { Progress } from '@/components/ui/progress';
-
-// These will be dynamically imported
-import type { Document, Packer, Paragraph, TextRun } from 'docx';
-import type { saveAs } from 'file-saver';
-import type * as pdfjsLib from 'pdfjs-dist';
 
 export function PdfToWordForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState('');
+  const [progress, setProgress] = useState(0);
   const [docxBlob, setDocxBlob] = useState<Blob | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const pdfjs = await import('pdfjs-dist');
-        pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-      } catch(e) {
-        console.error("Error setting up pdf.js worker", e);
-      }
-    })();
-  }, []);
 
   const handleFileSelect = (file: File | undefined) => {
     if (file) {
@@ -71,110 +56,69 @@ export function PdfToWordForm() {
       toast({ variant: "destructive", title: "No file selected" });
       return;
     }
+    
+    const apiSecret = process.env.NEXT_PUBLIC_CONVERT_API_SECRET;
+
+    if (!apiSecret || apiSecret === "YOUR_SECRET_HERE") {
+        toast({
+            variant: "destructive",
+            title: "Configuration Error",
+            description: "ConvertAPI secret is not configured. Please add it to your .env file.",
+        });
+        return;
+    }
 
     setIsLoading(true);
     setDocxBlob(null);
     setProgress(0);
+    
+    const formData = new FormData();
+    formData.append('file', selectedFile);
 
     try {
-      setStatusText('Loading conversion engine...');
-      const { Document, Packer, Paragraph, TextRun } = await import('docx');
-      const pdfjsLib = await import('pdfjs-dist');
-      
-      setStatusText('Reading PDF file...');
-      const arrayBuffer = await selectedFile.arrayBuffer();
-      const loadingTask = pdfjsLib.getDocument(arrayBuffer);
-      const pdf = await loadingTask.promise;
-      
-      const numPages = pdf.numPages;
-      let allExtractedText = '';
-      const paragraphs: Paragraph[] = [];
+        setStatusText('Uploading file...');
+        setProgress(25);
+        
+        const response = await fetch(`https://v2.convertapi.com/convert/pdf/to/docx?secret=${apiSecret}`, {
+            method: 'POST',
+            body: formData,
+        });
 
-      for (let i = 1; i <= numPages; i++) {
-        const currentProgress = (i / numPages) * 50; // Standard extraction is first 50%
-        setStatusText(`Processing page ${i} of ${numPages}...`);
-        setProgress(currentProgress);
-        
-        const page = await pdf.getPage(i);
-        const textContent = await page.getTextContent();
-        
-        const pageText = textContent.items.map((item: any) => item.str).join(' ');
-        if (pageText.trim()) {
-            allExtractedText += pageText + '\n';
+        setStatusText('Converting...');
+        setProgress(75);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.Error || `API error: ${response.statusText}`);
         }
-      }
-      
-      console.log("--- Extracted Text from PDF.js ---");
-      console.log(allExtractedText.trim().length > 0 ? allExtractedText : "No text extracted by PDF.js.");
-      console.log("------------------------------------");
-      
-      // If client-side extraction fails, try AI OCR as a fallback
-      if (!allExtractedText.trim()) {
-          setStatusText('Standard extraction failed. Trying advanced AI OCR...');
-          setProgress(75);
 
-          const { convertPdfToWord } = await import('@/ai/flows/pdf-to-word-flow');
-          
-          const fileDataUri = await new Promise<string>((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onerror = () => {
-                  reader.abort();
-                  reject(new DOMException("Problem parsing input file."));
-              };
-              reader.onload = () => resolve(reader.result as string);
-              reader.readAsDataURL(selectedFile);
-          });
+        const result = await response.json();
 
-          const aiResult = await convertPdfToWord({ pdfDataUri: fileDataUri });
-
-          if (aiResult.error || !aiResult.textContent) {
-              const errorMessage = aiResult.error || "AI OCR failed to extract text from the document.";
-              setStatusText('Conversion failed.');
-              toast({
-                  variant: "destructive",
-                  title: "Conversion Error",
-                  description: errorMessage,
-              });
-              setProgress(0);
-              return; // Stop execution, finally block will run
-          }
-          allExtractedText = aiResult.textContent;
-          setStatusText('AI OCR successful. Creating document...');
-          console.log("--- Extracted Text from AI OCR ---");
-          console.log(allExtractedText);
-      }
-
-      if (!allExtractedText.trim()) {
-        throw new Error("Could not extract any text from the document, even with AI. The file might be corrupted or completely empty.");
-      }
-
-      setStatusText('Creating .docx file...');
-      setProgress(95);
-
-      const docParagraphs = allExtractedText.split('\n').map(text => 
-          new Paragraph({ children: [new TextRun(text)] })
-      );
-
-      const doc = new Document({
-          sections: [{
-              properties: {},
-              children: docParagraphs,
-          }]
-      });
-
-      const blob = await Packer.toBlob(doc);
-      setDocxBlob(blob);
-      setStatusText('Conversion complete!');
-      setProgress(100);
-      toast({ title: "Success!", description: "Your PDF has been converted to a Word document." });
+        if (result.Files && result.Files.length > 0) {
+            const fileData = result.Files[0].FileData;
+            const byteCharacters = atob(fileData);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+            
+            setDocxBlob(blob);
+            setStatusText('Conversion complete!');
+            setProgress(100);
+            toast({ title: "Success!", description: "Your PDF has been converted." });
+        } else {
+            throw new Error("Conversion failed. No file returned from API.");
+        }
 
     } catch (error: any) {
-      console.error("PDF to Word Conversion Error:", error);
+      console.error("Conversion Error:", error);
       setStatusText('Conversion failed.');
       toast({
         variant: "destructive",
         title: "An error occurred",
-        description: error.message || "Failed to convert PDF. The file might be corrupted or in an unsupported format.",
+        description: error.message || "Failed to convert PDF.",
       });
       setProgress(0);
     } finally {
@@ -182,9 +126,8 @@ export function PdfToWordForm() {
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!docxBlob || !selectedFile) return;
-    const { saveAs } = await import('file-saver');
     const docxName = selectedFile.name.replace(/\.pdf$/i, '.docx');
     saveAs(docxBlob, docxName);
   };
@@ -223,7 +166,7 @@ export function PdfToWordForm() {
           >
             {selectedFile ? (
                 <div className="text-center">
-                    <FileCheck className="h-12 w-12 text-green-500 mx-auto mb-2" />
+                    <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-2" />
                     <p className="font-semibold text-foreground truncate">{selectedFile.name}</p>
                     <p className="text-sm text-muted-foreground">{formatBytes(selectedFile.size)}</p>
                 </div>
