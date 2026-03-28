@@ -7,7 +7,7 @@ import { Loader2, Upload, FileDown, Settings, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import mammoth from 'mammoth';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import 'jspdf/dist/polyfills.es.js'; // Needed for html method to work in all browsers
 import { Card, CardContent } from '@/components/ui/card';
 
 export function WordToPdfForm() {
@@ -66,83 +66,59 @@ export function WordToPdfForm() {
 
     setIsLoading(true);
     setPdfUrl(null);
+    const renderContainer = previewRef.current;
 
     try {
+      if (!renderContainer) {
+        throw new Error("Preview container not found.");
+      }
+      
       setStatus('Reading file...');
       const arrayBuffer = await selectedFile.arrayBuffer();
       
       setStatus('Converting to HTML...');
       const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
 
-      if (previewRef.current) {
-        // Set a standard width for rendering. A4 width in pixels at 96 DPI is about 794px.
-        previewRef.current.style.width = '794px';
-        previewRef.current.innerHTML = html;
-        
-        // Give browser time to render content, especially images
-        await new Promise(r => setTimeout(r, 200)); 
+      // Prepare hidden div for rendering
+      renderContainer.innerHTML = `<div style="width: 210mm; padding: 10mm; background-color: white; color: black;">${html}</div>`;
 
-        setStatus('Capturing document...');
-        const canvas = await html2canvas(previewRef.current, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          allowTaint: true,
-        });
+      // Give browser time to render content, especially images
+      await new Promise(r => setTimeout(r, 200)); 
 
-        setStatus('Generating PDF...');
-        const pdf = new jsPDF('p', 'px', 'a4'); // portrait, pixels, a4
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
-        
-        // Calculate the height of the image in the PDF.
-        // We are scaling the image to fit the PDF width.
-        const ratio = canvasHeight / canvasWidth;
-        const imgHeight = pdfWidth * ratio;
-        
-        let heightLeft = imgHeight;
-        let position = 0;
+      setStatus('Generating PDF...');
+      const pdf = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4',
+      });
+      
+      await pdf.html(renderContainer, {
+          autoPaging: 'text',
+          margin: [10, 0, 10, 0], // top, right, bottom, left
+      });
 
-        // Add the first page
-        pdf.addImage(canvas, 'PNG', 0, position, pdfWidth, imgHeight);
-        heightLeft -= pdfHeight;
+      const url = pdf.output('bloburl');
+      setPdfUrl(url);
 
-        // Add more pages if content is longer than one page
-        while (heightLeft > 0) {
-          position -= pdfHeight;
-          pdf.addPage();
-          pdf.addImage(canvas, 'PNG', 0, position, pdfWidth, imgHeight);
-          heightLeft -= pdfHeight;
-        }
+      setStatus('Conversion complete!');
+      toast({
+        title: "Success!",
+        description: "Your file has been converted and is ready for download.",
+      });
 
-        const pdfBlob = pdf.output('blob');
-        const url = URL.createObjectURL(pdfBlob);
-        setPdfUrl(url);
-
-        setStatus('Conversion complete!');
-        toast({
-          title: "Success!",
-          description: "Your file has been converted. You can now download it.",
-        });
-      } else {
-        throw new Error("Preview container not found.");
-      }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error("Conversion Error:", error);
       setStatus('Error during conversion.');
       toast({
         variant: "destructive",
         title: "An error occurred",
-        description: "Failed to convert the document. It might be corrupted or use unsupported features.",
+        description: error.message || "Failed to convert the document. It might be corrupted or use unsupported features.",
       });
     } finally {
       setIsLoading(false);
       // Clean up the hidden div
-      if (previewRef.current) {
-        previewRef.current.innerHTML = '';
+      if (renderContainer) {
+        renderContainer.innerHTML = '';
       }
     }
   };
@@ -203,10 +179,10 @@ export function WordToPdfForm() {
           </div>
         )}
       </div>
-      {/* Hidden div for rendering HTML to be captured by html2canvas */}
+      {/* Hidden div for rendering HTML to be captured by jsPDF.html */}
       <div 
         ref={previewRef} 
-        className="absolute -z-10 -left-[9999px] top-0 p-8 bg-white text-black"
+        className="absolute -z-10 -left-[9999px] top-0"
         aria-hidden="true"
       />
     </>
