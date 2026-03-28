@@ -23,6 +23,11 @@ export const resumeFormSchema = z.object({
   skills: z.array(z.object({
     name: z.string().optional(),
   })).optional(),
+  projects: z.array(z.object({
+    name: z.string().optional(),
+    description: z.string().optional(),
+    url: z.string().optional(),
+  })).optional(),
 });
 
 export type ResumeData = z.infer<typeof resumeFormSchema>;

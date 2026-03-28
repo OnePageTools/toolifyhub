@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useForm, useFieldArray, FormProvider, useFormContext, useWatch } from 'react-hook-form';
+import { useForm, useFieldArray, FormProvider, useFormContext } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { resumeFormSchema, type ResumeData } from '@/lib/schema/resume-schema';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,20 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Trash2, Plus, Printer, Mail, Phone, Linkedin, Globe, MapPin } from 'lucide-react';
+import { Trash2, Plus, Printer, Palette, CaseSensitive } from 'lucide-react';
+import { useState } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { templates, type TemplateKey, type TemplateProps } from './templates';
+import { cn } from '@/lib/utils';
+
+// Theme definitions
+const colorThemes = {
+    sky: { primary: 'text-sky-600', background: '#f0f9ff', text: '#0c4a6e' },
+    slate: { primary: 'text-slate-800', background: '#f1f5f9', text: '#334155' },
+    rose: { primary: 'text-rose-600', background: '#fff1f2', text: '#881337' },
+    emerald: { primary: 'text-emerald-700', background: '#ecfdf5', text: '#064e3b' },
+};
+type ColorThemeKey = keyof typeof colorThemes;
 
 // The main component that orchestrates the form and preview
 export function ResumeBuilderForm() {
@@ -26,14 +39,20 @@ export function ResumeBuilderForm() {
       linkedin: 'linkedin.com/in/yourprofile',
       summary: 'A brief professional summary highlighting your key skills, experiences, and career ambitions. Tailor this to the job you are applying for.',
       experience: [{ company: 'Awesome Company', jobTitle: 'Software Engineer', date: 'Jan 2020 - Present', description: '- Developed cool things.\n- Collaborated with great people.' }],
+      projects: [{ name: 'My Side Project', description: '- Built an amazing app that does X, Y, and Z.', url: 'github.com/my-project'}],
       education: [{ school: 'University of Knowledge', degree: 'B.S. in Computer Science', date: 'Graduated May 2020' }],
       skills: [{ name: 'React' }, { name: 'Node.js' }, { name: 'Problem Solving' }],
     },
   });
+  
+  const [template, setTemplate] = useState<TemplateKey>('modern');
+  const [colorTheme, setColorTheme] = useState<ColorThemeKey>('sky');
 
   const handlePrint = () => {
     window.print();
   };
+  
+  const data = methods.watch();
 
   return (
     <FormProvider {...methods}>
@@ -46,7 +65,41 @@ export function ResumeBuilderForm() {
               <CardDescription>Fill out the sections below. The preview will update in real-time.</CardDescription>
             </CardHeader>
             <CardContent>
-              <Accordion type="single" collapsible defaultValue="personal-info" className="w-full">
+              <Accordion type="multiple" defaultValue={['style', 'personal-info']} className="w-full">
+                <AccordionItem value="style">
+                  <AccordionTrigger>Style & Template</AccordionTrigger>
+                  <AccordionContent>
+                      <div className="grid grid-cols-2 gap-4 p-1">
+                          <div className="space-y-1">
+                              <Label className="flex items-center gap-2"><CaseSensitive/> Template</Label>
+                              <Select value={template} onValueChange={(v: TemplateKey) => setTemplate(v)}>
+                                  <SelectTrigger><SelectValue/></SelectTrigger>
+                                  <SelectContent>
+                                      <SelectItem value="modern">Modern</SelectItem>
+                                      <SelectItem value="classic">Classic</SelectItem>
+                                      <SelectItem value="minimal">Minimal</SelectItem>
+                                  </SelectContent>
+                              </Select>
+                          </div>
+                           <div className="space-y-1">
+                              <Label className="flex items-center gap-2"><Palette/> Color Theme</Label>
+                              <Select value={colorTheme} onValueChange={(v: ColorThemeKey) => setColorTheme(v)}>
+                                  <SelectTrigger><SelectValue/></SelectTrigger>
+                                  <SelectContent>
+                                      {Object.entries(colorThemes).map(([key, theme]) => (
+                                          <SelectItem key={key} value={key}>
+                                              <div className="flex items-center gap-2">
+                                                  <div className={cn("w-4 h-4 rounded-full", theme.primary.replace('text-', 'bg-'))} />
+                                                  <span className="capitalize">{key}</span>
+                                              </div>
+                                          </SelectItem>
+                                      ))}
+                                  </SelectContent>
+                              </Select>
+                          </div>
+                      </div>
+                  </AccordionContent>
+                </AccordionItem>
                 <AccordionItem value="personal-info">
                   <AccordionTrigger>Personal Information</AccordionTrigger>
                   <AccordionContent><PersonalForm /></AccordionContent>
@@ -58,6 +111,10 @@ export function ResumeBuilderForm() {
                 <AccordionItem value="experience">
                   <AccordionTrigger>Experience</AccordionTrigger>
                   <AccordionContent><ExperienceForm /></AccordionContent>
+                </AccordionItem>
+                 <AccordionItem value="projects">
+                  <AccordionTrigger>Projects</AccordionTrigger>
+                  <AccordionContent><ProjectsForm /></AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="education">
                   <AccordionTrigger>Education</AccordionTrigger>
@@ -77,19 +134,19 @@ export function ResumeBuilderForm() {
           <Card className="shadow-lg print:shadow-none">
             <CardHeader className="print:hidden">
               <CardTitle>Preview & Download</CardTitle>
-               <Button onClick={handlePrint} className="w-full">
+               <Button onClick={handlePrint} size="lg" className="w-full mt-2">
                 <Printer className="mr-2" /> Download as PDF
               </Button>
             </CardHeader>
             <CardContent className="h-[75vh] overflow-y-auto bg-secondary/50 p-2 print:h-auto print:overflow-visible">
-                <ResumePreview />
+                <ResumePreview data={data} template={template} theme={colorThemes[colorTheme]} />
             </CardContent>
           </Card>
         </div>
       </div>
       {/* This div is only for printing */}
       <div className="hidden print-container">
-        <ResumePreview />
+         <ResumePreview data={data} template={template} theme={colorThemes[colorTheme]} />
       </div>
     </FormProvider>
   );
@@ -105,8 +162,8 @@ const PersonalForm = () => {
       <div className="space-y-1"><Label>Email*</Label><Input {...register('email')} type="email" /><p className="text-destructive text-xs">{errors.email?.message}</p></div>
       <div className="space-y-1"><Label>Phone</Label><Input {...register('phone')} /></div>
       <div className="space-y-1"><Label>Location</Label><Input {...register('location')} placeholder="e.g. San Francisco, CA"/></div>
-      <div className="space-y-1"><Label>Portfolio URL</Label><Input {...register('portfolio')} /></div>
-      <div className="col-span-1 md:col-span-2 space-y-1"><Label>LinkedIn URL</Label><Input {...register('linkedin')} /></div>
+      <div className="space-y-1"><Label>Portfolio URL</Label><Input {...register('portfolio')} placeholder="your-portfolio.com" /></div>
+      <div className="col-span-1 md:col-span-2 space-y-1"><Label>LinkedIn Profile</Label><Input {...register('linkedin')} placeholder="linkedin.com/in/yourprofile" /></div>
     </div>
   );
 };
@@ -138,6 +195,24 @@ const ExperienceForm = () => {
         </div>
       ))}
       <Button type="button" variant="outline" onClick={() => append({ company: '', jobTitle: '', date: '', description: '' })}><Plus className="mr-2" /> Add Experience</Button>
+    </div>
+  );
+};
+
+const ProjectsForm = () => {
+  const { control, register } = useFormContext<ResumeData>();
+  const { fields, append, remove } = useFieldArray({ control, name: 'projects' });
+  return (
+    <div className="space-y-4 p-1">
+      {fields.map((field, index) => (
+        <div key={field.id} className="p-4 border rounded-lg space-y-3 relative bg-background">
+          <Button type="button" variant="ghost" size="icon" className="absolute top-1 right-1 h-7 w-7" onClick={() => remove(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+          <div className="space-y-1"><Label>Project Name</Label><Input {...register(`projects.${index}.name`)} placeholder="e.g., My Awesome App" /></div>
+          <div className="space-y-1"><Label>Project URL (Optional)</Label><Input {...register(`projects.${index}.url`)} placeholder="e.g., github.com/user/repo" /></div>
+          <div className="space-y-1"><Label>Description</Label><Textarea {...register(`projects.${index}.description`)} placeholder="Describe your project. Use hyphens for bullet points." rows={3} /></div>
+        </div>
+      ))}
+      <Button type="button" variant="outline" onClick={() => append({ name: '', description: '', url: '' })}><Plus className="mr-2" /> Add Project</Button>
     </div>
   );
 };
@@ -183,80 +258,26 @@ const SkillsForm = () => {
 
 
 // The real-time preview component
-const ResumePreview = () => {
-    const { watch } = useFormContext<ResumeData>();
-    const data = watch();
+interface ResumePreviewProps extends TemplateProps {
+    template: TemplateKey;
+}
 
-    const renderTextWithBreaks = (text?: string) => {
-        return text?.split('\n').map((line, index) => (
-            <p key={index} className="mb-1">{line}</p>
-        ));
-    };
+const ResumePreview = ({ data, template, theme }: ResumePreviewProps) => {
+    const TemplateComponent = templates[template] || templates.modern;
+    // Deep clone and sanitize data before passing to template
+    const sanitizedData = JSON.parse(JSON.stringify(data || {}));
+    
+    // Ensure all array fields are present
+    const arrayFields: (keyof ResumeData)[] = ['experience', 'education', 'skills', 'projects'];
+    arrayFields.forEach(field => {
+        if (!Array.isArray(sanitizedData[field])) {
+            sanitizedData[field] = [];
+        }
+    });
 
     return (
-        <div className="bg-white text-black shadow-lg aspect-[8.5/11] p-8 w-full h-full transform origin-top print:shadow-none print:transform-none">
-            <header className="text-center mb-6">
-                {data.fullName && <h1 className="text-4xl font-bold tracking-tight text-primary">{data.fullName}</h1>}
-                {data.jobTitle && <p className="text-xl text-gray-600">{data.jobTitle}</p>}
-                <div className="flex justify-center items-center flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-gray-500">
-                    {data.email && <div className="flex items-center gap-1"><Mail size={12}/> {data.email}</div>}
-                    {data.phone && <div className="flex items-center gap-1"><Phone size={12}/> {data.phone}</div>}
-                    {data.location && <div className="flex items-center gap-1"><MapPin size={12}/> {data.location}</div>}
-                    {data.portfolio && <div className="flex items-center gap-1"><Globe size={12}/> {data.portfolio}</div>}
-                    {data.linkedin && <div className="flex items-center gap-1"><Linkedin size={12}/> {data.linkedin}</div>}
-                </div>
-            </header>
-            
-            <main className="text-sm">
-                {data.summary && (
-                    <section className="mb-6">
-                        <h2 className="text-lg font-bold text-primary border-b-2 border-primary pb-1 mb-2">Summary</h2>
-                        <p className="text-gray-700">{data.summary}</p>
-                    </section>
-                )}
-
-                {data.skills?.some(s => s.name) && (
-                    <section className="mb-6">
-                        <h2 className="text-lg font-bold text-primary border-b-2 border-primary pb-1 mb-2">Skills</h2>
-                        <div className="flex flex-wrap gap-2">
-                            {data.skills?.map((skill, index) => skill.name && <span key={index} className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs">{skill.name}</span>)}
-                        </div>
-                    </section>
-                )}
-
-                {data.experience?.some(e => e.company || e.jobTitle) && (
-                    <section className="mb-6">
-                        <h2 className="text-lg font-bold text-primary border-b-2 border-primary pb-1 mb-2">Experience</h2>
-                        {data.experience?.map((exp, index) => (
-                            <div key={index} className="mb-4">
-                                <div className="flex justify-between items-baseline">
-                                    <h3 className="font-bold">{exp.jobTitle || 'Job Title'}</h3>
-                                    <p className="text-xs text-gray-500">{exp.date}</p>
-                                </div>
-                                <p className="text-sm italic">{exp.company || 'Company'}</p>
-                                <div className="text-gray-700 mt-1 text-xs prose prose-sm max-w-none">
-                                    {renderTextWithBreaks(exp.description)}
-                                </div>
-                            </div>
-                        ))}
-                    </section>
-                )}
-                
-                {data.education?.some(e => e.school || e.degree) && (
-                     <section>
-                        <h2 className="text-lg font-bold text-primary border-b-2 border-primary pb-1 mb-2">Education</h2>
-                         {data.education?.map((edu, index) => (
-                            <div key={index} className="mb-2">
-                                 <div className="flex justify-between items-baseline">
-                                    <h3 className="font-bold">{edu.school || 'School'}</h3>
-                                    <p className="text-xs text-gray-500">{edu.date}</p>
-                                </div>
-                                <p className="text-sm italic">{edu.degree || 'Degree'}</p>
-                            </div>
-                        ))}
-                    </section>
-                )}
-            </main>
+        <div className="bg-white shadow-lg aspect-[8.5/11] w-full h-full transform origin-top scale-[0.9] lg:scale-100 print:shadow-none print:transform-none print:scale-100">
+            <TemplateComponent data={sanitizedData} theme={theme} />
         </div>
     );
 };

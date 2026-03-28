@@ -4,8 +4,8 @@ import AIHelper from '@/components/ai-assistant';
 
 export const metadata: Metadata = {
   title: 'Free Resume Builder - Create a Professional Resume in Minutes',
-  description: 'Build a professional, job-winning resume in minutes with our free and easy-to-use resume builder. No sign-up, no AI, just you and your resume.',
-  keywords: 'resume builder, free resume builder, create resume, resume maker',
+  description: 'Build a professional, job-winning resume in minutes with our free and easy-to-use resume builder. Choose from multiple templates and themes. No sign-up required.',
+  keywords: 'resume builder, free resume builder, create resume, resume maker, resume template',
 };
 
 export default function ResumeBuilderPage() {
