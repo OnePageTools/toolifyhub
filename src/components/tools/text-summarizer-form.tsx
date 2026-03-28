@@ -14,10 +14,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useState } from 'react';
-import {
-  summarizeContent,
-  type SummarizeContentOutput,
-} from '@/ai/flows/ai-content-summarization';
 import { Loader2, Zap, RefreshCw, Clipboard, ClipboardCheck, AlignLeft, AlignCenter, List } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
@@ -29,55 +25,138 @@ const formSchema = z.object({
 
 type SummaryLength = 'short' | 'medium' | 'detailed';
 
+type SummarizeClientOutput = {
+  summary: string;
+  keywords: string[];
+  originalWordCount: number;
+  summaryWordCount: number;
+  error?: string;
+};
+
+// Basic list of English stop words
+const stopWords = new Set([
+    'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and', 'any', 'are', 'aren\'t', 'as', 'at',
+    'be', 'because', 'been', 'before', 'being', 'below', 'between', 'both', 'but', 'by', 'can\'t', 'cannot', 'could',
+    'couldn\'t', 'did', 'didn\'t', 'do', 'does', 'doesn\'t', 'doing', 'don\'t', 'down', 'during', 'each', 'few', 'for',
+    'from', 'further', 'had', 'hadn\'t', 'has', 'hasn\'t', 'have', 'haven\'t', 'having', 'he', 'he\'d', 'he\'ll', 'he\'s',
+    'her', 'here', 'here\'s', 'hers', 'herself', 'him', 'himself', 'his', 'how', 'how\'s', 'i', 'i\'d', 'i\'ll', 'i\'m',
+    'i\'ve', 'if', 'in', 'into', 'is', 'isn\'t', 'it', 'it\'s', 'its', 'itself', 'let\'s', 'me', 'more', 'most', 'mustn\'t',
+    'my', 'myself', 'no', 'nor', 'not', 'of', 'off', 'on', 'once', 'only', 'or', 'other', 'ought', 'our', 'ours',
+    'ourselves', 'out', 'over', 'own', 'same', 'shan\'t', 'she', 'she\'d', 'she\'ll', 'she\'s', 'should', 'shouldn\'t',
+    'so', 'some', 'such', 'than', 'that', 'that\'s', 'the', 'their', 'theirs', 'them', 'themselves', 'then', 'there',
+    'there\'s', 'these', 'they', 'they\'d', 'they\'ll', 'they\'re', 'they\'ve', 'this', 'those', 'through', 'to', 'too',
+    'under', 'until', 'up', 'very', 'was', 'wasn\'t', 'we', 'we\'d', 'we\'ll', 'we\'re', 'we\'ve', 'were', 'weren\'t',
+    'what', 'what\'s', 'when', 'when\'s', 'where', 'where\'s', 'which', 'while', 'who', 'who\'s', 'whom', 'why', 'why\'s',
+    'with', 'won\'t', 'would', 'wouldn\'t', 'you', 'you\'d', 'you\'ll', 'you\'re', 'you\'ve', 'your', 'yours', 'yourself',
+    'yourselves'
+]);
+
+
 export function TextSummarizerForm() {
-  const [result, setResult] = useState<SummarizeContentOutput | null>(null);
+  const [result, setResult] = useState<SummarizeClientOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [summaryLength, setSummaryLength] = useState<SummaryLength>('medium');
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      text: '',
-    },
+    defaultValues: { text: '' },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    await handleSummarize(values.text, summaryLength);
-  }
+  const clientSideSummarize = (text: string, length: SummaryLength): SummarizeClientOutput => {
+    // 1. Split into sentences
+    const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
+    if (sentences.length < 2) {
+      return { error: "Not enough text to summarize. Please provide at least two sentences.", summary: '', keywords: [], originalWordCount: 0, summaryWordCount: 0 };
+    }
 
-  const handleSummarize = async (text: string, length: SummaryLength) => {
+    // 2. Create word frequency map
+    const words = text.toLowerCase().replace(/[^a-z\s]/g, "").split(/\s+/);
+    const wordFrequencies: Record<string, number> = {};
+    words.forEach(word => {
+      if (word && !stopWords.has(word)) {
+        wordFrequencies[word] = (wordFrequencies[word] || 0) + 1;
+      }
+    });
+
+    // 3. Score sentences
+    const sentenceScores: { sentence: string, score: number, index: number }[] = [];
+    sentences.forEach((sentence, index) => {
+      let score = 0;
+      const sentenceWords = sentence.toLowerCase().replace(/[^a-z\s]/g, "").split(/\s+/);
+      sentenceWords.forEach(word => {
+        if (wordFrequencies[word]) {
+          score += wordFrequencies[word];
+        }
+      });
+      sentenceScores.push({ sentence, score, index });
+    });
+
+    // 4. Rank sentences and select the top ones
+    const sortedSentences = sentenceScores.sort((a, b) => b.score - a.score);
+    
+    let numSentences: number;
+    switch (length) {
+      case 'short': numSentences = Math.max(2, Math.min(3, Math.ceil(sortedSentences.length * 0.2))); break;
+      case 'medium': numSentences = Math.max(3, Math.min(5, Math.ceil(sortedSentences.length * 0.4))); break;
+      case 'detailed': numSentences = Math.max(5, Math.min(8, Math.ceil(sortedSentences.length * 0.6))); break;
+      default: numSentences = 3;
+    }
+
+    const topSentences = sortedSentences
+      .slice(0, numSentences)
+      .sort((a, b) => a.index - b.index) // Restore original order
+      .map(s => s.sentence.trim());
+      
+    const summary = topSentences.join(' ');
+
+    // 5. Extract keywords
+    const keywords = Object.entries(wordFrequencies)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 7)
+      .map(([word]) => word);
+
+    return {
+      summary,
+      keywords,
+      originalWordCount: words.length,
+      summaryWordCount: summary.split(/\s+/).filter(Boolean).length,
+    };
+  };
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    setError(null);
     setResult(null);
     setIsCopied(false);
+    
+    // Simulate async operation for better UX
+    await new Promise(resolve => setTimeout(resolve, 200));
 
-    try {
-      const summary = await summarizeContent({ text, length });
-      if (summary.error) {
-          setError(summary.error);
-          toast({
-              variant: "destructive",
-              title: "Summarization Failed",
-              description: summary.error,
-          });
-      } else {
-        setResult(summary);
-      }
-    } catch (e) {
-      const errorMessage = 'An unexpected network error occurred. Please try again.';
-      setError(errorMessage);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: errorMessage,
-      });
-    } finally {
-      setIsLoading(false);
+    const summaryResult = clientSideSummarize(values.text, summaryLength);
+    if (summaryResult.error) {
+        toast({
+            variant: "destructive",
+            title: "Summarization Failed",
+            description: summaryResult.error,
+        });
+    } else {
+        setResult(summaryResult);
     }
-  };
+
+    setIsLoading(false);
+  }
+  
+  const handleSummarizeWithLength = (length: SummaryLength) => {
+    setSummaryLength(length);
+    const currentText = form.getValues('text');
+    if (form.getFieldState('text').isDirty && !form.getFieldState('text').error) {
+      const summaryResult = clientSideSummarize(currentText, length);
+      if (!summaryResult.error) {
+        setResult(summaryResult);
+      }
+    }
+  }
 
   const handleCopy = () => {
     if (!result?.summary) return;
@@ -101,7 +180,7 @@ export function TextSummarizerForm() {
               <FormItem>
                 <FormControl>
                   <Textarea
-                    placeholder="Paste your long text or article here..."
+                    placeholder="Paste your long text or article here... The summarization is done entirely in your browser."
                     className="min-h-48"
                     {...field}
                   />
@@ -114,9 +193,9 @@ export function TextSummarizerForm() {
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Summary Length:</span>
               <div className="flex items-center rounded-lg p-1 bg-secondary">
-                <Button type="button" size="sm" variant={summaryLength === 'short' ? 'default' : 'ghost'} onClick={() => setSummaryLength('short')}><AlignLeft />Short</Button>
-                <Button type="button" size="sm" variant={summaryLength === 'medium' ? 'default' : 'ghost'} onClick={() => setSummaryLength('medium')}><AlignCenter />Medium</Button>
-                <Button type="button" size="sm" variant={summaryLength === 'detailed' ? 'default' : 'ghost'} onClick={() => setSummaryLength('detailed')}><List />Detailed</Button>
+                <Button type="button" size="sm" variant={summaryLength === 'short' ? 'default' : 'ghost'} onClick={() => handleSummarizeWithLength('short')}><AlignLeft />Short</Button>
+                <Button type="button" size="sm" variant={summaryLength === 'medium' ? 'default' : 'ghost'} onClick={() => handleSummarizeWithLength('medium')}><AlignCenter />Medium</Button>
+                <Button type="button" size="sm" variant={summaryLength === 'detailed' ? 'default' : 'ghost'} onClick={() => handleSummarizeWithLength('detailed')}><List />Detailed</Button>
               </div>
             </div>
              <Button type="submit" disabled={isLoading}>
@@ -136,7 +215,7 @@ export function TextSummarizerForm() {
         </form>
       </Form>
       
-      {isLoading && <p className="text-center text-muted-foreground">AI is thinking...</p>}
+      {isLoading && <p className="text-center text-muted-foreground">Summarizing your text...</p>}
 
       {result && result.summary && (
         <div className="space-y-6">
@@ -183,7 +262,7 @@ export function TextSummarizerForm() {
                     <CardDescription>{result.summaryWordCount} words</CardDescription>
                   </div>
                    <div className="flex gap-2">
-                      <Button variant="ghost" size="icon" onClick={() => handleSummarize(form.getValues('text'), summaryLength)} disabled={isLoading}>
+                      <Button variant="ghost" size="icon" onClick={() => handleSummarizeWithLength(summaryLength)} disabled={isLoading}>
                         <RefreshCw />
                         <span className="sr-only">Regenerate</span>
                       </Button>
@@ -202,9 +281,6 @@ export function TextSummarizerForm() {
             </Card>
           </div>
         </div>
-      )}
-       {error && (
-        <p className="text-sm text-center text-destructive">{error}</p>
       )}
     </div>
   );

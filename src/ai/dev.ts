@@ -4,7 +4,6 @@ config();
 
 import '@/ai/flows/ai-assisted-essay-writing.ts';
 import '@/ai/flows/contextual-tool-assistance.ts';
-import '@/ai/flows/ai-content-summarization.ts';
 import '@/ai/flows/image-compressor-flow.ts';
 import '@/ai/flows/ai-resume-builder-flow.ts';
 import '@/ai/flows/ai-code-minifier-flow.ts';
