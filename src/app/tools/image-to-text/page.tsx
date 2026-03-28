@@ -12,8 +12,8 @@ import { Type } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Image to Text Converter (OCR) - Free Online Tool',
-  description: 'Extract text from any image with our powerful and free AI-powered OCR tool. Convert pictures to editable text instantly. Accurate and easy to use.',
-  keywords: 'image to text, ocr online, picture to text, extract text from image, image text extractor',
+  description: 'Extract text from any image with our powerful and free client-side OCR tool. Convert pictures to editable text instantly and securely in your browser.',
+  keywords: 'image to text, ocr online, picture to text, extract text from image, image text extractor, tesseract.js',
 };
 
 export default function ImageToTextPage() {
@@ -27,7 +27,7 @@ export default function ImageToTextPage() {
              </div>
             <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">Image to Text (OCR)</CardTitle>
             <CardDescription className="text-lg mt-2">
-              Extract text from any image with our AI-powered OCR tool.
+              Extract text from any image directly in your browser. Fast, secure, and free.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6 md:p-8">
