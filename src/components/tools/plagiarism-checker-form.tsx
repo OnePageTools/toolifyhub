@@ -1,279 +1,215 @@
+
 "use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@/components/ui/form';
+import { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useState, useRef, useMemo } from 'react';
-import {
-  aiPlagiarismCheck,
-  type AIPlagiarismCheckOutput,
-} from '@/ai/flows/ai-plagiarism-detection';
-import { Loader2, ShieldCheck, ShieldAlert, FileDown, Search, MessageSquare, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { Search, Loader2, RefreshCw, BarChart } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
-const formSchema = z.object({
-  text: z.string().min(50, { message: 'Please enter at least 50 characters to check.' }),
-});
+// List of common filler words and phrases
+const commonPhrases = new Set([
+  'in conclusion', 'for example', 'on the other hand', 'as a matter of fact',
+  'at the end of the day', 'in the long run', 'it is what it is', 'to be honest',
+  'believe it or not', 'needless to say', 'for what it\'s worth', 'in my opinion',
+  'in order to', 'due to the fact that', 'the point is', 'basically', 'actually',
+  'literally', 'obviously', 'really', 'very', 'somewhat', 'a little bit'
+]);
+
+// Helper to create n-grams from a word array
+const getNgrams = (words: string[], n: number): Map<string, number> => {
+    const ngrams = new Map<string, number>();
+    for (let i = 0; i <= words.length - n; i++) {
+        const ngram = words.slice(i, i + n).join(' ');
+        ngrams.set(ngram, (ngrams.get(ngram) || 0) + 1);
+    }
+    return ngrams;
+}
+
+type AnalysisResult = {
+    score: number;
+    repeatedPhrases: { phrase: string, count: number }[];
+    wordCount: number;
+    uniqueWords: number;
+} | null;
+
 
 export function PlagiarismCheckerForm() {
-  const [result, setResult] = useState<AIPlagiarismCheckOutput | null>(null);
+  const [text, setText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const reportRef = useRef<HTMLDivElement>(null);
+  const [result, setResult] = useState<AnalysisResult>(null);
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      text: '',
-    },
-  });
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const handleAnalyze = () => {
+    if (text.trim().length < 50) {
+      toast({
+        variant: "destructive",
+        title: "Text is too short",
+        description: "Please provide at least 50 characters for an accurate analysis.",
+      });
+      return;
+    }
+    
     setIsLoading(true);
-    setError(null);
     setResult(null);
-    try {
-      const checkResult = await aiPlagiarismCheck(values);
-      if (checkResult.error) {
-        setError(checkResult.error);
-        toast({
-          variant: "destructive",
-          title: "Analysis Failed",
-          description: checkResult.error,
+
+    // Simulate a short delay for better UX
+    setTimeout(() => {
+        const words = text.toLowerCase().replace(/[^\w\s']/g, '').split(/\s+/).filter(Boolean);
+        const totalWords = words.length;
+
+        if (totalWords < 10) {
+            setIsLoading(false);
+            toast({ variant: "destructive", title: "Not enough content", description: "Please enter more text to analyze." });
+            return;
+        }
+
+        const uniqueWords = new Set(words);
+        
+        // Base score on lexical diversity
+        let score = (uniqueWords.size / totalWords) * 100;
+        
+        // Penalize for repeated 5-word phrases
+        const fiveGrams = getNgrams(words, 5);
+        const repeatedPhrases: {phrase: string, count: number}[] = [];
+        let repetitionPenalty = 0;
+        fiveGrams.forEach((count, phrase) => {
+            if (count > 1) {
+                // Heavier penalty for more repetitions
+                repetitionPenalty += (count - 1) * Math.log(phrase.length) * 2;
+                repeatedPhrases.push({ phrase, count });
+            }
         });
-      } else {
-        setResult(checkResult);
-        toast({
-          title: "Analysis Complete",
-          description: "Your originality report is ready.",
+        score -= repetitionPenalty;
+
+        // Penalize for common filler phrases
+        let commonPhrasePenalty = 0;
+        commonPhrases.forEach(phrase => {
+            if (text.toLowerCase().includes(phrase)) {
+                commonPhrasePenalty += 1;
+            }
         });
-      }
-    } catch (e: any) {
-      const genericError = e.message || 'An unexpected network error occurred. Please try again.';
-      setError(genericError);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: genericError,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }
+        score -= commonPhrasePenalty;
 
-  const handleDownloadPdf = async () => {
-    const reportElement = reportRef.current;
-    if (!reportElement) return;
+        // Clamp score
+        score = Math.max(0, Math.min(100, score));
 
-    // Temporarily increase width for better capture quality
-    reportElement.style.width = '1050px';
-    
-    try {
-      const canvas = await html2canvas(reportElement, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
+        setResult({
+            score: Math.round(score),
+            repeatedPhrases: repeatedPhrases.sort((a, b) => b.count - a.count).slice(0, 5),
+            wordCount: totalWords,
+            uniqueWords: uniqueWords.size,
+        });
 
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: [canvas.width, canvas.height],
-      });
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      pdf.save('originality-report.pdf');
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      toast({
-        variant: "destructive",
-        title: "PDF Export Failed",
-        description: "There was an issue generating the PDF.",
-      });
-    } finally {
-        // Revert style changes
-       reportElement.style.width = '';
-    }
+        setIsLoading(false);
+        toast({ title: "Analysis Complete", description: "Your originality report is ready." });
+
+    }, 500); // 500ms delay
   };
-
-  const highlightedText = useMemo(() => {
-    if (!result) return form.getValues('text');
-    
-    const originalText = form.getValues('text');
-    let highlighted = originalText;
-
-    if (result.similarSegments) {
-        result.similarSegments.forEach(segment => {
-          // Use a more robust regex that handles special characters
-          const escapedSegment = segment.segment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          const regex = new RegExp(escapedSegment, 'g');
-          highlighted = highlighted.replace(regex, `<span class="bg-yellow-200 dark:bg-yellow-900/50 rounded px-1">${segment.segment}</span>`);
-        });
-    }
-
-    return highlighted;
-  }, [result, form]);
-
 
   const handleReset = () => {
-    form.reset();
+    setText('');
     setResult(null);
-    setError(null);
   };
   
-  const uniquenessScore = result?.uniquenessScore ?? 0;
-  const plagiarismPercentage = 100 - uniquenessScore;
-  const isOriginal = uniquenessScore > 95;
+  const plagiarismPercentage = result ? 100 - result.score : 0;
 
   return (
     <div className="space-y-6">
       {!result ? (
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="text"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Paste your text here to check for originality. We recommend at least 50 characters for an accurate analysis."
-                      className="min-h-60"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" disabled={isLoading} size="lg">
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Analyzing...
-                </>
-              ) : (
-                <>
-                  <Search className="mr-2" />
-                  Check Originality
-                </>
-              )}
-            </Button>
-          </form>
-        </Form>
-      ) : (
-        <div className="space-y-6">
-            <div className="flex flex-wrap gap-2 justify-end">
-                <Button onClick={handleDownloadPdf} variant="outline">
-                    <FileDown className="mr-2" /> Download Report
-                </Button>
-                <Button onClick={handleReset}>
-                    <RefreshCw className="mr-2" /> Start New Check
-                </Button>
-            </div>
-          <div ref={reportRef} className="p-8 border rounded-lg bg-background printable-area">
-             <header className="mb-8">
-                 <h1 className="text-3xl font-bold text-foreground">Originality Report</h1>
-                 <p className="text-muted-foreground">Analysis completed on: {new Date().toLocaleString()}</p>
-             </header>
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <Card className="col-span-1 flex flex-col justify-center">
-                    <CardHeader>
-                        <CardTitle className="text-xl">Uniqueness Score</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="text-center text-4xl font-bold">
-                            {uniquenessScore.toFixed(0)}%
-                            <span className="text-lg font-normal text-muted-foreground"> Unique</span>
-                        </div>
-                         <div>
-                            <div className="flex justify-between text-sm text-muted-foreground mb-1">
-                                <span>Similar Content</span>
-                                <span>{plagiarismPercentage.toFixed(0)}%</span>
-                            </div>
-                            <Progress value={plagiarismPercentage} className="h-2 [&>div]:bg-yellow-500" />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                 <Card className="md:col-span-2">
-                    <CardHeader>
-                         <CardTitle className="text-xl flex items-center gap-2">
-                            {isOriginal ? <ShieldCheck className="text-green-500" /> : <ShieldAlert className="text-yellow-500" />}
-                            Analysis Details
-                         </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex justify-between items-center text-sm p-3 bg-secondary rounded-md">
-                            <span className="font-medium text-muted-foreground">Similar Segments Found</span>
-                            <span className="font-bold text-yellow-500">{result.similarSegments?.length ?? 0}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-sm p-3 bg-secondary rounded-md">
-                            <span className="font-medium text-muted-foreground">Est. Uniqueness</span>
-                            <span className="font-bold text-green-500">{uniquenessScore.toFixed(0)}%</span>
-                        </div>
-                        <div>
-                             <h4 className="font-semibold mb-1">AI Summary</h4>
-                             <p className="text-sm text-muted-foreground italic">"{result.summary}"</p>
-                        </div>
-                    </CardContent>
-                 </Card>
-            </div>
-            
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-xl">Analyzed Text</CardTitle>
-                    <CardDescription>Segments with high similarity to common sources are highlighted in yellow.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div
-                        className="prose prose-sm dark:prose-invert max-w-none p-4 border rounded-md bg-secondary/50 max-h-96 overflow-y-auto"
-                        dangerouslySetInnerHTML={{ __html: highlightedText }}
-                    />
-                </CardContent>
-            </Card>
-
-            {result.similarSegments && result.similarSegments.length > 0 && (
-                <Card className="mt-6">
-                    <CardHeader>
-                        <CardTitle className="text-xl">Flagged Segments</CardTitle>
-                        <CardDescription>These segments show similarity to common phrases or known text.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ul className="space-y-3">
-                            {result.similarSegments.map((segment, index) => (
-                                <li key={index} className="p-3 border rounded-md bg-secondary">
-                                    <p className="italic text-sm">"...{segment.segment}..."</p>
-                                    <p className="text-primary text-xs flex items-center gap-1 mt-1 font-medium">
-                                        <MessageSquare className="h-3 w-3" /> 
-                                        Reason: {segment.explanation} (Similarity: {(segment.similarityScore * 100).toFixed(0)}%)
-                                    </p>
-                                </li>
-                            ))}
-                        </ul>
-                    </CardContent>
-                </Card>
+        <div className="space-y-4">
+          <Textarea
+            placeholder="Paste your text here to check for originality. The analysis is done entirely in your browser."
+            className="min-h-60"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <Button onClick={handleAnalyze} disabled={isLoading} size="lg">
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <Search className="mr-2" />
+                Check Originality
+              </>
             )}
-          </div>
+          </Button>
         </div>
-      )}
+      ) : (
+        <div className="space-y-6 animate-in fade-in-50">
+          <div className="flex flex-wrap gap-2 justify-end">
+            <Button onClick={handleReset} variant="outline">
+              <RefreshCw className="mr-2" /> Start New Check
+            </Button>
+          </div>
 
-       {error && !isLoading && (
-        <p className="text-sm text-destructive text-center">{error}</p>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Originality Report</CardTitle>
+              <CardDescription>This is an estimation based on text analysis, not an exhaustive plagiarism check against external sources.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                 <div className="text-center">
+                    <div className="text-5xl font-bold text-primary">{result.score}%</div>
+                    <div className="text-muted-foreground">Estimated Originality</div>
+                 </div>
+                 <div className="space-y-2">
+                    <div className="flex justify-between text-sm text-muted-foreground mb-1">
+                        <span>Repetitive Content</span>
+                        <span>{plagiarismPercentage}%</span>
+                    </div>
+                    <Progress value={plagiarismPercentage} className="h-2 [&>div]:bg-yellow-500" />
+                 </div>
+              </div>
+               <div className="grid grid-cols-2 gap-4 text-center">
+                    <Card className="p-3 bg-secondary/50">
+                        <p className="text-2xl font-bold">{result.wordCount}</p>
+                        <p className="text-xs text-muted-foreground">Total Words</p>
+                    </Card>
+                     <Card className="p-3 bg-secondary/50">
+                        <p className="text-2xl font-bold">{result.uniqueWords}</p>
+                        <p className="text-xs text-muted-foreground">Unique Words</p>
+                    </Card>
+                </div>
+            </CardContent>
+          </Card>
+          
+          {result.repeatedPhrases.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl flex items-center gap-2"><BarChart/>Most Repeated Phrases</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {result.repeatedPhrases.map((item, index) => (
+                    <li key={index} className="flex justify-between items-center text-sm p-2 bg-secondary rounded-md">
+                      <span className="italic text-muted-foreground">"{item.phrase}"</span>
+                      <span className="font-bold text-primary">{item.count} times</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Your Text</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="prose prose-sm dark:prose-invert max-w-none p-4 border rounded-md bg-secondary/50 max-h-60 overflow-y-auto">
+                {text}
+              </div>
+            </CardContent>
+          </Card>
+
+        </div>
       )}
     </div>
   );
