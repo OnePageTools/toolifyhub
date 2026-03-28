@@ -13,17 +13,23 @@ export const ClassicTemplate = ({ data, theme }: TemplateProps) => {
   return (
     <div className="bg-white text-black p-8 font-serif" style={{ color: theme.text }}>
       {/* Header */}
-      <header className="text-center mb-8">
-        {data.fullName && <h1 className={cn("text-5xl font-bold tracking-tight mb-1", theme.primary)}>{data.fullName}</h1>}
-        {data.jobTitle && <p className="text-xl text-gray-600 font-body">{data.jobTitle}</p>}
-        <div className="flex justify-center items-center flex-wrap gap-x-4 gap-y-1 mt-3 text-xs text-gray-500 font-body">
-          {data.email && <div className="flex items-center gap-1.5"><Mail size={12}/> {data.email}</div>}
-          {data.phone && <div className="flex items-center gap-1.5"><Phone size={12}/> {data.phone}</div>}
-          {data.location && <div className="flex items-center gap-1.5"><MapPin size={12}/> {data.location}</div>}
-          {data.portfolio && <div className="flex items-center gap-1.5"><Globe size={12}/> {data.portfolio}</div>}
-          {data.linkedin && <div className="flex items-center gap-1.5"><Linkedin size={12}/> {data.linkedin}</div>}
+      <header className={cn("mb-8 flex items-center gap-8", !data.photo && "text-center flex-col")}>
+        {data.photo && (
+          <img src={data.photo} alt={data.fullName || 'Profile Photo'} className="w-32 h-32 rounded-full object-cover shadow-md" />
+        )}
+        <div className={cn(!data.photo && "text-center")}>
+          {data.fullName && <h1 className={cn("text-5xl font-bold tracking-tight mb-1", theme.primary)}>{data.fullName}</h1>}
+          {data.jobTitle && <p className="text-xl text-gray-600 font-body">{data.jobTitle}</p>}
+          <div className={cn("flex justify-center items-center flex-wrap gap-x-4 gap-y-1 mt-3 text-xs text-gray-500 font-body", data.photo && "justify-start")}>
+            {data.email && <div className="flex items-center gap-1.5"><Mail size={12}/> {data.email}</div>}
+            {data.phone && <div className="flex items-center gap-1.5"><Phone size={12}/> {data.phone}</div>}
+            {data.location && <div className="flex items-center gap-1.5"><MapPin size={12}/> {data.location}</div>}
+            {data.portfolio && <div className="flex items-center gap-1.5"><Globe size={12}/> {data.portfolio}</div>}
+            {data.linkedin && <div className="flex items-center gap-1.5"><Linkedin size={12}/> {data.linkedin}</div>}
+          </div>
         </div>
       </header>
+
 
       {/* Body */}
       <main className="text-sm font-body">
@@ -94,3 +100,5 @@ export const ClassicTemplate = ({ data, theme }: TemplateProps) => {
     </div>
   );
 };
+
+    

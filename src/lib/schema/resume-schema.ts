@@ -1,6 +1,8 @@
+
 import { z } from 'zod';
 
 export const resumeFormSchema = z.object({
+  photo: z.string().optional(),
   fullName: z.string().min(1, 'Full name is required'),
   jobTitle: z.string().optional(),
   email: z.string().email('A valid email is required'),
@@ -31,3 +33,5 @@ export const resumeFormSchema = z.object({
 });
 
 export type ResumeData = z.infer<typeof resumeFormSchema>;
+
+    

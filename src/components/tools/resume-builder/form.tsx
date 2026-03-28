@@ -10,11 +10,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Trash2, Plus, Printer, Palette, CaseSensitive } from 'lucide-react';
+import { Trash2, Plus, Printer, Palette, CaseSensitive, User } from 'lucide-react';
 import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { templates, type TemplateKey, type TemplateProps } from './templates';
 import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 // Theme definitions
 const colorThemes = {
@@ -30,6 +31,7 @@ export function ResumeBuilderForm() {
   const methods = useForm<ResumeData>({
     resolver: zodResolver(resumeFormSchema),
     defaultValues: {
+      photo: '',
       fullName: 'Your Name',
       jobTitle: 'Your Job Title',
       email: 'youremail@example.com',
@@ -154,9 +156,49 @@ export function ResumeBuilderForm() {
 
 // Sub-components for form sections
 const PersonalForm = () => {
-  const { register, formState: { errors } } = useFormContext<ResumeData>();
+  const { register, formState: { errors }, setValue, watch } = useFormContext<ResumeData>();
+  const photoUrl = watch('photo');
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        alert('File size must be less than 2MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setValue('photo', reader.result as string, { shouldDirty: true });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
+       <div className="md:col-span-2 space-y-2">
+        <Label>Profile Photo</Label>
+        <div className="flex items-center gap-4">
+          <Avatar className="h-24 w-24">
+            <AvatarImage src={photoUrl || undefined} alt="Profile Photo" />
+            <AvatarFallback>
+              <User className="h-12 w-12 text-muted-foreground" />
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col gap-2">
+            <Button asChild variant="outline" size="sm">
+              <label htmlFor="photo-upload" className="cursor-pointer">Upload Photo</label>
+            </Button>
+            <Input id="photo-upload" type="file" accept="image/png, image/jpeg, image/webp" onChange={handlePhotoUpload} className="hidden" />
+            {photoUrl && (
+              <Button type="button" variant="ghost" size="sm" onClick={() => setValue('photo', '', { shouldDirty: true })} className="text-destructive hover:text-destructive flex items-center justify-start">
+                <Trash2 className="mr-2 h-4 w-4" /> Remove
+              </Button>
+            )}
+             <p className="text-xs text-muted-foreground">PNG, JPG, WEBP up to 2MB.</p>
+          </div>
+        </div>
+      </div>
       <div className="space-y-1"><Label>Full Name*</Label><Input {...register('fullName')} /><p className="text-destructive text-xs">{errors.fullName?.message}</p></div>
       <div className="space-y-1"><Label>Job Title</Label><Input {...register('jobTitle')} placeholder="e.g. Senior Software Engineer"/></div>
       <div className="space-y-1"><Label>Email*</Label><Input {...register('email')} type="email" /><p className="text-destructive text-xs">{errors.email?.message}</p></div>
@@ -281,3 +323,5 @@ const ResumePreview = ({ data, template, theme }: ResumePreviewProps) => {
         </div>
     );
 };
+
+    

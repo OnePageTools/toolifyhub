@@ -14,9 +14,16 @@ export const MinimalTemplate = ({ data, theme }: TemplateProps) => {
     <div className="bg-white text-black p-10 font-body" style={{ color: theme.text }}>
       {/* Header */}
       <header className="mb-10">
-        {data.fullName && <h1 className={cn("text-4xl font-bold font-serif mb-2", theme.primary)}>{data.fullName}</h1>}
-        {data.jobTitle && <p className="text-lg text-gray-600">{data.jobTitle}</p>}
-        <div className="text-xs text-gray-500 mt-2 border-t pt-2 flex flex-wrap gap-x-4 gap-y-1">
+        <div className="flex flex-row items-center gap-8">
+            {data.photo && (
+                <img src={data.photo} alt={data.fullName || 'Profile Photo'} className="w-24 h-24 rounded-full object-cover" />
+            )}
+            <div className="flex-1">
+                {data.fullName && <h1 className={cn("text-4xl font-bold font-serif mb-2", theme.primary)}>{data.fullName}</h1>}
+                {data.jobTitle && <p className="text-lg text-gray-600">{data.jobTitle}</p>}
+            </div>
+        </div>
+        <div className="text-xs text-gray-500 mt-4 border-t pt-2 flex flex-wrap gap-x-4 gap-y-1">
             {data.email && <a href={`mailto:${data.email}`} className="hover:underline">{data.email}</a>}
             {data.phone && <span>{data.phone}</span>}
             {data.location && <span>{data.location}</span>}
@@ -98,3 +105,5 @@ export const MinimalTemplate = ({ data, theme }: TemplateProps) => {
     </div>
   );
 };
+
+    
