@@ -167,7 +167,16 @@ const ResumePreview = () => {
       // Trigger validation for all fields
       const isValidForm = await trigger(); 
       if (isValidForm) {
-        setPreviewData(getValues());
+        const rawData = getValues();
+        setPreviewData({
+            ...rawData,
+            experience: rawData.experience || [],
+            education: rawData.education || [],
+            skills: rawData.skills || [],
+            projects: rawData.projects || [],
+            certifications: rawData.certifications || [],
+            languages: rawData.languages || [],
+        });
       } else {
         setPreviewData(null);
       }
