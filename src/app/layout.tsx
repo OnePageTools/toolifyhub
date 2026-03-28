@@ -5,13 +5,65 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { Poppins, Inter, Playfair_Display } from 'next/font/google';
 
+const siteConfig = {
+  name: 'ToolifyHub',
+  url: 'https://toolifyhub.com',
+  ogImage: 'https://toolifyhub.com/og.png',
+  description: 'Your ultimate suite of 20+ free, professional online tools. Featuring AI-powered utilities like PDF converters, image compressors, text summarizers, and a resume builder. No sign-up required, 100% free.',
+  title: 'ToolifyHub - Free All-in-One Tools for Productivity',
+};
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.title,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  keywords: [
+    "free online tools",
+    "productivity tools",
+    "pdf tools",
+    "image tools",
+    "developer tools",
+    "text tools",
+    "resume builder",
+  ],
+  authors: [{ name: 'ToolifyHub' }],
+  creator: 'ToolifyHub',
   verification: {
     google: "rBMCQjItPptEmhBrwvazsrpiqZr3uTbw6UlH4iuvKl4",
   },
-  title: 'ToolifyHub - Free All-in-One Tools for Productivity',
-  description:
-    'Your ultimate suite of 20+ free, professional online tools. Featuring AI-powered utilities like PDF converters, image compressors, text summarizers, and a resume builder. No sign-up required, 100% free.',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: siteConfig.url,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
 };
 
 const poppins = Poppins({

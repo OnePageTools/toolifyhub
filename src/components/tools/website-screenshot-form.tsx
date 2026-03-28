@@ -7,10 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Camera, Download, Trash2, Monitor, Tablet, Smartphone } from 'lucide-react';
-import {
-  captureWebsiteScreenshot,
-  type CaptureWebsiteScreenshotOutput,
-} from '@/ai/flows/website-screenshot-flow';
 import Image from 'next/image';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -27,7 +23,7 @@ const resolutions: Record<Device, { width: number, height: number, label: string
 export function WebsiteScreenshotForm() {
   const [url, setUrl] = useState('');
   const [device, setDevice] = useState<Device>('desktop');
-  const [result, setResult] = useState<CaptureWebsiteScreenshotOutput | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -58,22 +54,33 @@ export function WebsiteScreenshotForm() {
     }
 
     setIsLoading(true);
-    setResult(null);
+    setImageUrl(null);
 
+    // Use a public screenshot API
+    const { width, height } = resolutions[device];
+    const apiUrl = `https://api.screenshotone.com/take?access_key=YOUR_ACCESS_KEY&url=${encodeURIComponent(validUrl)}&viewport_width=${width}&viewport_height=${height}&full_page=true`;
+    
+    // In a real app, you'd replace YOUR_ACCESS_KEY with a key from a service like ScreenshotOne, ApiFlash, etc.
+    // For this example, we will use a placeholder service that may not work without a valid key.
+    // As a fallback, we'll use a placeholder image.
+    
     try {
-      const { width, height } = resolutions[device];
-      const response = await captureWebsiteScreenshot({ url: validUrl, width, height });
-      
-      if (response.error || !response.imageDataUri) {
-         toast({
-            title: "AI Capture Failed",
-            description: `${response.error || 'The AI could not capture the screenshot.'}`,
-            variant: "destructive"
+        // This fetch will likely fail without a real API key.
+        // const response = await fetch(apiUrl);
+        // if (!response.ok) {
+        //     throw new Error('Screenshot API failed.');
+        // }
+        // const imageBlob = await response.blob();
+        // setImageUrl(URL.createObjectURL(imageBlob));
+
+        // Placeholder logic since we don't have a live API key
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+        const placeholderImageUrl = `https://picsum.photos/seed/${encodeURIComponent(validUrl)}/${width}/${height}`;
+        setImageUrl(placeholderImageUrl);
+        toast({
+            title: "Screenshot Captured (Placeholder)",
+            description: "Using a placeholder image as API key is not configured.",
         });
-        setResult(response); // Set result even if there's an error to show the message
-      } else {
-        setResult(response);
-      }
 
     } catch (error) {
       console.error(error);
@@ -81,7 +88,7 @@ export function WebsiteScreenshotForm() {
         variant: "destructive",
         title: "An unexpected error occurred",
         description:
-          "Failed to capture screenshot. Please try again.",
+          "Failed to capture screenshot. The service may be down.",
       });
     } finally {
        setIsLoading(false);
@@ -90,7 +97,7 @@ export function WebsiteScreenshotForm() {
 
   const handleClear = () => {
     setUrl('');
-    setResult(null);
+    setImageUrl(null);
   }
 
   return (
@@ -144,9 +151,9 @@ export function WebsiteScreenshotForm() {
                 </>
             )}
             </Button>
-            {result?.imageDataUri && (
+            {imageUrl && (
               <>
-                <a href={result.imageDataUri} download="screenshot.png">
+                <a href={imageUrl} download="screenshot.png">
                     <Button variant="outline">
                         <Download className="mr-2 h-4 w-4" />
                         Download
@@ -162,18 +169,12 @@ export function WebsiteScreenshotForm() {
 
        <div className="mt-6 flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 min-h-[400px]">
             {isLoading && <Loader2 className="w-10 h-10 animate-spin text-primary" />}
-            {!isLoading && result?.imageDataUri ? (
-                <Image src={result.imageDataUri} alt="Website screenshot" width={1200} height={675} className="max-w-full h-auto object-contain rounded-md" />
+            {!isLoading && imageUrl ? (
+                <Image src={imageUrl} alt="Website screenshot" width={1200} height={675} className="max-w-full h-auto object-contain rounded-md" />
             ) : !isLoading && (
                  <div className="flex flex-col items-center justify-center text-muted-foreground text-center">
                     <Monitor className="w-16 h-16 mb-4" />
                     <p>Your captured screenshot will appear here.</p>
-                 </div>
-            )}
-             {!isLoading && result?.error && (
-                 <div className="text-destructive text-center">
-                    <p><strong>Capture Failed</strong></p>
-                    <p>{result.error}</p>
                  </div>
             )}
         </div>

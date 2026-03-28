@@ -1,9 +1,22 @@
 
 import type {NextConfig} from 'next';
 
+const securityHeaders = [
+  {
+    key: 'X-Frame-Options',
+    value: 'SAMEORIGIN',
+  },
+  {
+    key: 'X-Content-Type-Options',
+    value: 'nosniff',
+  },
+  {
+    key: 'Referrer-Policy',
+    value: 'origin-when-cross-origin',
+  }
+];
+
 const nextConfig: NextConfig = {
-  output: 'export',
-  /* config options here */
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -28,6 +41,14 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     allowedDevOrigins: ["*.cloudworkstations.dev"],
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: securityHeaders,
+      },
+    ];
   },
 };
 

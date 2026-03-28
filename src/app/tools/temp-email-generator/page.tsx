@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { TempEmailGeneratorForm } from '@/components/tools/temp-email-generator-form';
 import {
@@ -10,34 +11,77 @@ import {
 import AIHelper from '@/components/ai-assistant';
 import { Mail } from 'lucide-react';
 
-export const metadata: Metadata = {
+const tool = {
+  name: 'Temporary Email Generator',
+  url: '/tools/temp-email-generator',
   title: 'Free Temporary Email Generator - Disposable & Anonymous Email',
   description: 'Instantly create a secure, private, and disposable email address with a simulated real-time inbox. Protect your privacy and avoid spam. Free and no sign-up required.',
-  keywords: 'temp email, temporary email, disposable email, fake email generator, throwaway email',
+  keywords: 'temp email, temporary email, disposable email, fake email generator, throwaway email, anonymous email',
 };
+
+export const metadata: Metadata = {
+  title: tool.title,
+  description: tool.description,
+  keywords: tool.keywords.split(','),
+  alternates: {
+    canonical: tool.url,
+  },
+  openGraph: {
+    title: tool.title,
+    description: tool.description,
+    url: tool.url,
+  },
+  twitter: {
+    title: tool.title,
+    description: tool.description,
+  },
+};
+
+const WebAppSchema = () => (
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{ __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": tool.name,
+      "description": tool.description,
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "All",
+      "url": `https://toolifyhub.com${tool.url}`,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    })}}
+  />
+);
 
 export default function TempEmailGeneratorPage() {
   return (
-    <div className="container mx-auto py-10 px-4">
-      <div className="max-w-7xl mx-auto">
-        <Card className="shadow-lg border-primary/20 overflow-hidden">
-          <CardHeader className="text-center bg-secondary/50 p-6">
-             <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
-                <Mail className="w-10 h-10 text-primary" />
-             </div>
-            <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
-              Advanced Temporary Email Generator
-            </CardTitle>
-            <CardDescription className="text-lg mt-2 max-w-2xl mx-auto">
-              Instantly create a secure, private, and disposable email address with a simulated real-time inbox.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-4 md:p-6">
-            <TempEmailGeneratorForm />
-          </CardContent>
-        </Card>
+    <>
+      <WebAppSchema />
+      <div className="container mx-auto py-10 px-4">
+        <div className="max-w-7xl mx-auto">
+          <Card className="shadow-lg border-primary/20 overflow-hidden">
+            <CardHeader className="text-center bg-secondary/50 p-6">
+               <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
+                  <Mail className="w-10 h-10 text-primary" />
+               </div>
+              <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
+                Advanced Temporary Email Generator
+              </CardTitle>
+              <CardDescription className="text-lg mt-2 max-w-2xl mx-auto">
+                Instantly create a secure, private, and disposable email address with a simulated real-time inbox.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 md:p-6">
+              <TempEmailGeneratorForm />
+            </CardContent>
+          </Card>
+        </div>
+        <AIHelper toolName="Temporary Email Generator" />
       </div>
-      <AIHelper toolName="Temporary Email Generator" />
-    </div>
+    </>
   );
 }

@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { JsonFormatterForm } from '@/components/tools/json-formatter-form';
 import {
@@ -10,34 +11,77 @@ import {
 import AIHelper from '@/components/ai-assistant';
 import { Braces } from 'lucide-react';
 
-export const metadata: Metadata = {
+const tool = {
+  name: 'JSON Formatter & Validator',
+  url: '/tools/json-formatter',
   title: 'JSON Formatter & Validator - Free Online Tool',
-  description: 'Format, validate, and beautify your JSON data with our free online tool. Provides real-time feedback and makes your JSON readable in seconds.',
-  keywords: 'json formatter, json validator, json beautifier, format json, pretty print json',
+  description: 'Format, validate, beautify, and pretty-print your JSON data with our free online tool. Provides real-time feedback and makes your JSON readable in seconds.',
+  keywords: 'json formatter, json validator, json beautifier, format json, pretty print json, json viewer',
 };
+
+export const metadata: Metadata = {
+  title: tool.title,
+  description: tool.description,
+  keywords: tool.keywords.split(','),
+  alternates: {
+    canonical: tool.url,
+  },
+  openGraph: {
+    title: tool.title,
+    description: tool.description,
+    url: tool.url,
+  },
+  twitter: {
+    title: tool.title,
+    description: tool.description,
+  },
+};
+
+const WebAppSchema = () => (
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{ __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": tool.name,
+      "description": tool.description,
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "All",
+      "url": `https://toolifyhub.com${tool.url}`,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    })}}
+  />
+);
 
 export default function JsonFormatterPage() {
   return (
-    <div className="container mx-auto py-10 px-4">
-      <div className="max-w-7xl mx-auto">
-        <Card className="shadow-lg border-primary/20 overflow-hidden">
-          <CardHeader className="text-center bg-secondary/50 p-6">
-             <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
-                <Braces className="w-10 h-10 text-primary" />
-             </div>
-            <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
-              JSON Formatter & Validator
-            </CardTitle>
-            <CardDescription className="text-lg mt-2 max-w-2xl mx-auto">
-              A professional tool to format, validate, and beautify your JSON data with real-time feedback.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-0 md:p-2 h-[75vh] md:h-auto">
-            <JsonFormatterForm />
-          </CardContent>
-        </Card>
+    <>
+      <WebAppSchema />
+      <div className="container mx-auto py-10 px-4">
+        <div className="max-w-7xl mx-auto">
+          <Card className="shadow-lg border-primary/20 overflow-hidden">
+            <CardHeader className="text-center bg-secondary/50 p-6">
+               <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
+                  <Braces className="w-10 h-10 text-primary" />
+               </div>
+              <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
+                JSON Formatter & Validator
+              </CardTitle>
+              <CardDescription className="text-lg mt-2 max-w-2xl mx-auto">
+                A professional tool to format, validate, and beautify your JSON data with real-time feedback.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 md:p-2 h-[75vh] md:h-auto">
+              <JsonFormatterForm />
+            </CardContent>
+          </Card>
+        </div>
+        <AIHelper toolName="JSON Formatter" />
       </div>
-      <AIHelper toolName="JSON Formatter" />
-    </div>
+    </>
   );
 }
