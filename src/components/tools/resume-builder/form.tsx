@@ -159,24 +159,32 @@ const ResumePreview = () => {
         setIsClient(true);
     }, []);
 
-    const { getValues, trigger, formState: { isValid, isDirty } } = useFormContext<ResumeData>();
+    const { getValues, trigger, formState: { isDirty } } = useFormContext<ResumeData>();
     const formData = useWatch();
 
     const handleGeneratePreview = async () => {
       setIsGenerating(true);
-      // Trigger validation for all fields
       const isValidForm = await trigger(); 
       if (isValidForm) {
         const rawData = getValues();
-        setPreviewData({
-            ...rawData,
+        // Defensively create the data object to ensure no undefined arrays are passed
+        const sanitizedData: ResumeData = {
+            fullName: rawData.fullName,
+            email: rawData.email,
+            phone: rawData.phone,
+            address: rawData.address,
+            linkedin: rawData.linkedin,
+            portfolio: rawData.portfolio,
+            profilePicture: rawData.profilePicture,
+            summary: rawData.summary,
             experience: rawData.experience || [],
             education: rawData.education || [],
             skills: rawData.skills || [],
             projects: rawData.projects || [],
             certifications: rawData.certifications || [],
             languages: rawData.languages || [],
-        });
+        };
+        setPreviewData(sanitizedData);
       } else {
         setPreviewData(null);
       }
@@ -464,3 +472,5 @@ const OptionalSectionsForm = () => {
       </div>
     );
   };
+
+    
