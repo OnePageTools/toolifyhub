@@ -25,10 +25,13 @@ export function PdfToWordForm() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Dynamically set workerSrc to avoid SSR issues
     (async () => {
-      const pdfjs = await import('pdfjs-dist');
-      pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+      try {
+        const pdfjs = await import('pdfjs-dist');
+        pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+      } catch(e) {
+        console.error("Error setting up pdf.js worker", e);
+      }
     })();
   }, []);
 
@@ -84,34 +87,66 @@ export function PdfToWordForm() {
       const pdf = await loadingTask.promise;
       
       const numPages = pdf.numPages;
-      const paragraphs: InstanceType<typeof Paragraph>[] = [];
-      let allExtractedTextForLog = '';
+      let allExtractedText = '';
 
       for (let i = 1; i <= numPages; i++) {
+        const currentProgress = (i / numPages) * 50; // Standard extraction is first 50%
         setStatusText(`Processing page ${i} of ${numPages}...`);
+        setProgress(currentProgress);
+        
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
         
         const pageText = textContent.items.map((item: any) => item.str).join(' ');
-
         if (pageText.trim()) {
-          paragraphs.push(new Paragraph({ children: [new TextRun(pageText)] }));
-          allExtractedTextForLog += pageText + '\n\n';
+            allExtractedText += pageText + '\n\n';
         }
-
-        setProgress(((i / numPages) * 100));
       }
       
-      // As requested for debugging: log the full extracted text.
       console.log("--- Extracted Text from PDF.js ---");
-      console.log(allExtractedTextForLog);
+      console.log(allExtractedText.trim().length > 0 ? allExtractedText : "No text extracted by PDF.js.");
       console.log("------------------------------------");
+      
+      // If client-side extraction fails, try AI OCR as a fallback
+      if (!allExtractedText.trim()) {
+          setStatusText('Standard extraction failed. Trying advanced AI OCR...');
+          setProgress(75);
 
-      if (paragraphs.length === 0) {
-          throw new Error("Could not extract any text from the document. The file might be image-based, password-protected, or empty.");
+          const { convertPdfToWord } = await import('@/ai/flows/pdf-to-word-flow');
+          
+          const fileDataUri = await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onerror = () => {
+                  reader.abort();
+                  reject(new DOMException("Problem parsing input file."));
+              };
+              reader.onload = () => resolve(reader.result as string);
+              reader.readAsDataURL(selectedFile);
+          });
+
+          const aiResult = await convertPdfToWord({ pdfDataUri: fileDataUri });
+
+          if (aiResult.error || !aiResult.textContent) {
+              throw new Error(aiResult.error || "AI OCR failed to extract text from the document.");
+          }
+          allExtractedText = aiResult.textContent;
+          setStatusText('AI OCR successful. Creating document...');
+          console.log("--- Extracted Text from AI OCR ---");
+          console.log(allExtractedText);
+          console.log("------------------------------------");
+      }
+
+      if (!allExtractedText.trim()) {
+        throw new Error("Could not extract any text from the document, even with AI. The file might be corrupted or completely empty.");
       }
 
       setStatusText('Creating .docx file...');
+      setProgress(95);
+
+      const paragraphs = allExtractedText.split('\n').map(text => 
+          new Paragraph({ children: [new TextRun(text)] })
+      );
+
       const doc = new Document({
           sections: [{
               properties: {},
@@ -122,6 +157,7 @@ export function PdfToWordForm() {
       const blob = await Packer.toBlob(doc);
       setDocxBlob(blob);
       setStatusText('Conversion complete!');
+      setProgress(100);
       toast({ title: "Success!", description: "Your PDF has been converted to a Word document." });
 
     } catch (error: any) {
