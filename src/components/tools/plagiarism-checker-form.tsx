@@ -48,17 +48,27 @@ export function PlagiarismCheckerForm() {
     setResult(null);
     try {
       const checkResult = await aiPlagiarismCheck(values);
-      setResult(checkResult);
-      toast({
-        title: "Analysis Complete",
-        description: "Your plagiarism report is ready.",
-      });
-    } catch (e) {
-      setError('An error occurred while checking for plagiarism. Please try again.');
+      if (checkResult.error) {
+        setError(checkResult.error);
+        toast({
+          variant: "destructive",
+          title: "Analysis Failed",
+          description: checkResult.error,
+        });
+      } else {
+        setResult(checkResult);
+        toast({
+          title: "Analysis Complete",
+          description: "Your plagiarism report is ready.",
+        });
+      }
+    } catch (e: any) {
+      const genericError = e.message || 'An unexpected network error occurred. Please try again.';
+      setError(genericError);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "An unexpected error occurred during the analysis.",
+        description: genericError,
       });
     } finally {
       setIsLoading(false);
@@ -106,10 +116,12 @@ export function PlagiarismCheckerForm() {
     const originalText = form.getValues('text');
     let highlighted = originalText;
 
-    result.plagiarizedSegments.forEach(segment => {
-      const regex = new RegExp(segment.segment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
-      highlighted = highlighted.replace(regex, `<span class="bg-red-200 dark:bg-red-900/50 rounded px-1">${segment.segment}</span>`);
-    });
+    if (result.plagiarizedSegments) {
+        result.plagiarizedSegments.forEach(segment => {
+          const regex = new RegExp(segment.segment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+          highlighted = highlighted.replace(regex, `<span class="bg-red-200 dark:bg-red-900/50 rounded px-1">${segment.segment}</span>`);
+        });
+    }
 
     return highlighted;
   }, [result, form]);
@@ -179,15 +191,15 @@ export function PlagiarismCheckerForm() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="text-center text-4xl font-bold">
-                            {result.uniquePercentage.toFixed(0)}%
+                            {result.uniquePercentage?.toFixed(0) ?? 0}%
                             <span className="text-lg font-normal text-muted-foreground"> Unique</span>
                         </div>
                          <div>
                             <div className="flex justify-between text-sm text-muted-foreground mb-1">
                                 <span>Plagiarized</span>
-                                <span>{result.plagiarismPercentage.toFixed(0)}%</span>
+                                <span>{result.plagiarismPercentage?.toFixed(0) ?? 0}%</span>
                             </div>
-                            <Progress value={result.plagiarismPercentage} className="h-2 [&>div]:bg-destructive" />
+                            <Progress value={result.plagiarismPercentage ?? 0} className="h-2 [&>div]:bg-destructive" />
                         </div>
                     </CardContent>
                 </Card>
@@ -202,11 +214,11 @@ export function PlagiarismCheckerForm() {
                     <CardContent className="space-y-4">
                         <div className="flex justify-between items-center text-sm p-3 bg-secondary rounded-md">
                             <span className="font-medium text-muted-foreground">Plagiarized</span>
-                            <span className="font-bold text-destructive">{result.plagiarismPercentage.toFixed(0)}%</span>
+                            <span className="font-bold text-destructive">{result.plagiarismPercentage?.toFixed(0) ?? 0}%</span>
                         </div>
                         <div className="flex justify-between items-center text-sm p-3 bg-secondary rounded-md">
                             <span className="font-medium text-muted-foreground">Unique</span>
-                            <span className="font-bold text-green-500">{result.uniquePercentage.toFixed(0)}%</span>
+                            <span className="font-bold text-green-500">{result.uniquePercentage?.toFixed(0) ?? 0}%</span>
                         </div>
                         <div>
                              <h4 className="font-semibold mb-1">AI Justification</h4>
@@ -229,7 +241,7 @@ export function PlagiarismCheckerForm() {
                 </CardContent>
             </Card>
 
-            {result.plagiarizedSegments.length > 0 && (
+            {result.plagiarizedSegments && result.plagiarizedSegments.length > 0 && (
                 <Card className="mt-6">
                     <CardHeader>
                         <CardTitle className="text-xl">Detected Sources</CardTitle>
