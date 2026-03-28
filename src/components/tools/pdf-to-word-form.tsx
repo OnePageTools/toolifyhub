@@ -1,13 +1,17 @@
 
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Upload, FileDown, Wand2, CheckCircle, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { saveAs } from 'file-saver';
 import { Progress } from '@/components/ui/progress';
+
+// Import client-side libraries
+import * as pdfjsLib from 'pdfjs-dist';
+import { Packer, Document, Paragraph } from 'docx';
 
 export function PdfToWordForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -19,6 +23,15 @@ export function PdfToWordForm() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // This effect runs only on the client, preventing SSR errors.
+    try {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.mjs`;
+    } catch (error) {
+        console.error("Error setting up PDF.js worker:", error);
+    }
+  }, []);
 
   const handleFileSelect = (file: File | undefined) => {
     if (file) {
@@ -56,73 +69,110 @@ export function PdfToWordForm() {
       toast({ variant: "destructive", title: "No file selected" });
       return;
     }
-    
-    const apiSecret = process.env.NEXT_PUBLIC_CONVERT_API_SECRET;
 
-    if (!apiSecret || apiSecret === "YOUR_SECRET_HERE") {
-        toast({
-            variant: "destructive",
-            title: "Configuration Error",
-            description: "ConvertAPI secret is not configured. Please add it to your .env file.",
-        });
-        return;
-    }
+    const apiSecret = process.env.NEXT_PUBLIC_CONVERT_API_SECRET;
 
     setIsLoading(true);
     setDocxBlob(null);
     setProgress(0);
-    
-    const formData = new FormData();
-    formData.append('file', selectedFile);
 
-    try {
-        setStatusText('Uploading file...');
-        setProgress(25);
+    // --- Flow 1: Use ConvertAPI if secret is available ---
+    if (apiSecret && apiSecret !== "YOUR_SECRET_HERE") {
+        setStatusText('Using secure cloud conversion...');
+        const formData = new FormData();
+        formData.append('file', selectedFile);
         
-        const response = await fetch(`https://v2.convertapi.com/convert/pdf/to/docx?secret=${apiSecret}`, {
-            method: 'POST',
-            body: formData,
-        });
+        try {
+            setProgress(25);
+            const response = await fetch(`https://v2.convertapi.com/convert/pdf/to/docx?secret=${apiSecret}`, {
+                method: 'POST',
+                body: formData,
+            });
 
-        setStatusText('Converting...');
-        setProgress(75);
+            setStatusText('Converting...');
+            setProgress(75);
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.Error || `API error: ${response.statusText}`);
-        }
-
-        const result = await response.json();
-
-        if (result.Files && result.Files.length > 0) {
-            const fileData = result.Files[0].FileData;
-            const byteCharacters = atob(fileData);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.Error || `API error: ${response.statusText}`);
             }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+
+            const result = await response.json();
+            if (result.Files && result.Files.length > 0) {
+                const fileData = result.Files[0].FileData;
+                const byteCharacters = atob(fileData);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) { byteNumbers[i] = byteCharacters.charCodeAt(i); }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                
+                setDocxBlob(blob);
+                setStatusText('Conversion complete!');
+                setProgress(100);
+                toast({ title: "Success!", description: "Your PDF has been converted via cloud." });
+            } else {
+                throw new Error("Conversion failed. No file returned from API.");
+            }
+        } catch (error: any) {
+            console.error("API Conversion Error:", error);
+            setStatusText('Cloud conversion failed.');
+            toast({ variant: "destructive", title: "An error occurred", description: error.message || "Failed to convert PDF using the cloud service." });
+            setProgress(0);
+        } finally {
+            setIsLoading(false);
+        }
+    } 
+    // --- Flow 2: Fallback to client-side conversion ---
+    else {
+        setStatusText('Using client-side conversion...');
+        try {
+            const arrayBuffer = await selectedFile.arrayBuffer();
+            setStatusText('Loading PDF...');
+            setProgress(10);
             
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const numPages = pdf.numPages;
+            let paragraphs: Paragraph[] = [];
+    
+            for (let i = 1; i <= numPages; i++) {
+                setStatusText(`Extracting text from page ${i} of ${numPages}...`);
+                setProgress(10 + (80 * (i / numPages)));
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                const pageText = textContent.items.map((item: any) => item.str).join(' ');
+                
+                if (pageText.trim().length > 0) {
+                    paragraphs.push(new Paragraph({ text: pageText }));
+                }
+            }
+    
+            if (paragraphs.length === 0) {
+                throw new Error("Could not extract any text from the document. The file might be image-based or empty. This tool doesn't support OCR.");
+            }
+    
+            setStatusText('Creating .docx file...');
+            setProgress(95);
+    
+            const doc = new Document({
+                sections: [{
+                    properties: {},
+                    children: paragraphs,
+                }],
+            });
+    
+            const blob = await Packer.toBlob(doc);
             setDocxBlob(blob);
             setStatusText('Conversion complete!');
             setProgress(100);
-            toast({ title: "Success!", description: "Your PDF has been converted." });
-        } else {
-            throw new Error("Conversion failed. No file returned from API.");
+            toast({ title: "Success!", description: "Your PDF has been converted on your device." });
+        } catch (error: any) {
+            console.error("Client-side Conversion Error:", error);
+            setStatusText('Conversion failed.');
+            toast({ variant: "destructive", title: "An error occurred", description: error.message || "Failed to convert PDF on your device." });
+            setProgress(0);
+        } finally {
+            setIsLoading(false);
         }
-
-    } catch (error: any) {
-      console.error("Conversion Error:", error);
-      setStatusText('Conversion failed.');
-      toast({
-        variant: "destructive",
-        title: "An error occurred",
-        description: error.message || "Failed to convert PDF.",
-      });
-      setProgress(0);
-    } finally {
-      setIsLoading(false);
     }
   };
 
