@@ -1,3 +1,6 @@
+
+// This AI flow has been deprecated and is no longer in use.
+// The Meta Tag Generator tool now uses a client-side template-based implementation.
 'use server';
 /**
  * @fileOverview An AI flow for generating a full suite of SEO-optimized meta tags, including JSON-LD.

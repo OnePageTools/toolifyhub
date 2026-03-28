@@ -16,10 +16,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
-import {
-  generateMetaTags,
-  type GenerateMetaTagsOutput,
-} from '@/ai/flows/meta-tag-generator-flow';
 import { Loader2, Wand2, Copy, ClipboardCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -35,8 +31,12 @@ const formSchema = z.object({
   imageUrl: z.string().url({ message: 'Please enter a valid image URL.' }).optional().or(z.literal('')),
 });
 
+type MetaTagResult = {
+  metaTagsHtml: string;
+};
+
 export function MetaTagGeneratorForm() {
-  const [result, setResult] = useState<GenerateMetaTagsOutput | null>(null);
+  const [result, setResult] = useState<MetaTagResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
@@ -54,29 +54,60 @@ export function MetaTagGeneratorForm() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const generateTagsFromData = (values: z.infer<typeof formSchema>): MetaTagResult => {
+      const tags = [];
+
+      // Basic Tags
+      tags.push(`<!-- Primary Meta Tags -->`);
+      tags.push(`<title>${values.pageTitle}</title>`);
+      tags.push(`<meta name="title" content="${values.pageTitle}">`);
+      tags.push(`<meta name="description" content="${values.description}">`);
+      if (values.keywords) {
+          tags.push(`<meta name="keywords" content="${values.keywords}">`);
+      }
+      if(values.authorOrBrandName){
+        tags.push(`<meta name="author" content="${values.authorOrBrandName}">`);
+      }
+      tags.push(`<link rel="canonical" href="${values.url}">`);
+      
+      // Open Graph / Facebook
+      tags.push(`\n<!-- Open Graph / Facebook -->`);
+      tags.push(`<meta property="og:type" content="website">`);
+      tags.push(`<meta property="og:url" content="${values.url}">`);
+      tags.push(`<meta property="og:title" content="${values.pageTitle}">`);
+      tags.push(`<meta property="og:description" content="${values.description}">`);
+      if (values.imageUrl) {
+        tags.push(`<meta property="og:image" content="${values.imageUrl}">`);
+      }
+
+      // Twitter
+      tags.push(`\n<!-- Twitter -->`);
+      tags.push(`<meta property="twitter:card" content="${values.imageUrl ? 'summary_large_image' : 'summary'}">`);
+      tags.push(`<meta property="twitter:url" content="${values.url}">`);
+      tags.push(`<meta property="twitter:title" content="${values.pageTitle}">`);
+      tags.push(`<meta property="twitter:description" content="${values.description}">`);
+      if (values.imageUrl) {
+        tags.push(`<meta property="twitter:image" content="${values.imageUrl}">`);
+      }
+      if(values.twitterHandle){
+         tags.push(`<meta name="twitter:creator" content="${values.twitterHandle}">`);
+      }
+
+      return { metaTagsHtml: tags.join('\n') };
+  };
+
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setResult(null);
-    try {
-      const response = await generateMetaTags(values);
-      if (response.error) {
-        toast({
-          variant: 'destructive',
-          title: 'Error Generating Tags',
-          description: response.error,
-        });
-      } else {
-        setResult(response);
-      }
-    } catch (e: any) {
-      toast({
-        variant: 'destructive',
-        title: 'An unexpected error occurred',
-        description: e.message,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+
+    // Simulate a short delay for better UX
+    setTimeout(() => {
+        const generated = generateTagsFromData(values);
+        setResult(generated);
+        setIsLoading(false);
+        toast({ title: "Success!", description: "Meta tags have been generated." });
+    }, 300);
   }
 
   const handleCopy = () => {
@@ -208,7 +239,7 @@ export function MetaTagGeneratorForm() {
         </form>
       </Form>
 
-      {(isLoading || result) && (
+      {result && (
         <Card className="mt-6">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Generated Meta Tags</CardTitle>

@@ -11,8 +11,8 @@ import AIHelper from '@/components/ai-assistant';
 import { Tag } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Advanced Meta Tag Generator - Free SEO & Social Media Tool',
-  description: 'Generate a full suite of professional meta tags for SEO, Open Graph, and Twitter Cards. Includes JSON-LD structured data for better search engine visibility.',
+  title: 'Meta Tag Generator - Free SEO & Social Media Tool',
+  description: 'Generate a full suite of meta tags for SEO, Open Graph, and Twitter Cards with our free client-side tool.',
   keywords: 'meta tag generator, seo meta tags, open graph generator, twitter card generator, json-ld generator',
 };
 
@@ -26,10 +26,10 @@ export default function MetaTagGeneratorPage() {
                 <Tag className="w-10 h-10 text-primary" />
              </div>
             <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
-              Advanced Meta Tag Generator
+              Meta Tag Generator
             </CardTitle>
             <CardDescription className="text-lg mt-2">
-              Generate a full set of professional SEO, Social Media, and JSON-LD meta tags for your website.
+              Generate a full set of professional SEO and Social Media meta tags for your website.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6 md:p-8">
@@ -37,7 +37,7 @@ export default function MetaTagGeneratorPage() {
           </CardContent>
         </Card>
       </div>
-      <AIHelper toolName="Advanced Meta Tag Generator" />
+      <AIHelper toolName="Meta Tag Generator" />
     </div>
   );
 }
