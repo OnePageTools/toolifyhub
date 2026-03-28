@@ -5,9 +5,6 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Upload, FileDown, Settings, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import mammoth from 'mammoth';
-import jsPDF from 'jspdf';
-import 'jspdf/dist/polyfills.es.js'; // Needed for html method to work in all browsers
 import { Card, CardContent } from '@/components/ui/card';
 
 export function WordToPdfForm() {
@@ -72,6 +69,11 @@ export function WordToPdfForm() {
       if (!renderContainer) {
         throw new Error("Preview container not found.");
       }
+
+      // Dynamically import libraries only on the client-side
+      const { default: mammoth } = await import('mammoth');
+      const { default: jsPDF } = await import('jspdf');
+      await import('jspdf/dist/polyfills.es.js');
       
       setStatus('Reading file...');
       const arrayBuffer = await selectedFile.arrayBuffer();
