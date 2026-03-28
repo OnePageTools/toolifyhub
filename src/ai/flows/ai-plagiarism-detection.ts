@@ -83,8 +83,8 @@ const aiPlagiarismCheckFlow = ai.defineFlow(
 
       if (err.message) {
         const lowerCaseError = err.message.toLowerCase();
-        if (lowerCaseError.includes('429') || lowerCaseError.includes('503') || lowerCaseError.includes('resource has been exhausted')) {
-          return { error: 'The AI service is currently experiencing high demand. Please try again in a few moments.' };
+        if (lowerCaseError.includes('429') || lowerCaseError.includes('503') || lowerCaseError.includes('resource has been exhausted') || lowerCaseError.includes('unavailable') || lowerCaseError.includes('deadline')) {
+          return { error: 'The AI service is currently experiencing high demand or is temporarily unavailable. Please try again in a few moments.' };
         }
         if (lowerCaseError.includes('safety') || lowerCaseError.includes('blocked')) {
           return { error: 'The analysis was blocked because the provided text may contain content that violates safety policies. Please review your text.' };
@@ -94,7 +94,7 @@ const aiPlagiarismCheckFlow = ai.defineFlow(
         }
       }
 
-      return { error: 'An unexpected error occurred during the analysis. The AI may be temporarily unavailable.' };
+      return { error: 'An unexpected error occurred during the analysis. The AI may have had trouble with the provided text. Please try again.' };
     }
   }
 );
