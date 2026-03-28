@@ -28,11 +28,11 @@ export function PdfToWordForm() {
         });
         return;
       }
-      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      if (file.size > 100 * 1024 * 1024) { // 100MB limit
         toast({
             variant: "destructive",
             title: "File too large",
-            description: "Please upload a PDF smaller than 10MB.",
+            description: "Please upload a PDF smaller than 100MB.",
         });
         return;
       }
@@ -159,7 +159,7 @@ export function PdfToWordForm() {
                 <span className="font-semibold text-primary">
                     {selectedFile ? selectedFile.name : "Click to upload or drag & drop"}
                 </span>
-                <p className="text-xs">PDF only (Max 10MB)</p>
+                <p className="text-xs">PDF only (Max 100MB)</p>
             </div>
         </label>
 
