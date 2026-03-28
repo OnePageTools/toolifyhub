@@ -5,7 +5,7 @@ config();
 import '@/ai/flows/contextual-tool-assistance.ts';
 import '@/ai/flows/image-compressor-flow.ts';
 // Note: The resume builder flow is now client-side.
-import '@/ai/flows/ai-code-minifier-flow.ts';
+// Note: The code minifier flow is now client-side.
 import '@/ai/flows/website-screenshot-flow.ts';
 import '@/ai/flows/meta-tag-generator-flow.ts';
 import '@/ai/flows/temp-email-generator-flow.ts';

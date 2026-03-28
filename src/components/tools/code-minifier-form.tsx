@@ -8,12 +8,53 @@ import { useToast } from '@/hooks/use-toast';
 import { Copy, ClipboardCheck, Trash2, Wand2, Loader2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { minifyCode, type MinifyCodeInput } from '@/ai/flows/ai-code-minifier-flow';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
-type Language = MinifyCodeInput['language'];
+type Language = 'javascript' | 'css' | 'html' | 'json';
+
+// Client-side minification functions
+const minifyJS = (code: string): string => {
+  // Remove multi-line comments
+  let minified = code.replace(/\/\*[\s\S]*?\*\//g, '');
+  // Remove single-line comments (careful with URLs)
+  minified = minified.replace(/([^:]|^)\/\/.*$/gm, '$1');
+  // This is a simplified approach. A full parser would be more robust.
+  minified = minified.split('\n').map(line => line.trim()).filter(Boolean).join(' ');
+  // Remove spaces around operators, but not all spaces
+  minified = minified.replace(/\s*([=;:{},()\[\]])\s*/g, '$1');
+  return minified.trim();
+};
+
+const minifyCSS = (code: string): string => {
+  // Remove comments
+  let minified = code.replace(/\/\*[\s\S]*?\*\//g, '');
+  // Remove newlines, tabs, and extra spaces
+  minified = minified.replace(/[\n\t\r]/g, '').replace(/\s+/g, ' ');
+  // Remove whitespace around selectors and properties
+  minified = minified.replace(/\s*([{}:;,])\s*/g, '$1');
+  // Remove last semicolon in a block
+  minified = minified.replace(/;}/g, '}');
+  return minified.trim();
+};
+
+const minifyHTML = (code: string): string => {
+    // Remove comments
+    let minified = code.replace(/<!--[\s\S]*?-->/g, '');
+    // Remove whitespace between tags
+    minified = minified.replace(/>\s+</g, '><');
+    return minified.trim();
+}
+
+const minifyJSON = (code: string): string => {
+    try {
+        return JSON.stringify(JSON.parse(code));
+    } catch (e) {
+        throw new Error("Invalid JSON provided. Please ensure your JSON is well-formed.");
+    }
+}
+
 
 export function CodeMinifierForm() {
   const [inputCode, setInputCode] = useState('');
@@ -40,20 +81,36 @@ export function CodeMinifierForm() {
     setIsLoading(true);
     setOutputCode('');
     setStats(null);
+
+    // Short delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 100));
+
     try {
-      const result = await minifyCode({ code: inputCode, language });
-      if (result.error) {
-        toast({ variant: 'destructive', title: 'Minification Error', description: result.error });
-      } else if (result.minifiedCode) {
-        setOutputCode(result.minifiedCode);
-        const originalSize = new Blob([inputCode]).size;
-        const minifiedSize = new Blob([result.minifiedCode]).size;
-        const reduction = originalSize > 0 ? ((originalSize - minifiedSize) / originalSize) * 100 : 0;
-        setStats({ original: originalSize, minified: minifiedSize, reduction });
-        toast({ title: 'Success', description: `Code minified successfully. Saved ${reduction.toFixed(2)}%` });
+      let minifiedCode = '';
+      switch (language) {
+          case 'javascript':
+              minifiedCode = minifyJS(inputCode);
+              break;
+          case 'css':
+              minifiedCode = minifyCSS(inputCode);
+              break;
+          case 'html':
+              minifiedCode = minifyHTML(inputCode);
+              break;
+          case 'json':
+              minifiedCode = minifyJSON(inputCode);
+              break;
       }
+      
+      setOutputCode(minifiedCode);
+      const originalSize = new Blob([inputCode]).size;
+      const minifiedSize = new Blob([minifiedCode]).size;
+      const reduction = originalSize > 0 ? ((originalSize - minifiedSize) / originalSize) * 100 : 0;
+      setStats({ original: originalSize, minified: minifiedSize, reduction });
+      toast({ title: 'Success', description: `Code minified successfully. Saved ${reduction.toFixed(2)}%` });
+
     } catch (e: any) {
-      toast({ variant: 'destructive', title: 'An unexpected error occurred', description: e.message });
+      toast({ variant: 'destructive', title: 'Minification Error', description: e.message });
     } finally {
       setIsLoading(false);
     }
