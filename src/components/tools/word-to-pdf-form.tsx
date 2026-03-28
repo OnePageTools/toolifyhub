@@ -75,11 +75,9 @@ export function WordToPdfForm() {
       
       setStatus('Converting to HTML...');
       const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
-
-      // As per your debugging request, let's log the extracted HTML.
-      console.log("Extracted HTML from Mammoth:", html);
+      
       if (!html || html.trim() === "") {
-        throw new Error("Mammoth.js could not extract any content from the document.");
+        throw new Error("Mammoth.js could not extract any content from the document. The file might be empty or corrupted.");
       }
 
       setStatus('Generating PDF...');
@@ -89,10 +87,8 @@ export function WordToPdfForm() {
         format: 'a4',
       });
       
-      // Use the callback pattern for jsPDF's html method for reliability
       pdf.html(html, {
           callback: function (doc) {
-            // This function is called once the PDF is generated and ready
             const url = doc.output('bloburl');
             setPdfUrl(url);
             setStatus('Conversion complete!');
@@ -100,12 +96,12 @@ export function WordToPdfForm() {
                 title: "Success!",
                 description: "Your file has been converted and is ready for download.",
             });
-            setIsLoading(false); // Set loading to false only after PDF is ready
+            setIsLoading(false);
           },
-          margin: [10, 10, 10, 10], // [top, right, bottom, left]
-          autoPaging: 'text',
-          width: 190, // A4 width (210mm) - margins (10mm * 2)
-          windowWidth: 700, // A virtual window width for rendering the HTML
+          margin: [10, 10, 10, 10],
+          autoPaging: 'slice',
+          width: 190,
+          windowWidth: 700,
       });
 
     } catch (error: any) {
