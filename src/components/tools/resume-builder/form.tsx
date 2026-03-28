@@ -167,22 +167,26 @@ const ResumePreview = () => {
       const isValidForm = await trigger(); 
       if (isValidForm) {
         const rawData = getValues();
-        // Defensively create the data object to ensure no undefined arrays are passed
+        
+        // Deep clone and remove any 'undefined' values, which can cause PDF renderer to crash
+        const clonedData = JSON.parse(JSON.stringify(rawData));
+
+        // Sanitize the data to ensure all arrays are present, even if empty
         const sanitizedData: ResumeData = {
-            fullName: rawData.fullName,
-            email: rawData.email,
-            phone: rawData.phone,
-            address: rawData.address,
-            linkedin: rawData.linkedin,
-            portfolio: rawData.portfolio,
-            profilePicture: rawData.profilePicture,
-            summary: rawData.summary,
-            experience: rawData.experience || [],
-            education: rawData.education || [],
-            skills: rawData.skills || [],
-            projects: rawData.projects || [],
-            certifications: rawData.certifications || [],
-            languages: rawData.languages || [],
+            fullName: clonedData.fullName || '',
+            email: clonedData.email || '',
+            phone: clonedData.phone || '',
+            address: clonedData.address || '',
+            linkedin: clonedData.linkedin || '',
+            portfolio: clonedData.portfolio || '',
+            profilePicture: clonedData.profilePicture || null,
+            summary: clonedData.summary || '',
+            experience: clonedData.experience || [],
+            education: clonedData.education || [],
+            skills: clonedData.skills || [],
+            projects: clonedData.projects || [],
+            certifications: clonedData.certifications || [],
+            languages: clonedData.languages || [],
         };
         setPreviewData(sanitizedData);
       } else {
@@ -221,7 +225,7 @@ const ResumePreview = () => {
                             {Object.keys(colorThemes).map(key => <SelectItem key={key} value={key}>{key.charAt(0).toUpperCase() + key.slice(1)}</SelectItem>)}
                         </SelectContent>
                     </Select>
-                    {isClient && isDataAvailable && (
+                    {isClient && isDataAvailable && previewData && (
                         <PDFDownloadLink
                             document={<ResumeTemplate data={previewData} theme={colorTheme} />}
                             fileName="resume.pdf"
@@ -241,7 +245,7 @@ const ResumePreview = () => {
                 </div>
             </CardHeader>
             <CardContent className="flex-grow min-h-0">
-             {isClient && isDataAvailable ? (
+             {isClient && isDataAvailable && previewData ? (
                 <PDFViewer width="100%" height="100%" showToolbar={false}>
                   <ResumeTemplate data={previewData} theme={colorTheme} />
                 </PDFViewer>
