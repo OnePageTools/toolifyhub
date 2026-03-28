@@ -107,9 +107,8 @@ export function BackgroundRemoverForm() {
       const response = await removeBackground({ photoDataUri });
       
       if (response.error || !response.imageDataUri) {
-        if (response.error && response.error !== 'RATE_LIMIT_EXCEEDED') {
-            console.error("AI Remover Failed:", response.error);
-        }
+        // The AI-based removal failed. Silently fall back to the client-side library.
+        // We don't show an error to the user because this is an intended fallback mechanism.
         
         // Dynamically import the client-side library
         const { removeBackground: removeBackgroundClient } = await import('@imgly/background-removal');
