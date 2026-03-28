@@ -1,5 +1,6 @@
+
 import type { Metadata } from 'next';
-import { PdfToWordForm } from '@/components/tools/pdf-to-word-form';
+import Link from 'next/link';
 import {
   Card,
   CardHeader,
@@ -7,35 +8,36 @@ import {
   CardDescription,
   CardContent,
 } from '@/components/ui/card';
-import AIHelper from '@/components/ai-assistant';
-import { FileText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { FileClock } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Free PDF to Word Converter Online - No Sign Up Required',
-  description: 'Easily convert your PDF files into editable Word documents (.docx) for free. Our AI-powered converter preserves formatting, tables, and text.',
-  keywords: 'pdf to word, pdf to docx, convert pdf to word, free pdf to word converter, pdf to word online',
+  title: 'PDF to Word Converter - Coming Soon',
+  description: 'Our advanced PDF to Word converter is under construction. Stay tuned for the best conversion tool!',
+  keywords: 'pdf to word, convert pdf to word, coming soon',
 };
 
-export default function PdfToWordPage() {
+export default function PdfToWordComingSoonPage() {
   return (
-    <div className="container mx-auto py-10 px-4">
-      <div className="max-w-4xl mx-auto">
-        <Card className="shadow-lg border-primary/20">
-          <CardHeader className="text-center bg-secondary/50 p-8">
-             <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
-                <FileText className="w-10 h-10 text-primary" />
-             </div>
-            <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">PDF to Word Converter</CardTitle>
-            <CardDescription className="text-lg mt-2">
-              Drag and drop your PDF to convert it into a high-quality, editable Word (.docx) file.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-6 md:p-8">
-            <PdfToWordForm />
-          </CardContent>
-        </Card>
-      </div>
-      <AIHelper toolName="PDF to Word Converter" />
+    <div className="container mx-auto py-10 px-4 min-h-[70vh] flex items-center justify-center">
+      <Card className="max-w-2xl mx-auto shadow-lg border-primary/20">
+        <CardHeader className="text-center bg-secondary/50 p-8">
+          <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
+            <FileClock className="w-12 h-12 text-primary" />
+          </div>
+          <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
+            Coming Soon
+          </CardTitle>
+          <CardDescription className="text-lg mt-2 max-w-md mx-auto">
+            We are working hard to bring you the best PDF to Word converter. Stay tuned!
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6 text-center">
+          <Button asChild size="lg">
+            <Link href="/">Back to Tools</Link>
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }
