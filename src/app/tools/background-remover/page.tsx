@@ -23,23 +23,6 @@ const tool = {
 
 // Metadata can't be dynamically generated in a client component in this way,
 // but we can set static metadata for the page.
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
 
 const WebAppSchema = () => (
   <script
