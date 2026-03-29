@@ -1,6 +1,7 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
+import { Analytics } from '@vercel/analytics/react';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { Poppins, Inter, Playfair_Display } from 'next/font/google';
@@ -103,7 +104,8 @@ export default function RootLayout({
           <main>{children}</main>
           <Toaster />
         </ThemeProvider>
-      </body>
+      <Analytics />
+</body>
     </html>
   );
 }
