@@ -46,3 +46,4 @@ firestore-debug.log
 .env*.local
 mysite.tar.gz
 mysite.zip
+node_modules
