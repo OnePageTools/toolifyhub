@@ -7,6 +7,8 @@ import { Loader2, Upload, FileDown, Settings, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { saveAs } from 'file-saver';
+import { jsPDF } from 'jspdf';
+import mammoth from 'mammoth';
 
 export function WordToPdfForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -66,53 +68,25 @@ export function WordToPdfForm() {
     setStatus('');
 
     try {
-      setStatus('Loading conversion engine...');
-      const { default: mammoth } = await import('mammoth');
-      const { jsPDF } = await import('jspdf');
-
       setStatus('Reading Word file...');
       const arrayBuffer = await selectedFile.arrayBuffer();
       
-      setStatus('Converting Word to HTML...');
-      let { value: html } = await mammoth.convertToHtml({ arrayBuffer });
+      setStatus('Extracting text content...');
+      const { value: rawText } = await mammoth.extractRawText({ arrayBuffer });
 
-      // Fallback mechanism
-      if (!html.trim()) {
-        toast({
-          variant: 'default',
-          title: "Formatting Issue",
-          description: "Could not preserve formatting. Falling back to plain text conversion.",
-        });
-        const { value: rawText } = await mammoth.extractRawText({ arrayBuffer });
-        if (!rawText.trim()) {
-             throw new Error("Conversion Failed. The tool could not read any content from this file. It may be empty, password-protected, or in an unsupported format.");
-        }
-        // Convert plain text to basic HTML
-        html = `<pre style="white-space: pre-wrap; font-size: 12px; font-family: 'Helvetica', 'Arial', sans-serif;">${rawText}</pre>`;
+      if (!rawText.trim()) {
+        throw new Error("Could not read any text from the document. The file might be empty, password-protected, or in an unsupported format.");
       }
       
-      setStatus('Creating PDF from content...');
+      setStatus('Creating PDF document...');
       const pdf = new jsPDF('p', 'pt', 'a4');
       
-      const styledHtml = `
-        <style>
-          body { font-family: 'Helvetica', 'Arial', sans-serif; line-height: 1.5; font-size: 12px; }
-          h1, h2, h3, h4, h5, h6 { margin-bottom: 0.5em; line-height: 1.2; }
-          p { margin-bottom: 1em; }
-          ul, ol { padding-left: 20px; margin-bottom: 1em; }
-          table { border-collapse: collapse; width: 100%; margin-bottom: 1em; }
-          th, td { border: 1px solid #ddd; padding: 8px; }
-          th { font-weight: bold; }
-        </style>
-        ${html}
-      `;
-
-      await pdf.html(styledHtml, {
-          margin: [40, 40, 40, 40],
-          autoPaging: 'text',
-          width: 515, // A4 width (595) - margins (40*2)
-          windowWidth: 515,
-      });
+      const margin = 40;
+      const pageWidth = pdf.internal.pageSize.getWidth() - margin * 2;
+      
+      // Using .text() with options for automatic page splitting
+      pdf.setFontSize(12);
+      pdf.text(rawText, margin, margin, { maxWidth: pageWidth });
 
       const pdfBlob = pdf.output('blob');
       const url = URL.createObjectURL(pdfBlob);
@@ -125,12 +99,11 @@ export function WordToPdfForm() {
       });
 
     } catch (error: any) {
-      console.error("Conversion Error:", error);
       setStatus('Error during conversion.');
       toast({
         variant: "destructive",
         title: "An error occurred",
-        description: error.message || "Failed to convert the document. The file might be incompatible.",
+        description: error.message || "Failed to convert the document. The file might be corrupted or incompatible.",
       });
     } finally {
         setIsLoading(false);
