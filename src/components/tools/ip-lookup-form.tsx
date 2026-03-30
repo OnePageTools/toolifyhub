@@ -4,28 +4,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Copy, ClipboardCheck, Globe, MapPin, Building, Clock, RefreshCw, LocateFixed } from 'lucide-react';
+import { Loader2, Copy, ClipboardCheck, Globe, MapPin, Server, Clock, RefreshCw, LocateFixed, Flag, Map } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Updated type to match freeipapi.com response
 type IpData = {
-    ipAddress: string;
-    cityName: string;
-    regionName: string;
-    countryName: string;
-    countryCode: string;
-    timeZone: string;
+    ip: string;
+    country: string;
+    flag: { emoji: string; };
+    region: string;
+    city: string;
+    connection: { isp: string; };
+    timezone: { id: string; };
     latitude: number;
     longitude: number;
-    continent: string;
-};
-
-// Helper function to convert a country code to a flag emoji
-const countryCodeToEmoji = (countryCode: string) => {
-    if (!countryCode || countryCode.length !== 2) return '🌍';
-    const codePoints = [...countryCode.toUpperCase()].map(char => 127397 + char.charCodeAt(0));
-    return String.fromCodePoint(...codePoints);
 };
 
 export function IpLookupForm() {
@@ -36,17 +28,29 @@ export function IpLookupForm() {
 
     const fetchIp = useCallback(async () => {
         setIsLoading(true);
+        setIpData(null);
         try {
-            const response = await fetch(`https://freeipapi.com/api/json`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch IP information.');
+            // Step 1: Get IP address from a simple, reliable service
+            const ipResponse = await fetch('https://api.ipify.org?format=json');
+            if (!ipResponse.ok) {
+                throw new Error('Could not fetch IP address.');
             }
-            const data = await response.json();
-            if (data.error) {
-                throw new Error(data.reason || 'The API returned an error.');
+            const { ip } = await ipResponse.json();
+
+            // Step 2: Get detailed data using the fetched IP
+            const detailsResponse = await fetch(`https://ipwho.is/${ip}`);
+            if (!detailsResponse.ok) {
+                throw new Error('Could not fetch IP details.');
             }
+            const data = await detailsResponse.json();
+            
+            if (!data.success) {
+                 throw new Error(data.message || 'Failed to get location details for the IP.');
+            }
+
             setIpData(data);
         } catch (error: any) {
+            setIpData(null);
             toast({ variant: "destructive", title: "Error", description: error.message });
         } finally {
             setIsLoading(false);
@@ -58,8 +62,8 @@ export function IpLookupForm() {
     }, [fetchIp]);
 
     const handleCopy = () => {
-        if (!ipData?.ipAddress) return;
-        navigator.clipboard.writeText(ipData.ipAddress).then(() => {
+        if (!ipData?.ip) return;
+        navigator.clipboard.writeText(ipData.ip).then(() => {
             setIsCopied(true);
             setTimeout(() => setIsCopied(false), 2000);
             toast({ title: 'IP Address copied to clipboard!' });
@@ -105,7 +109,7 @@ export function IpLookupForm() {
                             <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between gap-4">
                                 <div className="flex-1 text-center md:text-left">
                                     <p className="text-sm opacity-80">Your Public IP Address</p>
-                                    <p className="font-mono text-3xl md:text-4xl font-bold break-all">{ipData.ipAddress}</p>
+                                    <p className="font-mono text-3xl md:text-4xl font-bold break-all">{ipData.ip}</p>
                                 </div>
                                 <div className="flex gap-2">
                                   <Button variant="outline" onClick={handleCopy} className="bg-white/30 border-white/40 text-white hover:bg-white/50">
@@ -121,17 +125,22 @@ export function IpLookupForm() {
                         </Card>
                         
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                            <InfoCard icon={Globe} title="Country" value={`${countryCodeToEmoji(ipData.countryCode)} ${ipData.countryName}`} />
-                            <InfoCard icon={MapPin} title="Region" value={ipData.regionName} />
-                            <InfoCard icon={Building} title="City" value={ipData.cityName} />
-                            <InfoCard icon={Clock} title="Timezone" value={ipData.timeZone} />
+                            <InfoCard icon={Flag} title="Country" value={`${ipData.flag.emoji} ${ipData.country}`} />
+                            <InfoCard icon={Map} title="Region" value={ipData.region} />
+                            <InfoCard icon={MapPin} title="City" value={ipData.city} />
+                            <InfoCard icon={Server} title="ISP" value={ipData.connection.isp} />
+                            <InfoCard icon={Clock} title="Timezone" value={ipData.timezone.id} />
                             <InfoCard icon={LocateFixed} title="Coordinates" value={`${ipData.latitude.toFixed(4)}, ${ipData.longitude.toFixed(4)}`} />
-                            <InfoCard icon={Globe} title="Continent" value={ipData.continent} />
                         </div>
                     </motion.div>
                 ) : (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-white">
-                        <p className="text-lg">Could not load IP information. Please try refreshing the page.</p>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-white p-8 bg-black/20 rounded-lg">
+                        <p className="text-lg font-semibold">Could not load IP information.</p>
+                        <p className="text-sm opacity-80 mb-4">This can happen due to network issues or service unavailability.</p>
+                        <Button variant="outline" onClick={() => fetchIp()} className="bg-white/30 border-white/40 text-white hover:bg-white/50">
+                            <RefreshCw className="mr-2"/>
+                            Retry
+                        </Button>
                     </motion.div>
                 )}
                 </AnimatePresence>
@@ -139,4 +148,3 @@ export function IpLookupForm() {
         </div>
     );
 }
-
