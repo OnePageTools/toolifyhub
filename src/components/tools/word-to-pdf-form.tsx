@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef } from 'react';
@@ -77,7 +78,7 @@ export function WordToPdfForm() {
       const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
 
       if (!html.trim()) {
-        throw new Error("Could not read the document content. The file might be empty, password-protected, or in an unsupported format.");
+        throw new Error("Conversion Failed. The tool could not read this file's content. This often happens if the file is password-protected, empty, or uses an unsupported format (e.g., .doc instead of .docx). Please try re-saving your file as a standard .docx and try again.");
       }
       
       setStatus('Creating PDF from content...');
