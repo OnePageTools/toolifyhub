@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef } from 'react';
@@ -7,6 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Upload, FileDown, Settings, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
+import { saveAs } from 'file-saver';
 
 export function WordToPdfForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -66,74 +66,47 @@ export function WordToPdfForm() {
     setStatus('');
 
     try {
-      // Dynamically import libraries
       setStatus('Loading conversion engine...');
       const { default: mammoth } = await import('mammoth');
-      const { PDFDocument, rgb, StandardFonts, PageSizes } = await import('pdf-lib');
+      const { jsPDF } = await import('jspdf');
 
       setStatus('Reading Word file...');
       const arrayBuffer = await selectedFile.arrayBuffer();
       
-      setStatus('Extracting text content...');
-      const { value: rawText } = await mammoth.extractRawText({ arrayBuffer });
-      console.log("Extracted text from Mammoth:", rawText);
+      setStatus('Converting Word to HTML...');
+      const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
 
-      if (!rawText.trim()) {
-        throw new Error("Could not extract any text from the document. The file might be empty, password-protected, or in an unsupported format.");
+      if (!html.trim()) {
+        throw new Error("Could not read the document content. The file might be empty, password-protected, or in an unsupported format.");
       }
       
-      setStatus('Creating PDF document...');
-      const pdfDoc = await PDFDocument.create();
-      let page = pdfDoc.addPage(PageSizes.A4);
-      const { width, height } = page.getSize();
-      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-      const fontSize = 12;
-      const margin = 50;
-      const usableWidth = width - 2 * margin;
-      const lineHeight = fontSize * 1.2;
+      setStatus('Creating PDF from content...');
+      const pdf = new jsPDF('p', 'pt', 'a4');
+      
+      const styledHtml = `
+        <style>
+          body { font-family: 'Helvetica', 'Arial', sans-serif; line-height: 1.5; font-size: 12px; }
+          h1, h2, h3, h4, h5, h6 { margin-bottom: 0.5em; line-height: 1.2; }
+          p { margin-bottom: 1em; }
+          ul, ol { padding-left: 20px; margin-bottom: 1em; }
+          table { border-collapse: collapse; width: 100%; margin-bottom: 1em; }
+          th, td { border: 1px solid #ddd; padding: 8px; }
+          th { font-weight: bold; }
+        </style>
+        ${html}
+      `;
 
-      let y = height - margin;
+      await pdf.html(styledHtml, {
+          margin: [40, 40, 40, 40],
+          autoPaging: 'text',
+          width: 515, // A4 width (595) - margins (40*2)
+          windowWidth: 515,
+      });
 
-      const lines = rawText.split('\n');
-
-      for (const line of lines) {
-          let words = line.split(' ');
-          let currentLine = '';
-
-          for(const word of words) {
-              const testLine = currentLine ? `${currentLine} ${word}` : word;
-              const textWidth = font.widthOfTextAtSize(testLine, fontSize);
-
-              if (textWidth > usableWidth) {
-                  // The line is too long, draw the current line and start a new one
-                  page.drawText(currentLine, { x: margin, y, font, size: fontSize, color: rgb(0, 0, 0) });
-                  y -= lineHeight;
-                  if (y < margin) {
-                      page = pdfDoc.addPage(PageSizes.A4);
-                      y = height - margin;
-                  }
-                  currentLine = word;
-              } else {
-                  currentLine = testLine;
-              }
-          }
-
-          // Draw the last line of the paragraph
-          page.drawText(currentLine, { x: margin, y, font, size: fontSize, color: rgb(0, 0, 0) });
-          y -= lineHeight;
-          
-          if (y < margin) {
-              page = pdfDoc.addPage(PageSizes.A4);
-              y = height - margin;
-          }
-      }
-
-      setStatus('Saving PDF...');
-      const pdfBytes = await pdfDoc.save();
-      const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const pdfBlob = pdf.output('blob');
       const url = URL.createObjectURL(pdfBlob);
-      
       setPdfUrl(url);
+      
       setStatus('Conversion complete!');
       toast({
           title: "Success!",
@@ -146,11 +119,16 @@ export function WordToPdfForm() {
       toast({
         variant: "destructive",
         title: "An error occurred",
-        description: error.message || "Failed to convert the document.",
+        description: error.message || "Failed to convert the document. The file might be incompatible.",
       });
     } finally {
         setIsLoading(false);
     }
+  };
+
+  const handleDownload = () => {
+    if (!pdfUrl || !selectedFile) return;
+    saveAs(pdfUrl, selectedFile.name.replace('.docx', '.pdf'));
   };
 
   const handleReset = () => {
@@ -193,11 +171,9 @@ export function WordToPdfForm() {
               <CardContent className="p-4 flex flex-col md:flex-row items-center justify-center gap-4">
                  <p className="font-semibold text-green-800 dark:text-green-300 flex-1 text-center md:text-left">{status}</p>
                  <div className="flex gap-2">
-                   <a href={pdfUrl} download={selectedFile.name.replace('.docx', '.pdf')}>
-                      <Button variant="default">
-                          <FileDown className="mr-2 h-4 w-4" /> Download PDF
-                      </Button>
-                   </a>
+                   <Button variant="default" onClick={handleDownload}>
+                      <FileDown className="mr-2 h-4 w-4" /> Download PDF
+                   </Button>
                    <Button variant="outline" onClick={handleReset}>
                       <RefreshCw className="mr-2 h-4 w-4" /> Convert Another
                    </Button>
