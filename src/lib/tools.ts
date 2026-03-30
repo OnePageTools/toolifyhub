@@ -31,6 +31,9 @@ import {
   DollarSign,
   Camera,
   Tag,
+  Thermometer,
+  BookText,
+  Globe,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities';
@@ -202,6 +205,30 @@ export const tools: Tool[] = [
     description: 'Create temporary email addresses',
     href: '/tools/temp-email-generator',
     icon: Mail,
+    category: 'Utilities',
+    implemented: true,
+  },
+  {
+    name: 'Weather Checker',
+    description: 'Get live weather updates',
+    href: '/tools/weather-checker',
+    icon: Thermometer,
+    category: 'Utilities',
+    implemented: true,
+  },
+  {
+    name: 'Dictionary',
+    description: 'Find word definitions',
+    href: '/tools/dictionary',
+    icon: BookText,
+    category: 'Text',
+    implemented: true,
+  },
+  {
+    name: 'IP Lookup',
+    description: 'Find your IP address details',
+    href: '/tools/ip-lookup',
+    icon: Globe,
     category: 'Utilities',
     implemented: true,
   },
