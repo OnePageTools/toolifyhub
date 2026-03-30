@@ -169,7 +169,7 @@ export function WeatherCheckerForm() {
                             </div>
                             <div className="flex flex-col items-center gap-6">
                                 <Icon />
-                                <div className="grid grid-cols-3 gap-x-6 text-center text-sm">
+                                <div className="grid grid-cols-3 gap-4 md:gap-x-6 text-center text-sm">
                                     <div className="flex flex-col items-center gap-1">
                                         <Thermometer />
                                         <span>Feels like</span>
@@ -199,7 +199,7 @@ export function WeatherCheckerForm() {
                                     <div key={day.date} className="bg-white/10 p-4 rounded-lg flex items-center justify-between">
                                         <div>
                                             <p className="font-bold">{index === 0 ? 'Today' : format(new Date(day.date), 'EEE')}</p>
-                                            <p className="text-2xl font-bold">{day.avgtempC}°C</p>
+                                            <p className="text-xl md:text-2xl font-bold">{day.avgtempC}°C</p>
                                         </div>
                                         <ForecastIcon description={day.hourly[4].weatherDesc[0].value} />
                                     </div>
