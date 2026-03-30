@@ -5,9 +5,9 @@ import AIHelper from '@/components/ai-assistant';
 const tool = {
   name: 'English Dictionary',
   url: '/tools/dictionary',
-  title: 'Free English Dictionary - Definitions, Phonetics & Examples',
-  description: 'Look up definitions, phonetic transcriptions, part of speech, and usage examples for any English word. A free and simple online dictionary tool.',
-  keywords: 'dictionary, english dictionary, word definition, online dictionary, define word, word meaning'
+  title: 'Free English Dictionary Online - Word Meanings & Definitions',
+  description: 'Look up word meanings, definitions, pronunciations, synonyms, and antonyms with our free online English dictionary. Includes usage examples and audio.',
+  keywords: 'dictionary, english dictionary, online dictionary, word definition, define, thesaurus, synonyms, antonyms, pronunciation'
 };
 
 export const metadata: Metadata = {
