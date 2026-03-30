@@ -3,15 +3,16 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Copy, ClipboardCheck } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, Copy, ClipboardCheck, Globe, MapPin, Building, Wifi, Shield } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type IpData = {
     ip: string;
     city: string;
     region: string;
     country_name: string;
-    org: string;
+    org: string; // ISP
 };
 
 export function IpLookupForm() {
@@ -50,51 +51,67 @@ export function IpLookupForm() {
             toast({ variant: 'destructive', title: 'Failed to copy' });
         });
     };
-    
-    if (isLoading) {
-        return (
-            <div className="flex justify-center items-center h-40">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
-        );
-    }
 
-    if (!ipData) {
-        return <p className="text-center text-destructive">Could not load IP information. Please try refreshing the page.</p>;
-    }
+    const InfoCard = ({ icon: Icon, title, value }: { icon: React.FC<any>, title: string, value: string | undefined }) => (
+        <Card className="bg-white/20 border-white/30 backdrop-blur-lg text-white p-4 text-center transform hover:scale-105 transition-transform duration-300">
+            <Icon className="w-10 h-10 mx-auto mb-3 text-pink-200" />
+            <p className="text-sm opacity-80">{title}</p>
+            <p className="font-bold text-lg truncate">{value || 'N/A'}</p>
+        </Card>
+    );
 
     return (
-        <div className="space-y-4">
-             <Card className="bg-secondary/50">
-                <CardContent className="p-4 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div className="flex-1 text-center md:text-left">
-                        <p className="text-sm text-muted-foreground">Your Public IP Address</p>
-                        <p className="font-mono text-2xl font-bold text-primary">{ipData.ip}</p>
-                    </div>
-                    <Button variant="outline" onClick={handleCopy}>
-                        {isCopied ? <ClipboardCheck className="mr-2"/> : <Copy className="mr-2"/>}
-                        Copy IP
-                    </Button>
-                </CardContent>
-            </Card>
+        <div className="relative min-h-screen w-full p-4 md:p-8 flex flex-col items-center justify-center overflow-hidden">
+            <motion.div 
+                key="ip-lookup-bg"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1.5 }}
+                className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 -z-10"
+            />
+            
+            <div className="w-full max-w-4xl space-y-8">
+                <div className="text-center text-white">
+                    <h1 className="text-4xl md:text-5xl font-extrabold drop-shadow-lg flex items-center justify-center gap-3">
+                       <Shield className="w-10 h-10"/> IP Address Lookup
+                    </h1>
+                    <p className="mt-2 text-lg opacity-90">Automatically fetch details about your public IP address.</p>
+                </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
-                <InfoCard title="Country" value={ipData.country_name} />
-                <InfoCard title="Region" value={ipData.region} />
-                <InfoCard title="City" value={ipData.city} />
-                <InfoCard title="ISP" value={ipData.org} />
+                <AnimatePresence>
+                {isLoading ? (
+                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex justify-center py-10">
+                        <Loader2 className="w-16 h-16 text-white animate-spin" />
+                    </motion.div>
+                ) : ipData ? (
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+                        <Card className="bg-white/20 backdrop-blur-lg border-white/30 text-white shadow-2xl">
+                            <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                                <div className="flex-1 text-center md:text-left">
+                                    <p className="text-sm opacity-80">Your Public IP Address</p>
+                                    <p className="font-mono text-3xl md:text-4xl font-bold break-all">{ipData.ip}</p>
+                                </div>
+                                <Button variant="outline" onClick={handleCopy} className="bg-white/30 border-white/40 text-white hover:bg-white/50">
+                                    {isCopied ? <ClipboardCheck className="mr-2"/> : <Copy className="mr-2"/>}
+                                    Copy IP
+                                </Button>
+                            </CardContent>
+                        </Card>
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                            <InfoCard icon={Globe} title="Country" value={ipData.country_name} />
+                            <InfoCard icon={MapPin} title="Region" value={ipData.region} />
+                            <InfoCard icon={Building} title="City" value={ipData.city} />
+                            <InfoCard icon={Wifi} title="ISP" value={ipData.org} />
+                        </div>
+                    </motion.div>
+                ) : (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-white">
+                        <p className="text-lg">Could not load IP information. Please try refreshing the page.</p>
+                    </motion.div>
+                )}
+                </AnimatePresence>
             </div>
         </div>
     );
 }
-
-const InfoCard = ({ title, value }: { title: string, value: string }) => (
-    <Card>
-        <CardHeader>
-            <CardTitle className="text-base text-muted-foreground">{title}</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <p className="text-xl font-semibold">{value}</p>
-        </CardContent>
-    </Card>
-);
