@@ -1,14 +1,13 @@
 import type { Metadata } from 'next';
 import { IpLookupForm } from '@/components/tools/ip-lookup-form';
 import AIHelper from '@/components/ai-assistant';
-import { Globe } from 'lucide-react';
 
 const tool = {
   name: 'IP Address Lookup',
   url: '/tools/ip-lookup',
-  title: 'My IP Address Lookup - Location, ISP, and More',
-  description: 'Instantly find your public IP address and get details about your location, including country, city, region, and ISP. Free and automatic IP lookup tool.',
-  keywords: 'ip lookup, my ip address, what is my ip, ip location, check ip, isp lookup'
+  title: 'Free IP Address Lookup - Find Your IP Location Online',
+  description: 'Instantly find your public IP address and get detailed geolocation data including country, city, region, ISP, and timezone with our free online tool.',
+  keywords: 'ip lookup, my ip address, what is my ip, ip location, check ip, isp lookup, geolocation, ip address location'
 };
 
 export const metadata: Metadata = {

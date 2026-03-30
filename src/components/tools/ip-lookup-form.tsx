@@ -1,18 +1,31 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Copy, ClipboardCheck, Globe, MapPin, Building, Wifi, Shield } from 'lucide-react';
+import { Loader2, Copy, ClipboardCheck, Globe, MapPin, Building, Wifi, Clock, RefreshCw, LocateFixed } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type IpData = {
-    ip: string;
+    query: string;
     city: string;
-    region: string;
-    country_name: string;
-    org: string; // ISP
+    regionName: string;
+    country: string;
+    countryCode: string;
+    isp: string;
+    timezone: string;
+    lat: number;
+    lon: number;
+};
+
+// Helper function to convert a country code to a flag emoji
+const countryCodeToEmoji = (countryCode: string) => {
+    if (!countryCode || countryCode.length !== 2) return '🌍';
+    // The regional indicator symbols are a set of 26 alphabetic Unicode characters
+    // (A–Z) used to encode country codes. The formula is 0x1F1E6 (Regional Indicator A) + charCode - 65 ('A').
+    const codePoints = [...countryCode.toUpperCase()].map(char => 127397 + char.charCodeAt(0));
+    return String.fromCodePoint(...codePoints);
 };
 
 export function IpLookupForm() {
@@ -21,29 +34,32 @@ export function IpLookupForm() {
     const [isCopied, setIsCopied] = useState(false);
     const { toast } = useToast();
 
-    useEffect(() => {
-        const fetchIp = async () => {
-            setIsLoading(true);
-            try {
-                const response = await fetch(`https://ipapi.co/json/`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch IP information.');
-                }
-                const data = await response.json();
-                setIpData(data);
-            } catch (error: any) {
-                toast({ variant: "destructive", title: "Error", description: error.message });
-            } finally {
-                setIsLoading(false);
+    const fetchIp = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`https://ip-api.com/json/`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch IP information.');
             }
-        };
-
-        fetchIp();
+            const data = await response.json();
+            if (data.status !== 'success') {
+                throw new Error(data.message || 'The API returned an error.');
+            }
+            setIpData(data);
+        } catch (error: any) {
+            toast({ variant: "destructive", title: "Error", description: error.message });
+        } finally {
+            setIsLoading(false);
+        }
     }, [toast]);
 
+    useEffect(() => {
+        fetchIp();
+    }, [fetchIp]);
+
     const handleCopy = () => {
-        if (!ipData?.ip) return;
-        navigator.clipboard.writeText(ipData.ip).then(() => {
+        if (!ipData?.query) return;
+        navigator.clipboard.writeText(ipData.query).then(() => {
             setIsCopied(true);
             setTimeout(() => setIsCopied(false), 2000);
             toast({ title: 'IP Address copied to clipboard!' });
@@ -73,9 +89,9 @@ export function IpLookupForm() {
             <div className="w-full max-w-4xl space-y-8">
                 <div className="text-center text-white">
                     <h1 className="text-4xl md:text-5xl font-extrabold drop-shadow-lg flex items-center justify-center gap-3">
-                       <Shield className="w-10 h-10"/> IP Address Lookup
+                       <LocateFixed className="w-10 h-10"/> IP Address Lookup
                     </h1>
-                    <p className="mt-2 text-lg opacity-90">Automatically fetch details about your public IP address.</p>
+                    <p className="mt-2 text-lg opacity-90">Find detailed geolocation information about your public IP address.</p>
                 </div>
 
                 <AnimatePresence>
@@ -89,20 +105,28 @@ export function IpLookupForm() {
                             <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between gap-4">
                                 <div className="flex-1 text-center md:text-left">
                                     <p className="text-sm opacity-80">Your Public IP Address</p>
-                                    <p className="font-mono text-3xl md:text-4xl font-bold break-all">{ipData.ip}</p>
+                                    <p className="font-mono text-3xl md:text-4xl font-bold break-all">{ipData.query}</p>
                                 </div>
-                                <Button variant="outline" onClick={handleCopy} className="bg-white/30 border-white/40 text-white hover:bg-white/50">
-                                    {isCopied ? <ClipboardCheck className="mr-2"/> : <Copy className="mr-2"/>}
-                                    Copy IP
-                                </Button>
+                                <div className="flex gap-2">
+                                  <Button variant="outline" onClick={handleCopy} className="bg-white/30 border-white/40 text-white hover:bg-white/50">
+                                      {isCopied ? <ClipboardCheck className="mr-2"/> : <Copy className="mr-2"/>}
+                                      Copy IP
+                                  </Button>
+                                   <Button variant="outline" onClick={() => fetchIp()} className="bg-white/30 border-white/40 text-white hover:bg-white/50">
+                                      <RefreshCw className="mr-2"/>
+                                      Refresh
+                                  </Button>
+                                </div>
                             </CardContent>
                         </Card>
                         
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                            <InfoCard icon={Globe} title="Country" value={ipData.country_name} />
-                            <InfoCard icon={MapPin} title="Region" value={ipData.region} />
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                            <InfoCard icon={Globe} title="Country" value={`${countryCodeToEmoji(ipData.countryCode)} ${ipData.country}`} />
+                            <InfoCard icon={MapPin} title="Region" value={ipData.regionName} />
                             <InfoCard icon={Building} title="City" value={ipData.city} />
-                            <InfoCard icon={Wifi} title="ISP" value={ipData.org} />
+                            <InfoCard icon={Wifi} title="ISP" value={ipData.isp} />
+                            <InfoCard icon={Clock} title="Timezone" value={ipData.timezone} />
+                            <InfoCard icon={LocateFixed} title="Coordinates" value={`${ipData.lat.toFixed(4)}, ${ipData.lon.toFixed(4)}`} />
                         </div>
                     </motion.div>
                 ) : (
