@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef } from 'react';
@@ -75,10 +74,21 @@ export function WordToPdfForm() {
       const arrayBuffer = await selectedFile.arrayBuffer();
       
       setStatus('Converting Word to HTML...');
-      const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
+      let { value: html } = await mammoth.convertToHtml({ arrayBuffer });
 
+      // Fallback mechanism
       if (!html.trim()) {
-        throw new Error("Conversion Failed. The tool could not read this file's content. This often happens if the file is password-protected, empty, or uses an unsupported format (e.g., .doc instead of .docx). Please try re-saving your file as a standard .docx and try again.");
+        toast({
+          variant: 'default',
+          title: "Formatting Issue",
+          description: "Could not preserve formatting. Falling back to plain text conversion.",
+        });
+        const { value: rawText } = await mammoth.extractRawText({ arrayBuffer });
+        if (!rawText.trim()) {
+             throw new Error("Conversion Failed. The tool could not read any content from this file. It may be empty, password-protected, or in an unsupported format.");
+        }
+        // Convert plain text to basic HTML
+        html = `<pre style="white-space: pre-wrap; font-size: 12px; font-family: 'Helvetica', 'Arial', sans-serif;">${rawText}</pre>`;
       }
       
       setStatus('Creating PDF from content...');
@@ -145,7 +155,7 @@ export function WordToPdfForm() {
       <label
         htmlFor="docx-upload"
         className={cn("group relative flex w-full max-w-lg cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary", isDragging && "border-primary bg-primary/10")}
-        onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}
+        onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDrop}
       >
         <div className="flex flex-col items-center gap-2 text-muted-foreground">
           <Upload className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
