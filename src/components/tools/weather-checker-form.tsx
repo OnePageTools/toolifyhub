@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
@@ -9,30 +10,80 @@ import { Card, CardContent } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 
-type WeatherData = {
-  current_condition: {
-    FeelsLikeC: string;
-    humidity: string;
-    temp_C: string;
-    weatherDesc: { value: string }[];
-    weatherCode: string;
-    windspeedKmph: string;
-  }[];
-  nearest_area: {
-    areaName: { value: string }[];
-    country: { value: string }[];
-  }[];
-  weather: {
-    date: string;
-    maxtempC: string;
-    mintempC: string;
-    avgtempC: string;
-    hourly: {
-        weatherCode: string;
-        weatherDesc: { value: string }[];
-    }[];
-  }[];
+type GeocodingResult = {
+    name: string;
+    latitude: number;
+    longitude: number;
+    country: string;
 };
+
+type ForecastData = {
+    current: {
+        temperature_2m: number;
+        relative_humidity_2m: number;
+        apparent_temperature: number;
+        weather_code: number;
+        wind_speed_10m: number;
+    };
+    daily: {
+        time: string[];
+        weather_code: number[];
+        temperature_2m_max: number[];
+        temperature_2m_min: number[];
+    };
+};
+
+type CombinedWeatherData = {
+    name: string;
+    country: string;
+    current: {
+        temp: number;
+        feelsLike: number;
+        humidity: number;
+        windSpeed: number;
+        description: string;
+    };
+    forecast: {
+        date: string;
+        avgTemp: number;
+        description: string;
+    }[];
+};
+
+const weatherCodeToDescription = (code: number): string => {
+    const descriptions: Record<number, string> = {
+        0: 'Clear sky',
+        1: 'Mainly clear',
+        2: 'Partly cloudy',
+        3: 'Overcast',
+        45: 'Fog',
+        48: 'Depositing rime fog',
+        51: 'Light drizzle',
+        53: 'Moderate drizzle',
+        55: 'Dense drizzle',
+        56: 'Light freezing drizzle',
+        57: 'Dense freezing drizzle',
+        61: 'Slight rain',
+        63: 'Moderate rain',
+        65: 'Heavy rain',
+        66: 'Light freezing rain',
+        67: 'Heavy freezing rain',
+        71: 'Slight snow fall',
+        73: 'Moderate snow fall',
+        75: 'Heavy snow fall',
+        77: 'Snow grains',
+        80: 'Slight rain showers',
+        81: 'Moderate rain showers',
+        82: 'Violent rain showers',
+        85: 'Slight snow showers',
+        86: 'Heavy snow showers',
+        95: 'Thunderstorm',
+        96: 'Thunderstorm with slight hail',
+        99: 'Thunderstorm with heavy hail',
+    };
+    return descriptions[code] || 'Unknown';
+};
+
 
 const getWeatherProperties = (description: string) => {
     const desc = description.toLowerCase();
@@ -85,7 +136,7 @@ const ForecastIcon = ({ description }: { description: string }) => {
 
 export function WeatherCheckerForm() {
     const [city, setCity] = useState('');
-    const [weather, setWeather] = useState<WeatherData | null>(null);
+    const [weather, setWeather] = useState<CombinedWeatherData | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
 
@@ -93,10 +144,40 @@ export function WeatherCheckerForm() {
         setIsLoading(true);
         setWeather(null);
         try {
-            const response = await fetch(`https://wttr.in/${encodeURIComponent(cityQuery)}?format=j1`);
-            if (!response.ok) throw new Error('City not found or API error.');
-            const data = await response.json();
-            setWeather(data);
+             // Step 1: Geocoding
+            const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityQuery)}&count=1`);
+            if (!geoResponse.ok) throw new Error('Could not fetch location data.');
+            const geoData = await geoResponse.json();
+            if (!geoData.results || geoData.results.length === 0) {
+                throw new Error(`Could not find a location for "${cityQuery}". Please be more specific.`);
+            }
+            const location: GeocodingResult = geoData.results[0];
+
+            // Step 2: Weather Forecast
+            const forecastResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3`);
+            if (!forecastResponse.ok) throw new Error('Could not fetch weather data.');
+            const forecastData: ForecastData = await forecastResponse.json();
+
+             // Step 3: Combine and set state
+            const combinedData: CombinedWeatherData = {
+                name: location.name,
+                country: location.country,
+                current: {
+                    temp: Math.round(forecastData.current.temperature_2m),
+                    feelsLike: Math.round(forecastData.current.apparent_temperature),
+                    humidity: forecastData.current.relative_humidity_2m,
+                    windSpeed: Math.round(forecastData.current.wind_speed_10m),
+                    description: weatherCodeToDescription(forecastData.current.weather_code),
+                },
+                forecast: forecastData.daily.time.map((date, index) => ({
+                    date,
+                    avgTemp: Math.round((forecastData.daily.temperature_2m_max[index] + forecastData.daily.temperature_2m_min[index]) / 2),
+                    description: weatherCodeToDescription(forecastData.daily.weather_code[index]),
+                })),
+            };
+            
+            setWeather(combinedData);
+
         } catch (error: any) {
             toast({ variant: "destructive", title: "Error", description: error.message });
         } finally {
@@ -106,7 +187,7 @@ export function WeatherCheckerForm() {
 
     useEffect(() => {
         // Fetch weather for a default city on initial load
-        fetchWeather('Larkana, Pakistan');
+        fetchWeather('Larkana');
     }, []);
 
     const handleSearch = () => {
@@ -114,17 +195,12 @@ export function WeatherCheckerForm() {
             toast({ variant: "destructive", title: "City name cannot be empty." });
             return;
         }
-        let cityQuery = city.trim();
-        // If no country is specified, default to Pakistan.
-        if (!cityQuery.includes(',')) {
-            cityQuery += ', Pakistan';
-        }
-        fetchWeather(cityQuery);
+        fetchWeather(city.trim());
     };
 
     const { Icon, gradient } = useMemo(() => {
-        if (weather?.current_condition[0]?.weatherDesc[0]?.value) {
-            return getWeatherProperties(weather.current_condition[0].weatherDesc[0].value);
+        if (weather?.current?.description) {
+            return getWeatherProperties(weather.current.description);
         }
         return getWeatherProperties('cloudy');
     }, [weather]);
@@ -144,7 +220,7 @@ export function WeatherCheckerForm() {
                 <div className="flex gap-2 backdrop-blur-sm bg-white/20 dark:bg-black/20 p-2 rounded-full shadow-lg">
                     <Input
                         id="city-input"
-                        placeholder="e.g., Larkana"
+                        placeholder="e.g., London, New York..."
                         className="bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-200"
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
@@ -154,7 +230,7 @@ export function WeatherCheckerForm() {
                         {isLoading ? <Loader2 className="animate-spin" /> : <Search />}
                     </Button>
                 </div>
-                 <p className="text-xs text-white/80 text-center mt-2 px-4">Enter a city name. Defaults to Pakistan if no country is specified.</p>
+                 <p className="text-xs text-white/80 text-center mt-2 px-4">Enter any city name for a live weather forecast.</p>
             </div>
             
             <AnimatePresence>
@@ -169,9 +245,9 @@ export function WeatherCheckerForm() {
                     <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-lg border-white/30 text-white shadow-2xl">
                         <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-8">
                             <div className="text-center md:text-left">
-                                <h1 className="text-3xl md:text-4xl font-bold">{weather.nearest_area[0].areaName[0].value}, {weather.nearest_area[0].country[0].value}</h1>
-                                <p className="capitalize text-lg">{weather.current_condition[0].weatherDesc[0].value}</p>
-                                <p className="text-7xl md:text-8xl font-bold my-4 drop-shadow-xl">{weather.current_condition[0].temp_C}°C</p>
+                                <h1 className="text-3xl md:text-4xl font-bold">{weather.name}, {weather.country}</h1>
+                                <p className="capitalize text-lg">{weather.current.description}</p>
+                                <p className="text-7xl md:text-8xl font-bold my-4 drop-shadow-xl">{weather.current.temp}°C</p>
                             </div>
                             <div className="flex flex-col items-center gap-6">
                                 <Icon />
@@ -179,17 +255,17 @@ export function WeatherCheckerForm() {
                                     <div className="flex flex-col items-center gap-1">
                                         <Thermometer />
                                         <span>Feels like</span>
-                                        <span className="font-bold">{weather.current_condition[0].FeelsLikeC}°</span>
+                                        <span className="font-bold">{weather.current.feelsLike}°</span>
                                     </div>
                                      <div className="flex flex-col items-center gap-1">
                                         <Droplets />
                                         <span>Humidity</span>
-                                        <span className="font-bold">{weather.current_condition[0].humidity}%</span>
+                                        <span className="font-bold">{weather.current.humidity}%</span>
                                     </div>
                                      <div className="flex flex-col items-center gap-1">
                                         <Wind />
                                         <span>Wind</span>
-                                        <span className="font-bold">{weather.current_condition[0].windspeedKmph} km/h</span>
+                                        <span className="font-bold">{weather.current.windSpeed} km/h</span>
                                     </div>
                                 </div>
                             </div>
@@ -201,13 +277,13 @@ export function WeatherCheckerForm() {
                         <CardContent className="p-6">
                             <h2 className="text-lg font-semibold mb-4">3-Day Forecast</h2>
                             <div className="grid md:grid-cols-3 gap-4">
-                                {weather.weather.map((day, index) => (
+                                {weather.forecast.map((day, index) => (
                                     <div key={day.date} className="bg-white/10 p-4 rounded-lg flex items-center justify-between">
                                         <div>
                                             <p className="font-bold">{index === 0 ? 'Today' : format(new Date(day.date), 'EEE')}</p>
-                                            <p className="text-xl md:text-2xl font-bold">{day.avgtempC}°C</p>
+                                            <p className="text-xl md:text-2xl font-bold">{day.avgTemp}°C</p>
                                         </div>
-                                        <ForecastIcon description={day.hourly[4].weatherDesc[0].value} />
+                                        <ForecastIcon description={day.description} />
                                     </div>
                                 ))}
                             </div>
