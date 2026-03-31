@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
@@ -139,7 +140,7 @@ export function WeatherCheckerForm() {
                 <div className="flex gap-2 backdrop-blur-sm bg-white/20 dark:bg-black/20 p-2 rounded-full shadow-lg">
                     <Input
                         id="city-input"
-                        placeholder="Search for a city..."
+                        placeholder="e.g., Larkana, Pakistan"
                         className="bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-200"
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
@@ -149,6 +150,7 @@ export function WeatherCheckerForm() {
                         {isLoading ? <Loader2 className="animate-spin" /> : <Search />}
                     </Button>
                 </div>
+                 <p className="text-xs text-white/80 text-center mt-2 px-4">For accurate results, please enter the city and country (e.g., "Larkana, Pakistan").</p>
             </div>
             
             <AnimatePresence>
