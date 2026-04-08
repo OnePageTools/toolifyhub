@@ -190,12 +190,12 @@ export function TextSummarizerForm() {
             )}
           />
           <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm font-medium">Summary Length:</span>
               <div className="flex items-center rounded-lg p-1 bg-secondary">
-                <Button type="button" size="sm" variant={summaryLength === 'short' ? 'default' : 'ghost'} onClick={() => handleSummarizeWithLength('short')}><AlignLeft />Short</Button>
-                <Button type="button" size="sm" variant={summaryLength === 'medium' ? 'default' : 'ghost'} onClick={() => handleSummarizeWithLength('medium')}><AlignCenter />Medium</Button>
-                <Button type="button" size="sm" variant={summaryLength === 'detailed' ? 'default' : 'ghost'} onClick={() => handleSummarizeWithLength('detailed')}><List />Detailed</Button>
+                <Button type="button" size="sm" variant={summaryLength === 'short' ? 'default' : 'ghost'} onClick={() => handleSummarizeWithLength('short')}><AlignLeft className="md:mr-2" /><span className="hidden md:inline">Short</span></Button>
+                <Button type="button" size="sm" variant={summaryLength === 'medium' ? 'default' : 'ghost'} onClick={() => handleSummarizeWithLength('medium')}><AlignCenter className="md:mr-2" /><span className="hidden md:inline">Medium</span></Button>
+                <Button type="button" size="sm" variant={summaryLength === 'detailed' ? 'default' : 'ghost'} onClick={() => handleSummarizeWithLength('detailed')}><List className="md:mr-2" /><span className="hidden md:inline">Detailed</span></Button>
               </div>
             </div>
              <Button type="submit" disabled={isLoading}>
