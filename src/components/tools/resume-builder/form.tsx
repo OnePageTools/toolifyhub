@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm, useFieldArray, FormProvider, useFormContext } from 'react-hook-form';
@@ -43,6 +44,7 @@ export function ResumeBuilderForm() {
       projects: [{ name: 'My Side Project', description: '- Built an amazing app that does X, Y, and Z.', url: 'github.com/my-project'}],
       education: [{ school: 'University of Knowledge', degree: 'B.S. in Computer Science', date: 'Graduated May 2020' }],
       skills: [{ name: 'React' }, { name: 'Node.js' }, { name: 'Problem Solving' }],
+      languages: [{ name: 'English' }, { name: 'Spanish' }],
     },
   });
   
@@ -124,6 +126,10 @@ export function ResumeBuilderForm() {
                 <AccordionItem value="skills">
                   <AccordionTrigger>Skills</AccordionTrigger>
                   <AccordionContent><SkillsForm /></AccordionContent>
+                </AccordionItem>
+                 <AccordionItem value="languages">
+                  <AccordionTrigger>Languages</AccordionTrigger>
+                  <AccordionContent><LanguagesForm /></AccordionContent>
                 </AccordionItem>
               </Accordion>
             </CardContent>
@@ -297,6 +303,25 @@ const SkillsForm = () => {
   );
 };
 
+const LanguagesForm = () => {
+  const { control, register } = useFormContext<ResumeData>();
+  const { fields, append, remove } = useFieldArray({ control, name: 'languages' });
+  return (
+    <div className="space-y-4 p-1">
+      <Label>Languages</Label>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        {fields.map((field, index) => (
+          <div key={field.id} className="flex items-center gap-1">
+            <Input {...register(`languages.${index}.name`)} placeholder="e.g., Spanish" />
+            <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+          </div>
+        ))}
+      </div>
+      <Button type="button" variant="outline" onClick={() => append({ name: '' })}><Plus className="mr-2" /> Add Language</Button>
+    </div>
+  );
+};
+
 
 // The real-time preview component
 interface ResumePreviewProps extends TemplateProps {
@@ -309,7 +334,7 @@ const ResumePreview = ({ data, template, theme }: ResumePreviewProps) => {
     const sanitizedData = JSON.parse(JSON.stringify(data || {}));
     
     // Ensure all array fields are present
-    const arrayFields: (keyof ResumeData)[] = ['experience', 'education', 'skills', 'projects'];
+    const arrayFields: (keyof ResumeData)[] = ['experience', 'education', 'skills', 'projects', 'languages'];
     arrayFields.forEach(field => {
         if (!Array.isArray(sanitizedData[field])) {
             sanitizedData[field] = [];

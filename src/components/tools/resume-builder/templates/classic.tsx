@@ -89,16 +89,23 @@ export const ClassicTemplate = ({ data, theme }: TemplateProps) => {
         )}
 
         {data.skills?.some(s => s.name) && (
-          <section>
+          <section className="mb-6">
             <h2 className={cn("text-xl font-bold border-b-2 pb-1 mb-2 font-serif", theme.primary)} style={{ borderColor: theme.primary.replace('text-', 'border-') }}>Skills</h2>
             <p className="text-gray-700">
               {data.skills?.map(skill => skill.name).filter(Boolean).join(' • ')}
             </p>
           </section>
         )}
+
+        {data.languages?.some(l => l.name) && (
+            <section>
+                <h2 className={cn("text-xl font-bold border-b-2 pb-1 mb-2 font-serif", theme.primary)} style={{ borderColor: theme.primary.replace('text-', 'border-') }}>Languages</h2>
+                <p className="text-gray-700">
+                    {data.languages?.map(lang => lang.name).filter(Boolean).join(' • ')}
+                </p>
+            </section>
+        )}
       </main>
     </div>
   );
 };
-
-    

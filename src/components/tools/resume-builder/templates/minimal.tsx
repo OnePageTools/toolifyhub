@@ -1,6 +1,5 @@
 
 import type { TemplateProps } from '.';
-import { Mail, Phone, Linkedin, Globe, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const MinimalTemplate = ({ data, theme }: TemplateProps) => {
@@ -94,10 +93,19 @@ export const MinimalTemplate = ({ data, theme }: TemplateProps) => {
         )}
 
         {data.skills?.some(s => s.name) && (
-          <section>
+          <section className="mb-6">
             <h2 className={cn("text-sm font-bold uppercase tracking-widest pb-1 mb-3 border-b", theme.primary)} style={{ borderColor: theme.primary.replace('text-', 'border-') }}>Skills</h2>
             <p className="text-gray-700">
               {data.skills?.map(skill => skill.name).filter(Boolean).join(', ')}
+            </p>
+          </section>
+        )}
+
+        {data.languages?.some(l => l.name) && (
+          <section>
+            <h2 className={cn("text-sm font-bold uppercase tracking-widest pb-1 mb-3 border-b", theme.primary)} style={{ borderColor: theme.primary.replace('text-', 'border-') }}>Languages</h2>
+            <p className="text-gray-700">
+              {data.languages?.map(lang => lang.name).filter(Boolean).join(', ')}
             </p>
           </section>
         )}
@@ -105,5 +113,3 @@ export const MinimalTemplate = ({ data, theme }: TemplateProps) => {
     </div>
   );
 };
-
-    

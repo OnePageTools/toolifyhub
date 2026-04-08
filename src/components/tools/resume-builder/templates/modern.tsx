@@ -1,8 +1,6 @@
 
 import type { TemplateProps } from '.';
-import { Mail, Phone, Linkedin, Globe, MapPin, Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Progress } from '@/components/ui/progress';
+import { Mail, Phone, Linkedin, Globe, MapPin } from 'lucide-react';
 
 export const ModernTemplate = ({ data, theme }: TemplateProps) => {
   const renderTextWithBreaks = (text?: string) => {
@@ -17,8 +15,6 @@ export const ModernTemplate = ({ data, theme }: TemplateProps) => {
       <aside className="col-span-1 p-8" style={{ backgroundColor: theme.background }}>
         <div className="text-center" style={{ color: theme.text }}>
             {data.photo && <img src={data.photo} alt={data.fullName || 'Profile Photo'} className="w-32 h-32 rounded-full object-cover mx-auto mb-6 border-4 border-white shadow-md" />}
-            {data.fullName && <h1 className="text-4xl font-bold tracking-tight font-serif" style={{color: theme.primary}}>{data.fullName}</h1>}
-            {data.jobTitle && <p className="text-lg mt-1">{data.jobTitle}</p>}
         </div>
 
         <section className="mt-8">
@@ -43,6 +39,17 @@ export const ModernTemplate = ({ data, theme }: TemplateProps) => {
             </section>
         )}
 
+        {data.languages?.some(l => l.name) && (
+            <section className="mt-8">
+                <h2 className="text-sm font-bold uppercase tracking-widest mb-3" style={{color: theme.primary}}>Languages</h2>
+                <ul className="space-y-1 text-sm list-disc list-inside" style={{ color: theme.text }}>
+                    {data.languages.map((lang, index) => lang.name && (
+                        <li key={index}>{lang.name}</li>
+                    ))}
+                </ul>
+            </section>
+        )}
+
         {data.education?.some(e => e.school || e.degree) && (
             <section className="mt-8">
                 <h2 className="text-sm font-bold uppercase tracking-widest mb-3" style={{color: theme.primary}}>Education</h2>
@@ -59,6 +66,11 @@ export const ModernTemplate = ({ data, theme }: TemplateProps) => {
 
       {/* Right Column (Main Content) */}
       <main className="col-span-2 p-8">
+        <header className="text-left mb-8">
+            {data.fullName && <h1 className="text-5xl font-bold tracking-tight font-serif" style={{color: theme.primary}}>{data.fullName}</h1>}
+            {data.jobTitle && <p className="text-2xl mt-1">{data.jobTitle}</p>}
+        </header>
+
         {data.summary && (
           <section className="mb-6">
             <h2 className="text-lg font-bold uppercase tracking-wider mb-2 font-serif" style={{color: theme.primary}}>Profile</h2>
@@ -102,5 +114,3 @@ export const ModernTemplate = ({ data, theme }: TemplateProps) => {
     </div>
   );
 };
-
-    
