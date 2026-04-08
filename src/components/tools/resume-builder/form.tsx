@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useForm, useFieldArray, FormProvider, useFormContext } from 'react-hook-form';
@@ -137,7 +136,7 @@ export function ResumeBuilderForm() {
         </div>
 
         {/* Action and Preview Section */}
-        <div className="sticky top-10 lg:col-span-1">
+        <div className="sticky top-10 lg:col-span-1 print:hidden">
           <Card className="shadow-lg print:shadow-none">
             <CardHeader className="print:hidden">
               <CardTitle>Preview & Download</CardTitle>
