@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm, useFieldArray, FormProvider, useFormContext } from 'react-hook-form';
@@ -9,12 +10,15 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Trash2, Plus, Printer, Palette, CaseSensitive, User } from 'lucide-react';
-import { useState } from 'react';
+import { Trash2, Plus, Printer, Palette, CaseSensitive, User, Loader2 } from 'lucide-react';
+import { useState, useRef } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { templates, type TemplateKey, type TemplateProps } from './templates';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+
 
 // Theme definitions
 const colorThemes = {
@@ -42,16 +46,59 @@ export function ResumeBuilderForm() {
       experience: [{ company: 'Awesome Company', jobTitle: 'Software Engineer', date: 'Jan 2020 - Present', description: '- Developed cool things.\n- Collaborated with great people.' }],
       projects: [{ name: 'My Side Project', description: '- Built an amazing app that does X, Y, and Z.', url: 'github.com/my-project'}],
       education: [{ school: 'University of Knowledge', degree: 'B.S. in Computer Science', date: 'Graduated May 2020' }],
-      skills: [{ name: 'React' }, { name: 'Node.js' }, { name: 'Problem Solving' }],
+      skills: [{ name: 'React' }, { name: 'Node.js' }, { name: 'Problem Solving' }, { name: 'TypeScript' }, { name: 'Next.js' }, { name: 'SQL' }, { name: 'Communication' } ],
       languages: [{ name: 'English' }, { name: 'Spanish' }],
     },
   });
   
   const [template, setTemplate] = useState<TemplateKey>('modern');
   const [colorTheme, setColorTheme] = useState<ColorThemeKey>('sky');
+  const [isPrinting, setIsPrinting] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = () => {
-    window.print();
+    const input = previewRef.current;
+    if (!input) {
+      alert("Preview not available for download.");
+      return;
+    }
+    
+    setIsPrinting(true);
+
+    html2canvas(input, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+    }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'pt',
+            format: 'a4'
+        });
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const ratio = canvasWidth / canvasHeight;
+        
+        let finalWidth = pdfWidth;
+        let finalHeight = finalWidth / ratio;
+        if(finalHeight > pdfHeight) {
+            finalHeight = pdfHeight;
+            finalWidth = finalHeight * ratio;
+        }
+
+        const x = (pdfWidth - finalWidth) / 2;
+        const y = (pdfHeight - finalHeight) / 2;
+
+        pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+        pdf.save('resume.pdf');
+        setIsPrinting(false);
+    }).catch(() => {
+        setIsPrinting(false);
+        alert('An error occurred while generating the PDF.');
+    });
   };
   
   const data = methods.watch();
@@ -60,7 +107,7 @@ export function ResumeBuilderForm() {
     <FormProvider {...methods}>
       <div className="grid lg:grid-cols-2 gap-8 items-start">
         {/* Form Section is hidden on print */}
-        <div className="lg:col-span-1 print:hidden">
+        <div className="lg:col-span-1">
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="font-headline text-3xl">Resume Builder</CardTitle>
@@ -136,23 +183,22 @@ export function ResumeBuilderForm() {
         </div>
 
         {/* Action and Preview Section */}
-        <div className="sticky top-10 lg:col-span-1 print:hidden">
-          <Card className="shadow-lg print:shadow-none">
-            <CardHeader className="print:hidden">
+        <div className="sticky top-10 lg:col-span-1">
+          <Card className="shadow-lg">
+            <CardHeader>
               <CardTitle>Preview & Download</CardTitle>
-               <Button onClick={handlePrint} size="lg" className="w-full mt-2">
-                <Printer className="mr-2" /> Download as PDF
+               <Button onClick={handlePrint} size="lg" className="w-full mt-2" disabled={isPrinting}>
+                {isPrinting ? <Loader2 className="mr-2 animate-spin" /> : <Printer className="mr-2" />} 
+                {isPrinting ? 'Generating PDF...' : 'Download as PDF'}
               </Button>
             </CardHeader>
-            <CardContent className="h-[75vh] overflow-y-auto bg-secondary/50 p-2 print:h-auto print:overflow-visible">
-                <ResumePreview data={data} template={template} theme={colorThemes[colorTheme]} />
+            <CardContent className="h-[75vh] overflow-y-auto bg-secondary/50 p-2">
+                <div ref={previewRef}>
+                    <ResumePreview data={data} template={template} theme={colorThemes[colorTheme]} />
+                </div>
             </CardContent>
           </Card>
         </div>
-      </div>
-      {/* This div is only for printing */}
-      <div className="hidden print-container">
-         <ResumePreview data={data} template={template} theme={colorThemes[colorTheme]} />
       </div>
     </FormProvider>
   );
@@ -341,7 +387,7 @@ const ResumePreview = ({ data, template, theme }: ResumePreviewProps) => {
     });
 
     return (
-        <div className="bg-white shadow-lg aspect-[8.5/11] w-full h-full transform origin-top scale-[0.9] lg:scale-100 print:shadow-none print:transform-none print:scale-100">
+        <div className="bg-white shadow-lg aspect-[8.5/11] w-full h-full transform origin-top scale-[0.9] lg:scale-100">
             <TemplateComponent data={sanitizedData} theme={theme} />
         </div>
     );

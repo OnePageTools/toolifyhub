@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Camera, Download, Trash2, Monitor, Tablet, Smartphone } from 'lucide-react';
 import Image from 'next/image';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { captureWebsiteScreenshot } from '@/ai/flows/website-screenshot-flow';
 
 
 type Device = 'desktop' | 'tablet' | 'mobile';
@@ -55,40 +56,31 @@ export function WebsiteScreenshotForm() {
 
     setIsLoading(true);
     setImageUrl(null);
-
-    // Use a public screenshot API
     const { width, height } = resolutions[device];
-    const apiUrl = `https://api.screenshotone.com/take?access_key=YOUR_ACCESS_KEY&url=${encodeURIComponent(validUrl)}&viewport_width=${width}&viewport_height=${height}&full_page=true`;
-    
-    // In a real app, you'd replace YOUR_ACCESS_KEY with a key from a service like ScreenshotOne, ApiFlash, etc.
-    // For this example, we will use a placeholder service that may not work without a valid key.
-    // As a fallback, we'll use a placeholder image.
-    
-    try {
-        // This fetch will likely fail without a real API key.
-        // const response = await fetch(apiUrl);
-        // if (!response.ok) {
-        //     throw new Error('Screenshot API failed.');
-        // }
-        // const imageBlob = await response.blob();
-        // setImageUrl(URL.createObjectURL(imageBlob));
 
-        // Placeholder logic since we don't have a live API key
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-        const placeholderImageUrl = `https://picsum.photos/seed/${encodeURIComponent(validUrl)}/${width}/${height}`;
-        setImageUrl(placeholderImageUrl);
-        toast({
-            title: "Screenshot Captured (Placeholder)",
-            description: "Using a placeholder image as API key is not configured.",
+    try {
+        const result = await captureWebsiteScreenshot({
+            url: validUrl,
+            width,
+            height,
         });
 
-    } catch (error) {
+        if (result.error || !result.imageDataUri) {
+            throw new Error(result.error || "The AI failed to generate a screenshot. The website may be inaccessible or blocking automated tools.");
+        }
+
+        setImageUrl(result.imageDataUri);
+        toast({
+            title: "Screenshot Captured!",
+            description: "The AI has successfully rendered the website.",
+        });
+
+    } catch (error: any) {
       console.error(error);
       toast({
         variant: "destructive",
         title: "An unexpected error occurred",
-        description:
-          "Failed to capture screenshot. The service may be down.",
+        description: error.message || "Failed to capture screenshot. The service may be down.",
       });
     } finally {
        setIsLoading(false);
