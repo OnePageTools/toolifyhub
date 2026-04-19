@@ -88,21 +88,14 @@ export const ClassicTemplate = ({ data, theme }: TemplateProps) => {
           </section>
         )}
 
-        {data.skills?.some(s => s.name) && (() => {
-            const displayedSkills = data.skills?.map(s => s.name).filter(Boolean).slice(0, 5) || [];
-            const hiddenSkillsCount = (data.skills?.map(s => s.name).filter(Boolean).length || 0) - displayedSkills.length;
-            return (
-                <section className="mb-6">
-                    <h2 className={cn("text-xl font-bold border-b-2 pb-1 mb-2 font-serif", theme.primary)} style={{ borderColor: theme.primary.replace('text-', 'border-') }}>Skills</h2>
-                    <p className="text-gray-700">
-                        {displayedSkills.join(' • ')}
-                        {hiddenSkillsCount > 0 && (
-                            <span className="text-xs italic"> &bull; +{hiddenSkillsCount} more</span>
-                        )}
-                    </p>
-                </section>
-            );
-        })()}
+        {data.skills?.some(s => s.name) && (
+            <section className="mb-6">
+                <h2 className={cn("text-xl font-bold border-b-2 pb-1 mb-2 font-serif", theme.primary)} style={{ borderColor: theme.primary.replace('text-', 'border-') }}>Skills</h2>
+                <p className="text-gray-700">
+                    {data.skills?.map(s => s.name).filter(Boolean).join(' • ')}
+                </p>
+            </section>
+        )}
 
 
         {data.languages?.some(l => l.name) && (

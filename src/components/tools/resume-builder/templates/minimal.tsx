@@ -92,21 +92,14 @@ export const MinimalTemplate = ({ data, theme }: TemplateProps) => {
           </section>
         )}
 
-        {data.skills?.some(s => s.name) && (() => {
-            const displayedSkills = data.skills?.map(s => s.name).filter(Boolean).slice(0, 5) || [];
-            const hiddenSkillsCount = (data.skills?.map(s => s.name).filter(Boolean).length || 0) - displayedSkills.length;
-            return (
-                <section className="mb-6">
-                    <h2 className={cn("text-sm font-bold uppercase tracking-widest pb-1 mb-3 border-b", theme.primary)} style={{ borderColor: theme.primary.replace('text-', 'border-') }}>Skills</h2>
-                    <p className="text-gray-700">
-                        {displayedSkills.join(', ')}
-                        {hiddenSkillsCount > 0 && (
-                            <span className="text-xs italic">, +{hiddenSkillsCount} more</span>
-                        )}
-                    </p>
-                </section>
-            );
-        })()}
+        {data.skills?.some(s => s.name) && (
+            <section className="mb-6">
+                <h2 className={cn("text-sm font-bold uppercase tracking-widest pb-1 mb-3 border-b", theme.primary)} style={{ borderColor: theme.primary.replace('text-', 'border-') }}>Skills</h2>
+                <p className="text-gray-700">
+                    {data.skills?.map(s => s.name).filter(Boolean).join(', ')}
+                </p>
+            </section>
+        )}
 
         {data.languages?.some(l => l.name) && (
           <section>

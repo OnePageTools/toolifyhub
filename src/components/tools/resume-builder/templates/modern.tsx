@@ -28,23 +28,16 @@ export const ModernTemplate = ({ data, theme }: TemplateProps) => {
             </div>
         </section>
 
-        {data.skills?.some(s => s.name) && (() => {
-            const displayedSkills = data.skills?.filter(s => s.name).slice(0, 5) || [];
-            const hiddenSkillsCount = (data.skills?.filter(s => s.name).length || 0) - displayedSkills.length;
-            return (
-                <section className="mt-8">
-                    <h2 className="text-sm font-bold uppercase tracking-widest mb-3" style={{color: theme.primary}}>Skills</h2>
-                    <ul className="space-y-1 text-sm list-disc list-inside" style={{ color: theme.text }}>
-                        {displayedSkills.map((skill, index) => skill.name && (
-                            <li key={index}>{skill.name}</li>
-                        ))}
-                        {hiddenSkillsCount > 0 && (
-                            <li className="text-xs list-none italic" style={{color: theme.text, opacity: 0.8}}>+ {hiddenSkillsCount} more</li>
-                        )}
-                    </ul>
-                </section>
-            );
-        })()}
+        {data.skills?.some(s => s.name) && (
+            <section className="mt-8">
+                <h2 className="text-sm font-bold uppercase tracking-widest mb-3" style={{color: theme.primary}}>Skills</h2>
+                <ul className="space-y-1 text-sm list-disc list-inside" style={{ color: theme.text }}>
+                    {data.skills.map((skill, index) => skill.name && (
+                        <li key={index}>{skill.name}</li>
+                    ))}
+                </ul>
+            </section>
+        )}
 
         {data.languages?.some(l => l.name) && (
             <section className="mt-8">
