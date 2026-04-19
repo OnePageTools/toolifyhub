@@ -11,6 +11,31 @@ export const metadata: Metadata = {
 
 const articles = [
     {
+        title: 'How to Build a Professional Resume Online for Free (2026 Guide)',
+        description: 'A step-by-step guide to creating a job-winning resume using a free online builder. Learn how to highlight your skills and experience.',
+        href: '/blog/how-to-build-a-free-resume-online',
+    },
+    {
+        title: 'The 5 Best Free Grammar Checker Tools for Flawless Writing in 2026',
+        description: 'Discover the top free online grammar checkers to correct spelling, punctuation, and style errors to improve your writing instantly.',
+        href: '/blog/best-free-grammar-checker-tools-2026',
+    },
+    {
+        title: 'How to Generate a QR Code for Free in Seconds',
+        description: 'A simple guide to creating custom QR codes for URLs, text, Wi-Fi, and more using our free online tool.',
+        href: '/blog/how-to-generate-qr-code-free',
+    },
+    {
+        title: 'How to Check the Weather Online for Any City Instantly (for Free)',
+        description: 'Learn how to use a free online weather checker to get real-time forecasts, temperature, humidity, and wind speed for any location.',
+        href: '/blog/free-weather-checker-online',
+    },
+    {
+        title: 'The 3 Best Free PDF Compressor Tools in 2026 (Online & Secure)',
+        description: 'We reviewed the top free online PDF compressors to help you reduce file sizes without sacrificing quality. Find the best tool for your needs.',
+        href: '/blog/best-free-pdf-compressor-tools',
+    },
+    {
         title: 'How to Compress PDF Files Online for Free: A Step-by-Step Guide',
         description: 'Learn why smaller PDFs are better and how you can reduce their file size in just a few clicks without losing quality.',
         href: '/blog/how-to-compress-pdf-online-free',
