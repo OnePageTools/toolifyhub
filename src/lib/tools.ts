@@ -34,6 +34,7 @@ import {
   Thermometer,
   BookText,
   Globe,
+  Newspaper,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities';
@@ -232,4 +233,12 @@ export const tools: Tool[] = [
     category: 'Utilities',
     implemented: true,
   },
+  {
+    name: 'Blog',
+    description: 'Tips & productivity guides',
+    href: '/blog',
+    icon: Newspaper,
+    category: 'Utilities',
+    implemented: true,
+  }
 ];

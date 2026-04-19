@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { Poppins, Inter, Playfair_Display } from 'next/font/google';
+import Footer from '@/components/common/footer';
 
 const siteConfig = {
   name: 'ToolifyHub',
@@ -101,7 +102,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main>{children}</main>
+          <div className="flex flex-col min-h-screen">
+            <main className="flex-grow">{children}</main>
+            <Footer />
+          </div>
           <Toaster />
         </ThemeProvider>
       <Analytics />

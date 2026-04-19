@@ -30,8 +30,6 @@ import { tools as allTools } from '@/lib/tools';
 import type { Tool, ToolCategory } from "@/lib/tools";
 import { cn } from "@/lib/utils";
 
-const Footer = dynamic(() => import('@/components/common/footer'), { ssr: false });
-
 const MotionLink = motion(Link);
 
 const categories: ToolCategory[] = ["PDF", "Image", "Text", "Dev", "Utilities"];
@@ -189,8 +187,6 @@ export default function Home() {
         <div className="mx-4 sm:mx-6 mb-4 rounded-2xl bg-black/10 dark:bg-white/10 h-14 flex items-center justify-center border border-white/20">
           <span className="font-medium text-sm text-gray-700 dark:text-gray-300">Banner Ad Placeholder</span>
         </div>
-        
-        <Footer />
       </div>
     </div>
   );
