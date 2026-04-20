@@ -2,9 +2,9 @@
 "use client";
 
 import { useState } from "react";
+import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import {
   Sun,
   Moon,
@@ -35,7 +35,7 @@ const MotionLink = motion(Link);
 const categories: ToolCategory[] = ["PDF", "Image", "Text", "Dev", "Utilities"];
 
 export default function Home() {
-  const [darkMode, setDarkMode] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<ToolCategory | "All">("All");
 
@@ -51,7 +51,7 @@ export default function Home() {
     );
 
   return (
-    <div className={`${darkMode ? "dark" : ""} min-h-screen relative overflow-hidden font-body bg-background text-foreground`}>
+    <div className="min-h-screen relative overflow-hidden font-body bg-background text-foreground">
       {/* Optimized gradient background */}
       <motion.div
         animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
@@ -67,10 +67,10 @@ export default function Home() {
           </h1>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setDarkMode(!darkMode)}
+              onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
               className="p-2 rounded-full bg-white/30 dark:bg-black/40 hover:scale-110 transition-transform"
             >
-              {darkMode ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5 text-indigo-800" />}
+              {resolvedTheme === 'dark' ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5 text-indigo-800" />}
             </button>
             <Sheet>
               <SheetTrigger asChild>

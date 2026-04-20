@@ -1,5 +1,6 @@
+
 import Link from 'next/link';
-import { Youtube, Instagram, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -38,12 +39,6 @@ export default function Footer() {
           <div className="border-t border-black/10 dark:border-white/10 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
              <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} ToolifyHub. All rights reserved.</p>
             <div className="flex justify-center md:justify-start space-x-4 text-muted-foreground">
-                <a href="#" aria-label="YouTube" className="hover:text-foreground transition-opacity">
-                  <Youtube className="w-6 h-6" />
-                </a>
-                <a href="#" aria-label="Instagram" className="hover:text-foreground transition-opacity">
-                  <Instagram className="w-6 h-6" />
-                </a>
                 <a href="mailto:goherkhan12131415@gmail.com" aria-label="Email" className="hover:text-foreground transition-opacity">
                   <Mail className="w-6 h-6" />
                 </a>
