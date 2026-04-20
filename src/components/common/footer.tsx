@@ -4,8 +4,8 @@ import { Youtube, Instagram, Mail } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="w-full mt-auto">
-      <div className="mx-4 md:mx-6 py-8 border-t border-black/10 dark:border-white/20 backdrop-blur-lg bg-white/5 dark:bg-black/10 rounded-t-2xl">
+    <footer className="w-full mt-auto print:hidden">
+      <div className="mx-4 md:mx-6 py-8 border-t border-white/10 backdrop-blur-lg bg-white/10 dark:bg-black/10 rounded-t-2xl">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
             
