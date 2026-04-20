@@ -4,7 +4,7 @@ import { Youtube, Instagram, Mail } from 'lucide-react';
 export default function Footer() {
   return (
     <footer className="w-full mt-auto print:hidden">
-      <div className="mx-4 md:mx-6 py-8 border-t border-white/10 backdrop-blur-lg bg-white/10 dark:bg-black/10 rounded-t-2xl">
+      <div className="mx-4 md:mx-6 py-8 border-t border-white/20 backdrop-blur-lg bg-white/10 dark:bg-white/10 rounded-t-2xl">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
             
@@ -35,7 +35,7 @@ export default function Footer() {
             </div>
 
           </div>
-          <div className="border-t border-black/10 dark:border-white/20 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="border-t border-black/10 dark:border-white/10 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
              <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} ToolifyHub. All rights reserved.</p>
             <div className="flex justify-center md:justify-start space-x-4 text-muted-foreground">
                 <a href="#" aria-label="YouTube" className="hover:text-foreground transition-opacity">
