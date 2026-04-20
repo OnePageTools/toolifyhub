@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import { Youtube, Instagram, Mail } from 'lucide-react';
 
@@ -17,20 +16,28 @@ export default function Footer() {
               </p>
             </div>
 
+            {/* Company Section */}
+            <div>
+              <h3 className="font-bold text-lg mb-2 text-foreground">Company</h3>
+              <ul className="space-y-2">
+                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-opacity">About Us</Link></li>
+                <li><Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-opacity">Blog</Link></li>
+              </ul>
+            </div>
+
             {/* Legal Section */}
             <div>
               <h3 className="font-bold text-lg mb-2 text-foreground">Legal</h3>
               <ul className="space-y-2">
-                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-opacity">About Us</Link></li>
                 <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-foreground transition-opacity">Privacy Policy</Link></li>
                 <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-foreground transition-opacity">Terms of Service</Link></li>
               </ul>
             </div>
 
-            {/* Follow Us Section */}
-            <div>
-              <h3 className="font-bold text-lg mb-2 text-foreground">Follow Us</h3>
-              <div className="flex justify-center md:justify-start space-x-4 text-muted-foreground">
+          </div>
+          <div className="border-t border-black/10 dark:border-white/20 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+             <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} ToolifyHub. All rights reserved.</p>
+            <div className="flex justify-center md:justify-start space-x-4 text-muted-foreground">
                 <a href="#" aria-label="YouTube" className="hover:text-foreground transition-opacity">
                   <Youtube className="w-6 h-6" />
                 </a>
@@ -41,11 +48,6 @@ export default function Footer() {
                   <Mail className="w-6 h-6" />
                 </a>
               </div>
-            </div>
-
-          </div>
-          <div className="border-t border-black/10 dark:border-white/20 mt-8 pt-6 text-center text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} ToolifyHub. All rights reserved.</p>
           </div>
         </div>
       </div>

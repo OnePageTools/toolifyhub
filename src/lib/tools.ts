@@ -233,12 +233,4 @@ export const tools: Tool[] = [
     category: 'Utilities',
     implemented: true,
   },
-  {
-    name: 'Blog',
-    description: 'Tips & productivity guides',
-    href: '/blog',
-    icon: Newspaper,
-    category: 'Utilities',
-    implemented: true,
-  }
 ];
