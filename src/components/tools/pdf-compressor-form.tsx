@@ -168,15 +168,6 @@ export function PdfCompressorForm() {
               <SelectItem value="high">High (Highest Compression)</SelectItem>
             </SelectContent>
           </Select>
-          {compressionLevel !== 'standard' &&
-            <Alert variant="destructive">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Important</AlertTitle>
-              <AlertDescription>
-                Medium and High compression will convert pages to images, making text non-selectable.
-              </AlertDescription>
-            </Alert>
-          }
         </CardContent>
       </Card>
       
