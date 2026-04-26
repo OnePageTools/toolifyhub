@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -38,6 +38,11 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<ToolCategory | "All">("All");
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const filteredTools = allTools
     .filter((tool) => tool.implemented)
     .filter((tool) =>
@@ -69,7 +74,11 @@ export default function Home() {
               onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
               className="p-2 rounded-full bg-white/30 dark:bg-black/40 hover:scale-110 transition-transform"
             >
-              {resolvedTheme === 'dark' ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5 text-indigo-800" />}
+              {mounted ? (
+                resolvedTheme === 'dark' ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5 text-indigo-800" />
+              ) : (
+                <div className="w-5 h-5" />
+              )}
             </button>
             <Sheet>
               <SheetTrigger asChild>
