@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -62,9 +61,9 @@ export default function Home() {
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Navbar */}
         <header className="flex items-center justify-between px-4 sm:px-6 py-3 backdrop-blur-lg bg-white/20 dark:bg-black/20 sticky top-0 rounded-b-2xl shadow-lg border-b border-white/20 dark:border-white/10">
-          <h1 className="font-extrabold text-lg tracking-wide flex items-center gap-2 text-gray-800 dark:text-white">
+          <div className="font-extrabold text-lg tracking-wide flex items-center gap-2 text-gray-800 dark:text-white">
             <Zap className="w-5 h-5 text-yellow-400" /> ToolifyHub
-          </h1>
+          </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
@@ -107,10 +106,10 @@ export default function Home() {
 
         {/* Hero */}
         <div className="px-4 py-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-extrabold drop-shadow-xl flex items-center justify-center gap-2 text-gray-800 dark:text-white">
+          <h1 className="text-3xl sm:text-4xl font-extrabold drop-shadow-xl flex items-center justify-center gap-2 text-gray-800 dark:text-white">
             <Sparkles className="text-pink-400 w-6 h-6" />
             Your All-in-One Free Toolkit
-          </h2>
+          </h1>
         </div>
 
         {/* Search */}
@@ -181,11 +180,6 @@ export default function Home() {
               </div>
             </MotionLink>
           ))}
-        </div>
-
-        {/* Banner Ad Placeholder */}
-        <div className="mx-4 sm:mx-6 mb-4 rounded-2xl bg-black/10 dark:bg-white/10 h-14 flex items-center justify-center border border-white/20">
-          <span className="font-medium text-sm text-gray-700 dark:text-gray-300">Banner Ad Placeholder</span>
         </div>
       </div>
     </div>

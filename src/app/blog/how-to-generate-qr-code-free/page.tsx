@@ -59,7 +59,7 @@ export default function BlogPost() {
 
       <h3>Step 1: Enter Your Data</h3>
       <p>
-        Navigate to the QR Code Generator tool. You'll see an input field labeled "Text or URL". This is where you'll put the information you want to encode. For example, if you want the QR code to link to your website, you would enter `https://yourwebsite.com`.
+        Navigate to the <Link href="/tools/qr-code-generator">QR Code Generator tool</Link>. You'll see an input field labeled "Text or URL". This is where you'll put the information you want to encode. For example, if you want the QR code to link to your website, you would enter `https://yourwebsite.com`.
       </p>
 
       <h3>Step 2: Customize Your QR Code (Optional)</h3>

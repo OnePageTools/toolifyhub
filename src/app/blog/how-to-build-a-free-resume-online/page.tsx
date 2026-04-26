@@ -47,7 +47,7 @@ export default function BlogPost() {
       
       <h2>How to Build Your Free Resume: A Step-by-Step Guide</h2>
       <p>
-        We'll use ToolifyHub's free Resume Builder as our example. It's powerful, private, and doesn't require a sign-up.
+        We'll use <Link href="/tools/resume-builder">ToolifyHub's free Resume Builder</Link> as our example. It's powerful, private, and doesn't require a sign-up.
       </p>
       
       <div className="my-6 p-4 border-l-4 border-primary bg-secondary/50 rounded-r-lg">

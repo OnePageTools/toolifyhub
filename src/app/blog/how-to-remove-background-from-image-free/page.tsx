@@ -47,7 +47,7 @@ export default function BlogPost() {
       
       <h2>How to Remove a Background Instantly with AI</h2>
       <p>
-        Our AI Background Remover tool is designed for speed and simplicity. It analyzes your image, identifies the subject, and cleanly cuts it out, leaving you with a high-quality PNG file with a transparent background.
+        Our <Link href="/tools/background-remover">AI Background Remover tool</Link> is designed for speed and simplicity. It analyzes your image, identifies the subject, and cleanly cuts it out, leaving you with a high-quality PNG file with a transparent background.
       </p>
       
       <div className="my-6 p-4 border-l-4 border-primary bg-secondary/50 rounded-r-lg">
@@ -58,7 +58,7 @@ export default function BlogPost() {
 
       <h3>Step 1: Upload Your Image</h3>
       <p>
-        First, go to the Background Remover tool. You can either click the upload area to select a JPG, PNG, or WEBP file from your device, or you can simply drag and drop the image directly onto the page. Your image is processed securely and is never stored on our servers.
+        First, go to the <Link href="/tools/background-remover">Background Remover tool</Link>. You can either click the upload area to select a JPG, PNG, or WEBP file from your device, or you can simply drag and drop the image directly onto the page. Your image is processed securely and is never stored on our servers.
       </p>
 
       <h3>Step 2: Let the AI Do the Work</h3>

@@ -47,7 +47,7 @@ export default function BlogPost() {
       
       <h2>How to Compress a PDF for Free in 3 Simple Steps</h2>
       <p>
-        Compressing a PDF with our tool is incredibly straightforward. It's designed to be fast, secure, and user-friendly.
+        Compressing a PDF with our <Link href="/tools/pdf-compressor">free online tool</Link> is incredibly straightforward. It's designed to be fast, secure, and user-friendly.
       </p>
       
       <div className="my-6 p-4 border-l-4 border-primary bg-secondary/50 rounded-r-lg">

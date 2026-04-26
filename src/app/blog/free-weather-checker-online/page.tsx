@@ -48,7 +48,7 @@ export default function BlogPost() {
       
       <h2>How to Use a Free Online Weather Checker</h2>
       <p>
-        Let's walk through the process using ToolifyHub's free Weather Checker.
+        Let's walk through the process using <Link href="/tools/weather-checker">ToolifyHub's free Weather Checker</Link>.
       </p>
       
       <div className="my-6 p-4 border-l-4 border-primary bg-secondary/50 rounded-r-lg">
