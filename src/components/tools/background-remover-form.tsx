@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,8 +21,21 @@ export function BackgroundRemoverForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [showLongProcessingMessage, setShowLongProcessingMessage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isLoading) {
+        timer = setTimeout(() => {
+            setShowLongProcessingMessage(true);
+        }, 30000); // 30 seconds
+    } else {
+        setShowLongProcessingMessage(false);
+    }
+    return () => clearTimeout(timer);
+  }, [isLoading]);
 
   const handleFileSelect = (file: File | undefined) => {
     if (file) {
@@ -159,7 +172,7 @@ export function BackgroundRemoverForm() {
         <label
             htmlFor="image-upload"
             className={cn(
-                "group relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary",
+                "group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-4 md:p-8 text-center transition-colors hover:bg-secondary min-h-[150px]",
                 isDragging && "border-primary bg-primary/10",
                 preview && "p-0 border-0"
             )}
@@ -190,7 +203,7 @@ export function BackgroundRemoverForm() {
         <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 space-y-2">
             <h3 className="text-sm font-semibold text-center">Original Image</h3>
             {preview ? (
-                <Image src={preview} alt="Original image preview" width={256} height={256} className="max-h-64 w-auto object-contain rounded-md" />
+                <Image src={preview} alt="Original image preview" width={256} height={256} className="max-h-64 w-full h-auto object-contain rounded-md" />
             ) : (
                 <div className="flex flex-col items-center justify-center text-muted-foreground text-center flex-grow">
                     <Upload className="w-10 h-10 mb-2" />
@@ -201,13 +214,14 @@ export function BackgroundRemoverForm() {
         <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 space-y-2">
              <h3 className="text-sm font-semibold text-center">Result</h3>
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center text-muted-foreground flex-grow">
+              <div className="flex flex-col items-center justify-center text-muted-foreground flex-grow text-center p-4">
                 <Loader2 className="w-10 h-10 animate-spin" />
-                <p className="mt-2 text-sm">Removing background...</p>
+                <p className="mt-4 text-sm font-semibold">Removing background, please wait...</p>
+                {showLongProcessingMessage && <p className="mt-2 text-xs">This may take a moment, please don't close the page.</p>}
               </div>
             ) : result?.imageDataUri ? (
                 <button onClick={() => setIsPreviewOpen(true)} className="cursor-zoom-in">
-                  <Image src={result.imageDataUri} alt="Background removed" width={256} height={256} className="max-h-64 w-auto object-contain rounded-md" />
+                  <Image src={result.imageDataUri} alt="Background removed" width={256} height={256} className="max-h-64 w-full h-auto object-contain rounded-md" />
                 </button>
             ) : (
                  <div className="flex flex-col items-center justify-center text-muted-foreground text-center flex-grow">
@@ -219,7 +233,7 @@ export function BackgroundRemoverForm() {
       </div>
       
       <div className="flex flex-col sm:flex-row gap-2">
-         <Button onClick={handleSubmit} disabled={isLoading || !selectedFile} className="w-full sm:w-auto">
+         <Button onClick={handleSubmit} disabled={isLoading || !selectedFile} className="w-full h-12">
             {isLoading ? (
                 <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -234,12 +248,12 @@ export function BackgroundRemoverForm() {
             </Button>
             {result && result.imageDataUri && (
               <>
-                 <Button variant="outline" onClick={() => setIsPreviewOpen(true)} className="w-full sm:w-auto">
+                 <Button variant="outline" onClick={() => setIsPreviewOpen(true)} className="w-full h-12">
                     <Eye className="mr-2 h-4 w-4" />
                     Preview
                 </Button>
-                <a href={result.imageDataUri} download="background-removed.png" className='w-full sm:w-auto'>
-                    <Button variant="outline" className="w-full">
+                <a href={result.imageDataUri} download="background-removed.png" className='w-full'>
+                    <Button variant="outline" className="w-full h-12">
                         <Download className="mr-2 h-4 w-4" />
                         Download
                     </Button>
