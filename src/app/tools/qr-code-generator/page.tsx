@@ -76,7 +76,7 @@ export default function QrCodeGeneratorPage() {
                 Simply enter your data to generate a QR code instantly.
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-6 md:p-8">
+            <CardContent className="p-4 md:p-8">
               <QrCodeGeneratorForm />
             </CardContent>
           </Card>
