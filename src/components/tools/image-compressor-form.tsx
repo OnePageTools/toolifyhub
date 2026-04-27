@@ -309,7 +309,7 @@ export function ImageCompressorForm() {
        <label
             htmlFor="image-upload"
             className={cn(
-                "group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary",
+                "group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-4 md:p-8 text-center transition-colors hover:bg-secondary min-h-[150px]",
                 isDragging && "border-primary bg-primary/10",
             )}
             onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}
@@ -401,7 +401,7 @@ export function ImageCompressorForm() {
         </Card>
 
         <div className="flex justify-center">
-            <Button size="lg" onClick={handleProcess} disabled={isLoading || originalFiles.length === 0} className="w-full md:w-auto">
+            <Button size="lg" onClick={handleProcess} disabled={isLoading || originalFiles.length === 0} className="w-full md:w-auto h-12">
                 {isLoading ? <><Loader2 className="mr-2 animate-spin" />Processing...</> : <>Process {originalFiles.length > 0 ? originalFiles.length : ''} Image(s)</>}
             </Button>
         </div>
@@ -437,8 +437,8 @@ export function ImageCompressorForm() {
                                     </span>
                                 </div>
                                 <div className="flex justify-end col-span-1">
-                                     <a href={c.preview} download={c.name}>
-                                        <Button variant="outline" size="sm"><FileDown className="mr-2" /> Download</Button>
+                                     <a href={c.preview} download={c.name} className='block w-full sm:w-auto'>
+                                        <Button variant="outline" size="sm" className="w-full"><FileDown className="mr-2" /> Download</Button>
                                     </a>
                                 </div>
                             </div>
