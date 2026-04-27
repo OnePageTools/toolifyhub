@@ -168,7 +168,7 @@ export default function Home() {
         </div>
 
         {/* Tools Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 px-4 py-8 sm:px-6 flex-1">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 py-8 sm:px-6 flex-1">
           {filteredTools.map((tool: Tool) => (
             <MotionLink
               href={tool.href}
@@ -177,8 +177,8 @@ export default function Home() {
               whileTap={{ scale: 0.97 }}
               className="rounded-2xl backdrop-blur-xl bg-white/40 dark:bg-black/40 p-4 shadow-xl flex flex-col justify-between cursor-pointer transition-all duration-300 border border-white/20 dark:border-white/10 hover:shadow-2xl hover:bg-white/60 dark:hover:bg-black/60"
             >
-              <div className="flex items-center gap-3">
-                {tool.icon && <tool.icon className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-500 dark:text-pink-400" />}
+              <div className="flex items-start gap-3">
+                {tool.icon && <tool.icon className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-500 dark:text-pink-400 flex-shrink-0 mt-1" />}
                 <div>
                   <h3 className="font-bold text-base drop-shadow-sm text-gray-800 dark:text-white">{tool.name}</h3>
                   <p className="text-xs opacity-75 mt-1 leading-snug text-gray-700 dark:text-gray-300">{tool.description}</p>

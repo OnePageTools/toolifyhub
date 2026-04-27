@@ -1,59 +1,28 @@
-import type { Metadata } from 'next';
-import { IpLookupForm } from '@/components/tools/ip-lookup-form';
-import AIHelper from '@/components/ai-assistant';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
-const tool = {
-  name: 'IP Address Lookup',
-  url: '/tools/ip-lookup',
-  title: 'What Is My IP Address? - Free IP Lookup Tool',
-  description: 'Instantly find your public IP address and get detailed geolocation information, including country, city, ISP, and timezone with our free IP lookup tool.',
-  keywords: 'ip lookup, what is my ip, ip address, geolocation, find ip, ip checker'
-};
-
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
-
-const WebAppSchema = () => (
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{ __html: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": tool.name,
-      "description": tool.description,
-      "applicationCategory": "UtilitiesApplication",
-      "operatingSystem": "All",
-      "url": `https://toolifyhub.com${tool.url}`,
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      }
-    })}}
-  />
-);
-
-export default function IpLookupPage() {
+export default function ToolPlaceholderPage() {
   return (
-    <>
-      <WebAppSchema />
-      <IpLookupForm />
-      <AIHelper toolName="IP Lookup" />
-    </>
+    <div className="container mx-auto py-10 px-4">
+      <Card className="max-w-2xl mx-auto text-center">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-center gap-2 text-2xl font-headline">
+            <AlertCircle className="w-8 h-8 text-primary" />
+            Tool Coming Soon!
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground">
+            We are working hard to bring this tool to you. Please check back
+            later.
+          </p>
+          <Button asChild>
+            <Link href="/">Back to Tools</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

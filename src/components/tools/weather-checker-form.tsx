@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
@@ -52,34 +51,17 @@ type CombinedWeatherData = {
 
 const weatherCodeToDescription = (code: number): string => {
     const descriptions: Record<number, string> = {
-        0: 'Clear sky',
-        1: 'Mainly clear',
-        2: 'Partly cloudy',
-        3: 'Overcast',
-        45: 'Fog',
-        48: 'Depositing rime fog',
-        51: 'Light drizzle',
-        53: 'Moderate drizzle',
-        55: 'Dense drizzle',
-        56: 'Light freezing drizzle',
-        57: 'Dense freezing drizzle',
-        61: 'Slight rain',
-        63: 'Moderate rain',
-        65: 'Heavy rain',
-        66: 'Light freezing rain',
-        67: 'Heavy freezing rain',
-        71: 'Slight snow fall',
-        73: 'Moderate snow fall',
-        75: 'Heavy snow fall',
+        0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+        45: 'Fog', 48: 'Depositing rime fog',
+        51: 'Light drizzle', 53: 'Moderate drizzle', 55: 'Dense drizzle',
+        56: 'Light freezing drizzle', 57: 'Dense freezing drizzle',
+        61: 'Slight rain', 63: 'Moderate rain', 65: 'Heavy rain',
+        66: 'Light freezing rain', 67: 'Heavy freezing rain',
+        71: 'Slight snow fall', 73: 'Moderate snow fall', 75: 'Heavy snow fall',
         77: 'Snow grains',
-        80: 'Slight rain showers',
-        81: 'Moderate rain showers',
-        82: 'Violent rain showers',
-        85: 'Slight snow showers',
-        86: 'Heavy snow showers',
-        95: 'Thunderstorm',
-        96: 'Thunderstorm with slight hail',
-        99: 'Thunderstorm with heavy hail',
+        80: 'Slight rain showers', 81: 'Moderate rain showers', 82: 'Violent rain showers',
+        85: 'Slight snow showers', 86: 'Heavy snow showers',
+        95: 'Thunderstorm', 96: 'Thunderstorm with slight hail', 99: 'Thunderstorm with heavy hail',
     };
     return descriptions[code] || 'Unknown';
 };
@@ -89,37 +71,37 @@ const getWeatherProperties = (description: string) => {
     const desc = description.toLowerCase();
     if (desc.includes('sunny') || desc.includes('clear')) {
         return { 
-            Icon: () => <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 10, ease: 'linear' }}><Sun className="w-24 h-24 text-yellow-400 drop-shadow-lg" /></motion.div>, 
+            Icon: () => <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 10, ease: 'linear' }}><Sun className="w-20 h-20 md:w-24 md:h-24 text-yellow-400 drop-shadow-lg" /></motion.div>, 
             gradient: "from-yellow-300 via-orange-400 to-pink-500" 
         };
     }
     if (desc.includes('rain') || desc.includes('drizzle') || desc.includes('shower')) {
         return { 
-            Icon: () => <motion.div animate={{ x: [0, -5, 5, 0] }} transition={{ repeat: Infinity, duration: 2 }}><CloudRain className="w-24 h-24 text-blue-300 drop-shadow-lg" /></motion.div>, 
+            Icon: () => <motion.div animate={{ x: [0, -5, 5, 0] }} transition={{ repeat: Infinity, duration: 2 }}><CloudRain className="w-20 h-20 md:w-24 md:h-24 text-blue-300 drop-shadow-lg" /></motion.div>, 
             gradient: "from-slate-400 via-gray-500 to-blue-600"
         };
     }
      if (desc.includes('snow') || desc.includes('sleet') || desc.includes('blizzard') || desc.includes('ice')) {
         return { 
-            Icon: () => <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 2 }}><CloudSnow className="w-24 h-24 text-white drop-shadow-lg" /></motion.div>, 
+            Icon: () => <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 2 }}><CloudSnow className="w-20 h-20 md:w-24 md:h-24 text-white drop-shadow-lg" /></motion.div>, 
             gradient: "from-sky-300 via-slate-300 to-white" 
         };
     }
     if (desc.includes('thunder')) {
         return { 
-            Icon: () => <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 1.5 }}><CloudLightning className="w-24 h-24 text-yellow-300 drop-shadow-lg" /></motion.div>, 
+            Icon: () => <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 1.5 }}><CloudLightning className="w-20 h-20 md:w-24 md:h-24 text-yellow-300 drop-shadow-lg" /></motion.div>, 
             gradient: "from-slate-800 via-purple-900 to-slate-700" 
         };
     }
     if (desc.includes('fog') || desc.includes('mist')) {
          return { 
-            Icon: () => <motion.div animate={{ opacity: [0.7, 1, 0.7] }} transition={{ repeat: Infinity, duration: 3 }}><CloudFog className="w-24 h-24 text-gray-400 drop-shadow-lg" /></motion.div>, 
+            Icon: () => <motion.div animate={{ opacity: [0.7, 1, 0.7] }} transition={{ repeat: Infinity, duration: 3 }}><CloudFog className="w-20 h-20 md:w-24 md:h-24 text-gray-400 drop-shadow-lg" /></motion.div>, 
             gradient: "from-slate-400 via-gray-500 to-slate-600" 
         };
     }
     // Default to cloudy
     return { 
-        Icon: () => <motion.div animate={{ x: [0, 5, -5, 0] }} transition={{ repeat: Infinity, duration: 5 }}><Cloud className="w-24 h-24 text-gray-300 drop-shadow-lg" /></motion.div>, 
+        Icon: () => <motion.div animate={{ x: [0, 5, -5, 0] }} transition={{ repeat: Infinity, duration: 5 }}><Cloud className="w-20 h-20 md:w-24 md:h-24 text-gray-300 drop-shadow-lg" /></motion.div>, 
         gradient: "from-sky-400 via-gray-400 to-slate-500" 
     };
 };
@@ -186,8 +168,8 @@ export function WeatherCheckerForm() {
     };
 
     useEffect(() => {
-        // Fetch weather for a default city on initial load
         fetchWeather('Larkana');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSearch = () => {
@@ -225,8 +207,9 @@ export function WeatherCheckerForm() {
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                        aria-label="City name"
                     />
-                    <Button onClick={handleSearch} disabled={isLoading} variant="ghost" size="icon" className="rounded-full bg-white/30 hover:bg-white/50 dark:bg-black/40 dark:hover:bg-black/60 text-white">
+                    <Button onClick={handleSearch} disabled={isLoading} variant="ghost" size="icon" className="rounded-full bg-white/30 hover:bg-white/50 dark:bg-black/40 dark:hover:bg-black/60 text-white" aria-label="Search">
                         {isLoading ? <Loader2 className="animate-spin" /> : <Search />}
                     </Button>
                 </div>
@@ -242,32 +225,32 @@ export function WeatherCheckerForm() {
                     className="w-full max-w-4xl space-y-8"
                 >
                     {/* Main Weather Card */}
-                    <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-lg border-white/30 text-white shadow-2xl">
+                    <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-lg border-white/30 text-white shadow-2xl overflow-hidden">
                         <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-8">
                             <div className="text-center md:text-left">
                                 <h1 className="text-3xl md:text-4xl font-bold">{weather.name}, {weather.country}</h1>
                                 <p className="capitalize text-lg">{weather.current.description}</p>
                                 <p className="text-7xl md:text-8xl font-bold my-4 drop-shadow-xl">{weather.current.temp}°C</p>
-                            </div>
-                            <div className="flex flex-col items-center gap-6">
-                                <Icon />
-                                <div className="grid grid-cols-3 gap-4 md:gap-x-6 text-center text-sm">
-                                    <div className="flex flex-col items-center gap-1">
+                                <div className="grid grid-cols-3 gap-2 md:gap-x-6 text-center text-sm">
+                                    <div className="flex flex-col items-center gap-1 bg-white/10 p-2 rounded-lg">
                                         <Thermometer />
-                                        <span>Feels like</span>
+                                        <span className='text-xs opacity-80'>Feels like</span>
                                         <span className="font-bold">{weather.current.feelsLike}°</span>
                                     </div>
-                                     <div className="flex flex-col items-center gap-1">
+                                     <div className="flex flex-col items-center gap-1 bg-white/10 p-2 rounded-lg">
                                         <Droplets />
-                                        <span>Humidity</span>
+                                         <span className='text-xs opacity-80'>Humidity</span>
                                         <span className="font-bold">{weather.current.humidity}%</span>
                                     </div>
-                                     <div className="flex flex-col items-center gap-1">
+                                     <div className="flex flex-col items-center gap-1 bg-white/10 p-2 rounded-lg">
                                         <Wind />
-                                        <span>Wind</span>
+                                         <span className='text-xs opacity-80'>Wind</span>
                                         <span className="font-bold">{weather.current.windSpeed} km/h</span>
                                     </div>
                                 </div>
+                            </div>
+                            <div className="flex flex-col items-center">
+                                <Icon />
                             </div>
                         </CardContent>
                     </Card>
@@ -275,10 +258,10 @@ export function WeatherCheckerForm() {
                     {/* 3-Day Forecast */}
                     <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-lg border-white/30 text-white shadow-xl">
                         <CardContent className="p-6">
-                            <h2 className="text-lg font-semibold mb-4">3-Day Forecast</h2>
-                            <div className="grid md:grid-cols-3 gap-4">
+                            <h2 className="text-lg font-semibold mb-4 text-center md:text-left">3-Day Forecast</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {weather.forecast.map((day, index) => (
-                                    <div key={day.date} className="bg-white/10 p-4 rounded-lg flex items-center justify-between">
+                                    <div key={day.date} className="bg-white/10 p-4 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
                                         <div>
                                             <p className="font-bold">{index === 0 ? 'Today' : format(new Date(day.date), 'EEE')}</p>
                                             <p className="text-xl md:text-2xl font-bold">{day.avgTemp}°C</p>

@@ -132,7 +132,7 @@ export function MetaTagGeneratorForm() {
               <FormItem>
                 <FormLabel>Page Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., Handmade Ceramic Mugs for Sale" {...field} />
+                  <Input placeholder="e.g., Handmade Ceramic Mugs for Sale" {...field} className="w-full"/>
                 </FormControl>
                  <FormDescription>The main title of the page (50-60 characters).</FormDescription>
                 <FormMessage />
@@ -146,7 +146,7 @@ export function MetaTagGeneratorForm() {
               <FormItem>
                 <FormLabel>Short Description</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="e.g., Discover unique, handcrafted ceramic mugs. Perfect for coffee lovers and as a special gift." {...field} />
+                  <Textarea placeholder="e.g., Discover unique, handcrafted ceramic mugs. Perfect for coffee lovers and as a special gift." {...field} className="w-full" />
                 </FormControl>
                 <FormDescription>A compelling summary (120-155 characters).</FormDescription>
                 <FormMessage />
@@ -160,7 +160,7 @@ export function MetaTagGeneratorForm() {
               <FormItem>
                 <FormLabel>Keywords / Focus Phrase (Optional)</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., pottery, handmade mugs, coffee cups" {...field} />
+                  <Input placeholder="e.g., pottery, handmade mugs, coffee cups" {...field} className="w-full"/>
                 </FormControl>
                 <FormDescription>Comma-separated keywords relevant to your page.</FormDescription>
                 <FormMessage />
@@ -175,7 +175,7 @@ export function MetaTagGeneratorForm() {
                   <FormItem>
                     <FormLabel>Author / Brand Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., My Pottery Studio" {...field} />
+                      <Input placeholder="e.g., My Pottery Studio" {...field} className="w-full" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -188,7 +188,7 @@ export function MetaTagGeneratorForm() {
                   <FormItem>
                     <FormLabel>Twitter Handle (Optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., @MyPottery" {...field} />
+                      <Input placeholder="e.g., @MyPottery" {...field} className="w-full"/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -203,7 +203,7 @@ export function MetaTagGeneratorForm() {
                   <FormItem>
                     <FormLabel>Full Page URL</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://example.com/mugs" {...field} />
+                      <Input placeholder="https://example.com/mugs" {...field} className="w-full"/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -216,14 +216,14 @@ export function MetaTagGeneratorForm() {
                   <FormItem>
                     <FormLabel>Social Image URL (Optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://example.com/image.jpg" {...field} />
+                      <Input placeholder="https://example.com/image.jpg" {...field} className="w-full"/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
           </div>
-          <Button type="submit" disabled={isLoading} size="lg">
+          <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto">
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -241,11 +241,12 @@ export function MetaTagGeneratorForm() {
 
       {result && (
         <Card className="mt-6">
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
             <CardTitle>Generated Meta Tags</CardTitle>
             {result && (
-              <Button variant="ghost" size="icon" onClick={handleCopy} disabled={!result.metaTagsHtml}>
-                {isCopied ? <ClipboardCheck className="text-green-500" /> : <Copy />}
+              <Button variant="outline" size="sm" onClick={handleCopy} disabled={!result.metaTagsHtml} className="w-full md:w-auto">
+                 {isCopied ? <ClipboardCheck className="mr-2 text-green-500" /> : <Copy className="mr-2" />}
+                Copy
               </Button>
             )}
           </CardHeader>

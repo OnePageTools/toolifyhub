@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef } from 'react';
@@ -155,7 +154,7 @@ export function BackgroundRemoverForm() {
         />
       )}
       <div className="space-y-2">
-        <Label htmlFor="image-upload">Upload Image</Label>
+        <Label htmlFor="image-upload" className='sr-only'>Upload Image</Label>
         <Input id="image-upload" type="file" accept="image/png, image/jpeg, image/webp" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
         <label
             htmlFor="image-upload"
@@ -188,26 +187,30 @@ export function BackgroundRemoverForm() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[256px]">
-        <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4">
-            <h3 className="text-sm font-semibold mb-2 text-center">Original Image</h3>
+        <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 space-y-2">
+            <h3 className="text-sm font-semibold text-center">Original Image</h3>
             {preview ? (
                 <Image src={preview} alt="Original image preview" width={256} height={256} className="max-h-64 w-auto object-contain rounded-md" />
             ) : (
-                <div className="flex flex-col items-center justify-center text-muted-foreground">
+                <div className="flex flex-col items-center justify-center text-muted-foreground text-center flex-grow">
                     <Upload className="w-10 h-10 mb-2" />
                     <span>Your image will appear here</span>
                 </div>
             )}
         </div>
-        <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4">
-             <h3 className="text-sm font-semibold mb-2 text-center">Result</h3>
-            {isLoading && <Loader2 className="w-10 h-10 animate-spin" />}
-            {!isLoading && result?.imageDataUri ? (
+        <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 space-y-2">
+             <h3 className="text-sm font-semibold text-center">Result</h3>
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center text-muted-foreground flex-grow">
+                <Loader2 className="w-10 h-10 animate-spin" />
+                <p className="mt-2 text-sm">Removing background...</p>
+              </div>
+            ) : result?.imageDataUri ? (
                 <button onClick={() => setIsPreviewOpen(true)} className="cursor-zoom-in">
                   <Image src={result.imageDataUri} alt="Background removed" width={256} height={256} className="max-h-64 w-auto object-contain rounded-md" />
                 </button>
-            ) : !isLoading && (
-                 <div className="flex flex-col items-center justify-center text-muted-foreground text-center">
+            ) : (
+                 <div className="flex flex-col items-center justify-center text-muted-foreground text-center flex-grow">
                     <Wand2 className="w-10 h-10 mb-2" />
                     <span>The result will be shown here</span>
                 </div>
@@ -215,8 +218,8 @@ export function BackgroundRemoverForm() {
         </div>
       </div>
       
-      <div className="flex flex-wrap gap-2">
-         <Button onClick={handleSubmit} disabled={isLoading || !selectedFile}>
+      <div className="flex flex-col sm:flex-row gap-2">
+         <Button onClick={handleSubmit} disabled={isLoading || !selectedFile} className="w-full sm:w-auto">
             {isLoading ? (
                 <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -231,12 +234,12 @@ export function BackgroundRemoverForm() {
             </Button>
             {result && result.imageDataUri && (
               <>
-                 <Button variant="outline" onClick={() => setIsPreviewOpen(true)}>
+                 <Button variant="outline" onClick={() => setIsPreviewOpen(true)} className="w-full sm:w-auto">
                     <Eye className="mr-2 h-4 w-4" />
                     Preview
                 </Button>
-                <a href={result.imageDataUri} download="background-removed.png">
-                    <Button variant="outline">
+                <a href={result.imageDataUri} download="background-removed.png" className='w-full sm:w-auto'>
+                    <Button variant="outline" className="w-full">
                         <Download className="mr-2 h-4 w-4" />
                         Download
                     </Button>

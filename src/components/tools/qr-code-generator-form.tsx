@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Download, Share2 } from 'lucide-react';
-import { useTheme } from 'next-themes';
 import {
   Select,
   SelectContent,
@@ -22,10 +21,8 @@ export function QrCodeGeneratorForm() {
   const [level, setLevel] = useState<'L' | 'M' | 'Q' | 'H'>('M');
   const [isShareSupported, setIsShareSupported] = useState(false);
   const qrRef = useRef<HTMLDivElement>(null);
-  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
-    // This check runs only on the client, after the component has mounted.
     if (navigator.share) {
       setIsShareSupported(true);
     }
@@ -73,7 +70,7 @@ export function QrCodeGeneratorForm() {
 
 
   return (
-    <div className="grid md:grid-cols-2 gap-8">
+    <div className="grid md:grid-cols-2 gap-8 items-start">
       <div className="space-y-6">
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="qr-text">Text or URL</Label>
@@ -83,13 +80,15 @@ export function QrCodeGeneratorForm() {
             placeholder="Enter text or URL"
             value={value}
             onChange={(e) => setValue(e.target.value)}
+            className="w-full text-base p-3"
+            aria-label='Text or URL for QR Code'
           />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className='grid w-full items-center gap-1.5'>
                 <Label htmlFor='qr-size'>Size</Label>
                 <Select onValueChange={(v) => setSize(Number(v))} defaultValue={size.toString()}>
-                    <SelectTrigger>
+                    <SelectTrigger id='qr-size' aria-label='Select QR Code size'>
                         <SelectValue placeholder="Size" />
                     </SelectTrigger>
                     <SelectContent>
@@ -102,7 +101,7 @@ export function QrCodeGeneratorForm() {
              <div className='grid w-full items-center gap-1.5'>
                 <Label htmlFor='qr-level'>Error Correction</Label>
                  <Select onValueChange={(v: 'L' | 'M' | 'Q' | 'H') => setLevel(v)} defaultValue={level}>
-                    <SelectTrigger>
+                    <SelectTrigger id='qr-level' aria-label='Select error correction level'>
                         <SelectValue placeholder="Level" />
                     </SelectTrigger>
                     <SelectContent>
@@ -114,7 +113,7 @@ export function QrCodeGeneratorForm() {
                 </Select>
             </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <Button onClick={downloadQRCode} className="w-full">
             <Download className="mr-2 h-4 w-4" /> Download PNG
           </Button>
@@ -126,7 +125,7 @@ export function QrCodeGeneratorForm() {
         </div>
       </div>
       <div className="flex items-center justify-center">
-        <Card className="p-6 inline-block bg-white shadow-lg rounded-xl">
+        <Card className="p-4 sm:p-6 inline-block bg-white shadow-lg rounded-xl">
           <div ref={qrRef}>
             <QRCode
               value={value}

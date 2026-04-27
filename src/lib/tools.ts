@@ -191,7 +191,7 @@ export const tools: Tool[] = [
     href: '/tools/website-screenshot',
     icon: Camera,
     category: 'Utilities',
-    implemented: true,
+    implemented: false,
   },
   {
     name: 'Meta Tag Generator',
@@ -207,7 +207,7 @@ export const tools: Tool[] = [
     href: '/tools/temp-email-generator',
     icon: Mail,
     category: 'Utilities',
-    implemented: true,
+    implemented: false,
   },
   {
     name: 'Weather Checker',
@@ -231,6 +231,6 @@ export const tools: Tool[] = [
     href: '/tools/ip-lookup',
     icon: Globe,
     category: 'Utilities',
-    implemented: true,
+    implemented: false,
   },
 ];

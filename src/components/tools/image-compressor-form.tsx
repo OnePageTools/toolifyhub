@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useCallback } from 'react';
@@ -234,13 +233,13 @@ export function ImageCompressorForm() {
         
         if(finalBlob.size >= original.originalSize) {
             finalBlob = original.file; // Ensure we never return a larger file
-            message = "Great! Your image is already optimized.";
+            message = "Already optimized!";
         } else {
             const savings = ((1 - finalBlob.size / original.originalSize) * 100).toFixed(0);
             if (useAISmartOptimize && !aiFailed) {
                 message = `Saved ${savings}% with AI`;
             } else if (finalBlob.type === 'image/webp' && original.file.type !== 'image/webp') {
-                message = `Converted to WEBP for max savings`;
+                message = `Converted to WEBP & saved ${savings}%`;
             } else {
                 message = `Saved ${savings}%`;
             }
@@ -282,6 +281,7 @@ export function ImageCompressorForm() {
 
   const handleRemoveFile = (idToRemove: string) => {
     setOriginalFiles(prev => prev.filter(f => f.id !== idToRemove));
+    setProcessedFiles(prev => prev.filter(f => f.id !== idToRemove));
   };
 
 
@@ -324,9 +324,9 @@ export function ImageCompressorForm() {
         {originalFiles.length > 0 &&
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex justify-between items-center">
+                    <CardTitle className="flex justify-between items-center text-base md:text-xl">
                         <span>{originalFiles.length} Image(s) Ready</span>
-                        <Button variant="ghost" size="icon" onClick={handleClearAll}><Trash2 className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" onClick={handleClearAll} aria-label="Clear all files"><Trash2 className="h-4 w-4" /></Button>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -334,10 +334,10 @@ export function ImageCompressorForm() {
                         <div className="space-y-2">
                         {originalFiles.map(f => (
                             <div key={f.id} className="flex items-center gap-3 text-sm p-2 bg-secondary rounded-md">
-                                <Image src={f.preview} alt={f.file.name} width={40} height={40} className="rounded object-cover h-10 w-10" />
-                                <span className="truncate flex-1 font-medium">{f.file.name}</span>
-                                <span className="text-muted-foreground">{formatBytes(f.originalSize)}</span>
-                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleRemoveFile(f.id)}>
+                                <Image src={f.preview} alt={f.file.name} width={40} height={40} className="rounded object-cover h-10 w-10 flex-shrink-0" />
+                                <span className="truncate flex-1 font-medium text-xs sm:text-sm">{f.file.name}</span>
+                                <span className="text-muted-foreground text-xs sm:text-sm">{formatBytes(f.originalSize)}</span>
+                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleRemoveFile(f.id)} aria-label={`Remove ${f.file.name}`}>
                                     <X className="h-4 w-4" />
                                 </Button>
                             </div>
@@ -350,7 +350,7 @@ export function ImageCompressorForm() {
 
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Settings className="h-6 w-6" /> Compression Settings</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-base md:text-xl"><Settings className="h-5 w-5" /> Compression Settings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="flex items-center justify-between rounded-lg bg-secondary p-3">
@@ -361,18 +361,18 @@ export function ImageCompressorForm() {
                             <p className="text-xs text-muted-foreground">Best quality-to-size ratio. Slower.</p>
                         </div>
                     </div>
-                    <Switch id="ai-optimize" checked={useAISmartOptimize} onCheckedChange={setUseAISmartOptimize} />
+                    <Switch id="ai-optimize" checked={useAISmartOptimize} onCheckedChange={setUseAISmartOptimize} aria-label="Toggle AI smart optimization" />
                 </div>
                  <div className={cn("space-y-6", useAISmartOptimize && "opacity-50 pointer-events-none")}>
                     <div className="grid gap-2">
-                        <Label>Quality: <span className="font-bold text-primary">{Math.round(quality * 100)}%</span></Label>
-                        <Slider value={[quality]} onValueChange={(v) => setQuality(v[0])} min={0.1} max={1} step={0.05} disabled={useAISmartOptimize} />
+                        <Label htmlFor='quality-slider'>Quality: <span className="font-bold text-primary">{Math.round(quality * 100)}%</span></Label>
+                        <Slider id='quality-slider' value={[quality]} onValueChange={(v) => setQuality(v[0])} min={0.1} max={1} step={0.05} disabled={useAISmartOptimize} aria-label='Compression quality' />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="grid gap-2">
                             <Label>Output Format</Label>
                             <Select value={outputFormat} onValueChange={(v: 'auto' | OutputFormat) => setOutputFormat(v)} disabled={useAISmartOptimize}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectTrigger aria-label='Select output format'><SelectValue /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="auto">Auto</SelectItem>
                                     <SelectItem value="image/jpeg">JPG</SelectItem>
@@ -386,13 +386,13 @@ export function ImageCompressorForm() {
                                 <Label>Resize</Label>
                                 <div className="flex items-center gap-2">
                                     <Lock className={cn("h-4 w-4", !lockAspectRatio && "text-muted-foreground")} />
-                                    <Switch checked={lockAspectRatio} onCheckedChange={setLockAspectRatio} disabled={useAISmartOptimize} />
+                                    <Switch checked={lockAspectRatio} onCheckedChange={setLockAspectRatio} disabled={useAISmartOptimize} aria-label="Lock aspect ratio" />
                                 </div>
                             </div>
                             <div className="flex gap-2 items-center">
-                                <Input placeholder="Width" value={maxWidth} onChange={e => setMaxWidth(e.target.value.replace(/\D/g, ''))} disabled={useAISmartOptimize} />
+                                <Input placeholder="Width" value={maxWidth} onChange={e => setMaxWidth(e.target.value.replace(/\D/g, ''))} disabled={useAISmartOptimize} aria-label='Max width' className="w-full" />
                                 <X className="h-4 w-4 text-muted-foreground" />
-                                <Input placeholder="Height" value={maxHeight} onChange={e => setMaxHeight(e.target.value.replace(/\D/g, ''))} disabled={useAISmartOptimize} />
+                                <Input placeholder="Height" value={maxHeight} onChange={e => setMaxHeight(e.target.value.replace(/\D/g, ''))} disabled={useAISmartOptimize} aria-label='Max height' className="w-full" />
                             </div>
                         </div>
                     </div>
@@ -401,7 +401,7 @@ export function ImageCompressorForm() {
         </Card>
 
         <div className="flex justify-center">
-            <Button size="lg" onClick={handleProcess} disabled={isLoading || originalFiles.length === 0}>
+            <Button size="lg" onClick={handleProcess} disabled={isLoading || originalFiles.length === 0} className="w-full md:w-auto">
                 {isLoading ? <><Loader2 className="mr-2 animate-spin" />Processing...</> : <>Process {originalFiles.length > 0 ? originalFiles.length : ''} Image(s)</>}
             </Button>
         </div>
@@ -409,9 +409,9 @@ export function ImageCompressorForm() {
       {processedFiles.length > 0 && (
         <Card>
             <CardHeader>
-                <CardTitle className="flex justify-between items-center">
+                <CardTitle className="flex flex-col sm:flex-row justify-between items-center gap-2 text-base md:text-xl">
                     <span>Processing Results</span>
-                    <Button onClick={handleDownloadAll}><Package className="mr-2"/> Download All (.zip)</Button>
+                    <Button onClick={handleDownloadAll} className="w-full sm:w-auto"><Package className="mr-2"/> Download All (.zip)</Button>
                 </CardTitle>
             </CardHeader>
             <CardContent>
@@ -419,24 +419,26 @@ export function ImageCompressorForm() {
                     <div className="space-y-3">
                     {processedFiles.map(c => {
                         return (
-                             <div key={c.id} className="grid grid-cols-2 md:grid-cols-4 gap-4 items-center p-2 rounded-lg hover:bg-secondary">
-                                <div className="flex items-center gap-3">
-                                    <Image src={c.preview} alt={c.name} width={50} height={50} className="rounded-md object-cover h-12 w-12" />
-                                    <span className="text-sm font-semibold truncate hidden md:block">{c.name}</span>
+                             <div key={c.id} className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4 items-center p-2 rounded-lg hover:bg-secondary">
+                                <div className="flex items-center gap-3 sm:col-span-1 md:col-span-2">
+                                    <Image src={c.preview} alt={c.name} width={50} height={50} className="rounded-md object-cover h-12 w-12 flex-shrink-0" />
+                                    <div className="flex flex-col">
+                                      <span className="text-xs font-semibold truncate sm:hidden">{c.name}</span>
+                                      <div className="flex items-center gap-2">
+                                          <span className="text-xs text-muted-foreground">{formatBytes(c.originalSize)}</span>
+                                          <ArrowRight className="h-3 w-3 text-primary" />
+                                          <span className="text-xs font-bold">{formatBytes(c.finalSize)}</span>
+                                      </div>
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-2 justify-end md:justify-start">
-                                    <span className="text-sm text-muted-foreground">{formatBytes(c.originalSize)}</span>
-                                    <ArrowRight className="h-4 w-4 text-primary" />
-                                    <span className="text-sm font-bold">{formatBytes(c.finalSize)}</span>
-                                </div>
-                                <div className="flex justify-end md:justify-start">
-                                    <span className="text-sm font-bold text-green-600 bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded-full">
+                                <div className="flex justify-start sm:justify-center">
+                                    <span className="text-xs font-bold text-green-600 bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded-full text-center">
                                       {c.message}
                                     </span>
                                 </div>
-                                <div className="flex justify-end col-span-2 md:col-span-1">
+                                <div className="flex justify-end col-span-1">
                                      <a href={c.preview} download={c.name}>
-                                        <Button variant="outline"><FileDown className="mr-2" /> Download</Button>
+                                        <Button variant="outline" size="sm"><FileDown className="mr-2" /> Download</Button>
                                     </a>
                                 </div>
                             </div>

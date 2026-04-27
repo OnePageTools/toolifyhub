@@ -1,87 +1,28 @@
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
-import type { Metadata } from 'next';
-import { TempEmailGeneratorForm } from '@/components/tools/temp-email-generator-form';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
-import AIHelper from '@/components/ai-assistant';
-import { Mail } from 'lucide-react';
-
-const tool = {
-  name: 'Temporary Email Generator',
-  url: '/tools/temp-email-generator',
-  title: 'Free Temporary Email Generator - Disposable & Anonymous Email',
-  description: 'Instantly create a secure, private, and disposable email address with a simulated real-time inbox. Protect your privacy and avoid spam. Free and no sign-up required.',
-  keywords: 'temp email, temporary email, disposable email, fake email generator, throwaway email, anonymous email',
-};
-
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
-
-const WebAppSchema = () => (
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{ __html: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": tool.name,
-      "description": tool.description,
-      "applicationCategory": "UtilitiesApplication",
-      "operatingSystem": "All",
-      "url": `https://toolifyhub.com${tool.url}`,
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      }
-    })}}
-  />
-);
-
-export default function TempEmailGeneratorPage() {
+export default function ToolPlaceholderPage() {
   return (
-    <>
-      <WebAppSchema />
-      <div className="container mx-auto py-10 px-4">
-        <div className="max-w-7xl mx-auto">
-          <Card className="shadow-lg border-primary/20 overflow-hidden">
-            <CardHeader className="text-center bg-secondary/50 p-6">
-               <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
-                  <Mail className="w-10 h-10 text-primary" />
-               </div>
-              <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
-                Advanced Temporary Email Generator
-              </CardTitle>
-              <CardDescription className="text-lg mt-2 max-w-2xl mx-auto">
-                Instantly create a secure, private, and disposable email address with a simulated real-time inbox.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-4 md:p-6">
-              <TempEmailGeneratorForm />
-            </CardContent>
-          </Card>
-        </div>
-        <AIHelper toolName="Temporary Email Generator" />
-      </div>
-    </>
+    <div className="container mx-auto py-10 px-4">
+      <Card className="max-w-2xl mx-auto text-center">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-center gap-2 text-2xl font-headline">
+            <AlertCircle className="w-8 h-8 text-primary" />
+            Tool Coming Soon!
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground">
+            We are working hard to bring this tool to you. Please check back
+            later.
+          </p>
+          <Button asChild>
+            <Link href="/">Back to Tools</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
