@@ -12,6 +12,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 type Currency = string;
 type Rates = Record<Currency, number>;
 
+const popularCurrencies = ['USD', 'EUR', 'GBP', 'PKR', 'SAR', 'AED', 'CAD', 'AUD'];
+
 export function CurrencyConverterForm() {
   const [fromCurrency, setFromCurrency] = useState<Currency>('USD');
   const [toCurrency, setToCurrency] = useState<Currency>('EUR');
@@ -41,10 +43,14 @@ export function CurrencyConverterForm() {
         }
 
         setRates(data.rates);
-        setCurrencies(Object.keys(data.rates).sort());
+        
+        const allCurrencies = Object.keys(data.rates);
+        const otherCurrencies = allCurrencies.filter(c => !popularCurrencies.includes(c)).sort();
+        setCurrencies([...popularCurrencies, ...otherCurrencies]);
+
         setLastUpdated(new Date(data.time_last_update_utc).toLocaleString());
       } catch (error: any) {
-        setError('Unable to fetch rates, please try again later.');
+        setError('Unable to fetch rates. Please try again later.');
         toast({ variant: 'destructive', title: 'Error', description: error.message });
       } finally {
         setIsLoading(false);
