@@ -1,15 +1,15 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload, FileArchive, Download, AlertTriangle, ArrowRight, Gauge, Save } from 'lucide-react';
+import { Loader2, Upload, FileArchive, Download, ArrowRight, Gauge, Save } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import * as pdfjsLib from 'pdfjs-dist';
 import { PDFDocument } from 'pdf-lib';
 
@@ -154,18 +154,18 @@ export function PdfCompressorForm() {
     : 0;
 
   return (
-    <div className="space-y-6 flex flex-col items-center">
-      <Card className="w-full max-w-lg">
+    <div className="space-y-6 flex flex-col items-center w-full">
+      <Card className="w-full">
         <CardContent className="p-4 space-y-4">
           <Label htmlFor="compression-level">Compression Level</Label>
           <Select value={compressionLevel} onValueChange={(v: CompressionLevel) => setCompressionLevel(v)}>
-            <SelectTrigger id="compression-level">
+            <SelectTrigger id="compression-level" className="w-full text-base">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="standard">Standard (Selectable Text, Low Compression)</SelectItem>
-              <SelectItem value="medium">Medium (Good Compression)</SelectItem>
-              <SelectItem value="high">High (Highest Compression)</SelectItem>
+              <SelectItem value="standard" className="text-base">Standard (Selectable Text, Low Compression)</SelectItem>
+              <SelectItem value="medium" className="text-base">Medium (Good Compression)</SelectItem>
+              <SelectItem value="high" className="text-base">High (Highest Compression)</SelectItem>
             </SelectContent>
           </Select>
         </CardContent>
@@ -175,7 +175,7 @@ export function PdfCompressorForm() {
        <label
             htmlFor="pdf-upload"
             className={cn(
-                "group relative flex w-full max-w-lg cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary",
+                "group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary min-h-[150px]",
                 isDragging && "border-primary bg-primary/10",
             )}
             onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}
@@ -189,8 +189,8 @@ export function PdfCompressorForm() {
             </div>
         </label>
 
-      <div className="flex justify-center">
-         <Button onClick={handleCompress} disabled={isLoading || !selectedFile} size="lg">
+      <div className="flex justify-center w-full">
+         <Button onClick={handleCompress} disabled={isLoading || !selectedFile} size="lg" className="w-full h-12 text-base">
             {isLoading ? (
                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Compressing...</>
             ) : (
@@ -200,38 +200,38 @@ export function PdfCompressorForm() {
       </div>
       
       {isLoading && (
-        <div className="w-full max-w-lg space-y-2">
+        <div className="w-full space-y-2">
             <Progress value={progress} />
             <p className="text-sm text-muted-foreground text-center">{statusText}</p>
         </div>
       )}
 
       {resultUrl && resultStats && (
-        <Card className="w-full max-w-lg animate-in fade-in-50">
+        <Card className="w-full animate-in fade-in-50">
           <CardHeader>
             <CardTitle className="text-center">Compression Complete!</CardTitle>
           </CardHeader>
-          <CardContent className="p-6 text-center space-y-4">
-            <div className="grid grid-cols-3 gap-4 text-sm items-center">
-                <div className="flex flex-col gap-1">
+          <CardContent className="p-4 md:p-6 text-center space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm items-center">
+                <Card className="p-4">
                     <Gauge className="h-6 w-6 mx-auto text-muted-foreground" />
-                    <div className="font-semibold">Original Size</div>
+                    <div className="font-semibold mt-1">Original Size</div>
                     <div className="text-lg font-bold">{formatBytes(resultStats.originalSize)}</div>
+                </Card>
+                <div className="flex justify-center text-primary">
+                    <ArrowRight className="h-6 w-6 sm:rotate-0 rotate-90" />
                 </div>
-                <div className="flex flex-col gap-1 text-primary">
-                    <ArrowRight className="h-6 w-6 mx-auto" />
-                </div>
-                 <div className="flex flex-col gap-1">
+                 <Card className="p-4">
                     <Save className="h-6 w-6 mx-auto text-muted-foreground"/>
-                    <div className="font-semibold">Compressed Size</div>
+                    <div className="font-semibold mt-1">Compressed Size</div>
                     <div className="text-lg font-bold">{formatBytes(resultStats.compressedSize)}</div>
-                </div>
+                </Card>
             </div>
              <Card className="p-4 bg-green-50 dark:bg-green-900/50 border-green-200 dark:border-green-800">
                 <p className="text-2xl font-bold text-green-700 dark:text-green-300">You saved {reductionPercentage}%</p>
             </Card>
-            <a href={resultUrl} download={selectedFile?.name.replace('.pdf', '-compressed.pdf') || 'compressed.pdf'}>
-                <Button className="w-full" size="lg">
+            <a href={resultUrl} download={selectedFile?.name.replace('.pdf', '-compressed.pdf') || 'compressed.pdf'} className="block w-full">
+                <Button className="w-full h-12 text-base" size="lg">
                     <Download className="mr-2 h-4 w-4" />
                     Download Compressed PDF
                 </Button>
