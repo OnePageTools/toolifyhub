@@ -75,7 +75,7 @@ export default function JsonFormatterPage() {
                 A professional tool to format, validate, and beautify your JSON data with real-time feedback.
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-0 md:p-2 h-[75vh] md:h-auto">
+            <CardContent className="p-0">
               <JsonFormatterForm />
             </CardContent>
           </Card>

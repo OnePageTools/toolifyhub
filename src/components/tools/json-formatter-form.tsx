@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -6,7 +7,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Copy, ClipboardCheck, Trash2, Wand2, CheckCircle, XCircle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
 
 export function JsonFormatterForm() {
   const [jsonInput, setJsonInput] = useState('');
@@ -23,7 +23,7 @@ export function JsonFormatterForm() {
     }
     try {
       const parsed = JSON.parse(input);
-      const formatted = JSON.stringify(parsed, null, 2);
+      const formatted = JSON.stringify(parsed, null, 2); // 2-space indentation
       setFormattedJson(formatted);
       setError(null);
     } catch (e: any) {
@@ -32,10 +32,11 @@ export function JsonFormatterForm() {
     }
   };
 
+  // Debounced validation on user input
   useEffect(() => {
     const handler = setTimeout(() => {
       validateAndFormat(jsonInput);
-    }, 500);
+    }, 500); // 500ms debounce
     return () => clearTimeout(handler);
   }, [jsonInput]);
   
@@ -44,12 +45,12 @@ export function JsonFormatterForm() {
       toast({
         variant: "destructive",
         title: 'Invalid JSON',
-        description: 'Cannot format invalid JSON. Please fix the errors.',
+        description: 'Cannot format invalid JSON. Please fix the errors first.',
       });
       return;
     }
     if(formattedJson) {
-      setJsonInput(formattedJson);
+      setJsonInput(formattedJson); // Update the input with the formatted version
       toast({ title: 'Success', description: 'JSON has been formatted.' });
     }
   }
@@ -59,6 +60,7 @@ export function JsonFormatterForm() {
       toast({ variant: 'destructive', title: 'Input is empty', description: 'Please enter some JSON to validate.' });
       return;
     }
+    // The validation runs on-the-fly, this button just gives a toast confirmation.
     if(error){
        toast({ variant: 'destructive', title: 'Validation Failed', description: error });
     } else {
@@ -75,7 +77,7 @@ export function JsonFormatterForm() {
 
   const handleCopy = () => {
     if (!formattedJson || error) {
-      toast({ variant: 'destructive', title: 'Nothing to copy' });
+      toast({ variant: 'destructive', title: 'Nothing to copy', description: 'You can only copy valid, formatted JSON.' });
       return;
     };
     navigator.clipboard.writeText(formattedJson).then(() => {
@@ -88,9 +90,10 @@ export function JsonFormatterForm() {
   };
 
   return (
-    <div className="p-0 md:p-4 space-y-4">
-      <div className="flex flex-col sm:flex-row flex-wrap gap-2 items-center justify-between bg-secondary p-2 rounded-lg">
-        <div className="flex items-center gap-2 ml-2">
+    <div className="p-4 space-y-4">
+      {/* Control Bar: Buttons and Status */}
+      <div className="flex flex-col sm:flex-row gap-2 items-center justify-between bg-secondary p-2 rounded-lg">
+        <div className="flex items-center gap-2 min-h-[24px]">
             {jsonInput.trim() && (
                 error ? (
                     <div className="flex items-center gap-1 text-red-500 text-sm font-semibold">
@@ -103,33 +106,35 @@ export function JsonFormatterForm() {
                 )
             )}
         </div>
-        <div className="flex gap-2 w-full sm:w-auto">
-          <Button onClick={handleFormat} variant="outline" size="sm" disabled={!jsonInput || !!error} className="flex-1 sm:flex-initial">
+        <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
+          <Button onClick={handleFormat} variant="outline" size="sm" disabled={!jsonInput || !!error} className="h-11 flex-1 sm:flex-initial">
             <Wand2 className="mr-2 h-4 w-4" />Format
           </Button>
-          <Button onClick={handleValidate} variant="outline" size="sm" disabled={!jsonInput} className="flex-1 sm:flex-initial">
+          <Button onClick={handleValidate} variant="outline" size="sm" disabled={!jsonInput} className="h-11 flex-1 sm:flex-initial">
              <CheckCircle className="mr-2 h-4 w-4" />Validate
           </Button>
-          <Button onClick={handleCopy} variant="outline" size="sm" disabled={!formattedJson || !!error} className="flex-1 sm:flex-initial">
+          <Button onClick={handleCopy} variant="outline" size="sm" disabled={!formattedJson || !!error} className="h-11 flex-1 sm:flex-initial">
             {isCopied ? <ClipboardCheck className="mr-2 h-4 w-4 text-green-500" /> : <Copy className="mr-2 h-4 w-4" />}Copy
           </Button>
-          <Button onClick={handleClear} variant="destructive" size="sm" className="flex-1 sm:flex-initial">
+          <Button onClick={handleClear} variant="destructive" size="sm" className="h-11 flex-1 sm:flex-initial">
             <Trash2 className="mr-2 h-4 w-4" />Clear
           </Button>
         </div>
       </div>
-      <div className="grid md:grid-cols-2 gap-4 h-[70vh] md:h-[75vh]">
+      
+      {/* Input and Output Textareas */}
+      <div className="grid md:grid-cols-2 gap-4 h-[70vh]">
         <ScrollArea className="h-full rounded-md border">
           <Textarea
             value={jsonInput}
             onChange={(e) => setJsonInput(e.target.value)}
             placeholder='Paste your raw JSON here...'
-            className="h-full min-h-[inherit] resize-none font-mono text-sm border-0 focus-visible:ring-0"
+            className="h-full min-h-[250px] resize-none font-mono text-sm border-0 focus-visible:ring-0"
             aria-label="JSON Input"
           />
         </ScrollArea>
         <ScrollArea className="h-full rounded-md border bg-secondary/50">
-          <pre className="p-4 text-sm whitespace-pre-wrap font-mono">
+          <pre className="p-4 text-sm whitespace-pre-wrap font-mono h-full min-h-[250px]">
             {formattedJson ? (
               <code>{formattedJson}</code>
             ) : (
