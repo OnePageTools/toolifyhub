@@ -47,14 +47,6 @@ export type Tool = {
 
 export const tools: Tool[] = [
   {
-    name: 'PDF to Word',
-    description: 'Convert PDF to editable Word doc',
-    href: '/tools/pdf-to-word',
-    icon: FileText,
-    category: 'PDF',
-    implemented: false,
-  },
-  {
     name: 'Word to PDF',
     description: 'Convert Word to PDF',
     href: '/tools/word-to-pdf',
