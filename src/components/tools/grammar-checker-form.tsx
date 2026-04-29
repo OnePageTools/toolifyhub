@@ -15,10 +15,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useState } from 'react';
-import { Loader2, Wand2, RefreshCw, ArrowRight } from 'lucide-react';
+import { Loader2, Wand2, RefreshCw, ArrowRight, CheckCircle, XCircle, Copy, ClipboardCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '../ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 const formSchema = z.object({
@@ -48,10 +47,12 @@ type Match = {
 
 export function GrammarCheckerForm() {
   const [matches, setMatches] = useState<Match[]>([]);
+  const [originalText, setOriginalText] = useState<string>('');
+  const [correctedText, setCorrectedText] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
-  const [correctedText, setCorrectedText] = useState<string | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -68,7 +69,9 @@ export function GrammarCheckerForm() {
     setIsLoading(true);
     setError(null);
     setMatches([]);
-    setCorrectedText(null);
+    setShowResults(false);
+    setOriginalText(values.text);
+    setCorrectedText(values.text);
     
     try {
       const params = new URLSearchParams();
@@ -90,7 +93,7 @@ export function GrammarCheckerForm() {
       setShowResults(true);
       toast({
         title: "Check Complete!",
-        description: `Found ${data.matches.length} potential issue(s).`,
+        description: data.matches.length > 0 ? `Found ${data.matches.length} potential issue(s).` : 'No issues found!',
       });
       
     } catch (e: any) {
@@ -104,26 +107,35 @@ export function GrammarCheckerForm() {
       setIsLoading(false);
     }
   }
-
-  const getCategoryColor = (categoryName: string) => {
-    const lowerCaseName = categoryName.toLowerCase();
-    if (lowerCaseName.includes('spelling')) return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300';
-    if (lowerCaseName.includes('grammar')) return 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300';
-    if (lowerCaseName.includes('punctuation')) return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300';
-    if (lowerCaseName.includes('style')) return 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300';
-    return 'bg-secondary text-secondary-foreground';
-  };
-
-  const handleReset = () => {
-    form.reset();
-    setMatches([]);
-    setError(null);
-    setShowResults(false);
-    setCorrectedText(null);
-  };
   
+  const handleFixOne = (matchToFix: Match) => {
+    const replacement = matchToFix.replacements[0]?.value;
+    if (!replacement) return;
+
+    // Apply the fix
+    const newCorrectedText = correctedText.substring(0, matchToFix.offset) + replacement + correctedText.substring(matchToFix.offset + matchToFix.length);
+    setCorrectedText(newCorrectedText);
+
+    // Calculate the change in length
+    const delta = replacement.length - matchToFix.length;
+
+    // Update offsets of remaining matches
+    const updatedMatches = matches
+      .filter(m => m !== matchToFix) // Remove the fixed match
+      .map(m => {
+        if (m.offset > matchToFix.offset) {
+          // Adjust offset for subsequent matches
+          return { ...m, offset: m.offset + delta };
+        }
+        return m;
+      });
+    
+    setMatches(updatedMatches);
+    toast({ title: "Fix applied." });
+  };
+
   const handleApplyAll = () => {
-      let text = form.getValues('text');
+      let text = originalText;
       const sortedMatches = [...matches].sort((a,b) => b.offset - a.offset);
 
       sortedMatches.forEach(match => {
@@ -132,126 +144,124 @@ export function GrammarCheckerForm() {
           }
       });
       setCorrectedText(text);
-      toast({ title: "Fixes Applied", description: "The corrected text is now available." });
+      setMatches([]); // All issues are now fixed
+      toast({ title: "All fixes applied!", description: "The corrected text has been updated." });
   };
-  
-  const HighlightedContext = ({ match }: { match: Match }) => {
-    const { text, offset, length } = match.context;
-    const before = text.substring(0, offset);
-    const highlighted = text.substring(offset, offset + length);
-    const after = text.substring(offset + length);
 
-    return (
-        <p className="text-sm my-2 p-2 bg-background rounded-md">
-            {before}
-            <span className="text-red-500 line-through bg-red-500/10 px-1 rounded">{highlighted}</span>
-            {after}
-        </p>
-    );
+  const handleCopy = () => {
+    if (!correctedText) return;
+    navigator.clipboard.writeText(correctedText).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+      toast({ title: 'Copied!', description: 'Corrected text copied to clipboard.' });
+    }).catch(err => {
+      toast({ variant: 'destructive', title: 'Copy Failed' });
+    });
+  };
+
+  const handleClear = () => {
+    form.reset({ text: '' });
+    setMatches([]);
+    setError(null);
+    setShowResults(false);
+    setCorrectedText('');
+    setOriginalText('');
   };
 
   return (
     <div className="space-y-6">
-      {!showResults ? (
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="text"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Paste your text here to check for grammar, spelling, and punctuation errors..."
-                      className="min-h-60"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <p className="text-sm text-muted-foreground">{wordCount} {wordCount === 1 ? 'word' : 'words'} · {textValue.length} characters</p>
-                <Button type="submit" disabled={isLoading} className="w-full sm:w-auto h-12" size="lg">
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Analyzing...
-                    </>
-                  ) : (
-                    <>
-                      <Wand2 className="mr-2 h-4 w-4" />
-                      Check Text
-                    </>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {!showResults && (
+            <>
+                <FormField
+                  control={form.control}
+                  name="text"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Type or paste your text here..."
+                          className="min-h-[200px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </Button>
-            </div>
-          </form>
-        </Form>
-      ) : (
+                />
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <p className="text-sm text-muted-foreground">{wordCount} {wordCount === 1 ? 'word' : 'words'} · {textValue.length} characters</p>
+                    <Button type="submit" disabled={isLoading} className="w-full sm:w-auto h-12" size="lg">
+                      {isLoading ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                          <Wand2 className="mr-2 h-4 w-4" />
+                      )}
+                      Check Grammar
+                    </Button>
+                </div>
+            </>
+          )}
+        </form>
+      </Form>
+      
+      {showResults && (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-end gap-2">
-                <Button onClick={handleReset} variant="outline" size="lg" className="w-full md:w-auto h-12">
-                    <RefreshCw className="mr-2 h-4 w-4" /> Check New Text
+                <Button onClick={handleClear} variant="outline" size="lg" className="w-full md:w-auto h-12">
+                    <RefreshCw className="mr-2 h-4 w-4" /> Clear and Start Over
                 </Button>
-                <Button onClick={handleApplyAll} size="lg" className="w-full md:w-auto h-12" disabled={matches.length === 0}>
+                 <Button onClick={handleApplyAll} size="lg" className="w-full md:w-auto h-12" disabled={matches.length === 0}>
                     <Wand2 className="mr-2 h-4 w-4" /> Apply All Fixes
                 </Button>
             </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
+            
+            {/* Score Card */}
+            <Alert variant={matches.length > 0 ? "destructive" : "default"} className={matches.length === 0 ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : ''}>
+                {matches.length > 0 ? <XCircle className="h-4 w-4" /> : <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />}
+                <AlertTitle className={matches.length === 0 ? 'text-green-800 dark:text-green-300' : ''}>
+                    {matches.length > 0 ? `${matches.length} issue(s) found` : "Perfect! No issues found."}
+                </AlertTitle>
+            </Alert>
+            
+            {/* Issues List */}
+            {matches.length > 0 && (
+                <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Suggestions</h3>
+                    {matches.map((match, index) => (
+                        <Card key={`${match.offset}-${index}`} className="p-4 bg-secondary/30">
+                           <p className="text-sm text-muted-foreground mb-2">{match.message}</p>
+                           <div className="flex flex-wrap items-center gap-2 text-sm bg-background p-2 rounded-md">
+                               <span className="text-red-500 line-through bg-red-500/10 px-1 rounded">
+                                   {match.context.text.substring(match.context.offset, match.context.offset + match.length)}
+                               </span>
+                               <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                               <span className="text-green-600 dark:text-green-400 font-semibold bg-green-500/10 px-1 rounded">
+                                   {match.replacements[0]?.value}
+                               </span>
+                           </div>
+                           <Button size="sm" variant="outline" className="mt-3" onClick={() => handleFixOne(match)}>Fix This</Button>
+                        </Card>
+                    ))}
+                </div>
+            )}
+            
+            {/* Corrected Text Box */}
+            <div className="space-y-4">
+                 <h3 className="text-lg font-semibold">Corrected Text</h3>
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Suggestions ({matches.length})</CardTitle>
-                        <CardDescription>Review the potential issues below.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                       {matches.length > 0 ? (
-                         <ScrollArea className="h-[60vh] pr-4">
-                            <div className="space-y-4">
-                            {matches.map((match, index) => (
-                                <Card key={index} className="p-3 bg-secondary/30">
-                                    <p className="font-semibold mb-2">{match.message}</p>
-                                    <HighlightedContext match={match} />
-                                    <div className="flex items-center gap-2">
-                                       <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                                       <span className="text-green-600 dark:text-green-400 font-semibold bg-green-500/10 px-1 rounded">{match.replacements[0]?.value || 'N/A'}</span>
-                                    </div>
-                                    <Badge className={`mt-3 ${getCategoryColor(match.rule.category.name)}`}>{match.rule.category.name}</Badge>
-                                </Card>
-                            ))}
-                            </div>
+                    <CardContent className="p-0">
+                        <ScrollArea className="h-60 rounded-md border">
+                            <pre className="p-4 text-sm whitespace-pre-wrap font-sans">{correctedText || 'Corrections will appear here...'}</pre>
                         </ScrollArea>
-                       ) : (
-                         <div className="h-[60vh] flex flex-col items-center justify-center text-center text-muted-foreground bg-secondary/50 rounded-md">
-                            <Wand2 className="h-10 w-10 mb-2 text-green-500"/>
-                            <p className="font-semibold">No issues found!</p>
-                            <p className="text-xs">The checker didn't find any suggestions for your text.</p>
-                         </div>
-                       )}
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Corrected Text</CardTitle>
-                        <CardDescription>The text with all suggestions applied.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                       {correctedText ? (
-                         <ScrollArea className="h-[60vh] pr-4">
-                            <div className="prose prose-sm dark:prose-invert max-w-none p-4 border rounded-md bg-secondary/30">
-                                {correctedText}
-                            </div>
-                         </ScrollArea>
-                       ) : (
-                         <div className="h-[60vh] flex flex-col items-center justify-center text-center text-muted-foreground bg-secondary/50 rounded-md">
-                            <p className="font-semibold">Click "Apply All Fixes" to see the corrected version here.</p>
-                         </div>
-                       )}
-                    </CardContent>
-                </Card>
+                <Button onClick={handleCopy} variant="outline" className="w-full md:w-auto">
+                    {isCopied ? <ClipboardCheck className="mr-2"/> : <Copy className="mr-2" />} Copy Corrected Text
+                </Button>
             </div>
+            
         </div>
       )}
 
