@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -92,33 +91,33 @@ export function JsonFormatterForm() {
   return (
     <div className="p-4 space-y-4">
       {/* Control Bar: Buttons and Status */}
-      <div className="flex flex-col sm:flex-row gap-2 items-center justify-between bg-secondary p-2 rounded-lg">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-secondary p-2 rounded-lg">
         <div className="flex items-center gap-2 min-h-[24px]">
             {jsonInput.trim() && (
                 error ? (
                     <div className="flex items-center gap-1 text-red-500 text-sm font-semibold">
-                        <XCircle className="h-4 w-4" /> Invalid JSON
+                        <XCircle /> Invalid JSON
                     </div>
                 ) : (
                     <div className="flex items-center gap-1 text-green-600 text-sm font-semibold">
-                        <CheckCircle className="h-4 w-4" /> Valid JSON
+                        <CheckCircle /> Valid JSON
                     </div>
                 )
             )}
         </div>
-        <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
-          <Button onClick={handleFormat} variant="outline" size="sm" disabled={!jsonInput || !!error} className="h-11 flex-1 sm:flex-initial">
-            <Wand2 className="mr-2 h-4 w-4" />Format
-          </Button>
-          <Button onClick={handleValidate} variant="outline" size="sm" disabled={!jsonInput} className="h-11 flex-1 sm:flex-initial">
-             <CheckCircle className="mr-2 h-4 w-4" />Validate
-          </Button>
-          <Button onClick={handleCopy} variant="outline" size="sm" disabled={!formattedJson || !!error} className="h-11 flex-1 sm:flex-initial">
-            {isCopied ? <ClipboardCheck className="mr-2 h-4 w-4 text-green-500" /> : <Copy className="mr-2 h-4 w-4" />}Copy
-          </Button>
-          <Button onClick={handleClear} variant="destructive" size="sm" className="h-11 flex-1 sm:flex-initial">
-            <Trash2 className="mr-2 h-4 w-4" />Clear
-          </Button>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full sm:w-auto">
+            <Button onClick={handleFormat} variant="outline" size="lg" disabled={!jsonInput || !!error}>
+                <Wand2 className="mr-2" />Format
+            </Button>
+            <Button onClick={handleValidate} variant="outline" size="lg" disabled={!jsonInput}>
+                <CheckCircle className="mr-2" />Validate
+            </Button>
+            <Button onClick={handleCopy} variant="outline" size="lg" disabled={!formattedJson || !!error}>
+                {isCopied ? <ClipboardCheck className="mr-2 text-green-500" /> : <Copy className="mr-2" />}Copy
+            </Button>
+            <Button onClick={handleClear} variant="destructive" size="lg">
+                <Trash2 className="mr-2" />Clear
+            </Button>
         </div>
       </div>
       
