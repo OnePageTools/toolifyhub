@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/card';
 import AIHelper from '@/components/ai-assistant';
 import { SpellCheck } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const tool = {
   name: 'Grammar and Spell Checker',
@@ -74,6 +75,11 @@ export default function GrammarCheckerPage() {
               <CardDescription className="text-lg mt-2 max-w-2xl mx-auto">
                 Paste your text below to get instant feedback on grammar, spelling, and punctuation.
               </CardDescription>
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+                <Badge className="bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">Free Forever</Badge>
+                <Badge className="bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">No Sign Up</Badge>
+                <Badge className="bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">Private & Secure</Badge>
+              </div>
             </CardHeader>
             <CardContent className="p-4 md:p-8">
               <GrammarCheckerForm />

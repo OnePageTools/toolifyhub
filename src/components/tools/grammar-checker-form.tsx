@@ -62,6 +62,7 @@ export function GrammarCheckerForm() {
   });
 
   const textValue = form.watch('text');
+  const wordCount = textValue.trim().length > 0 ? textValue.trim().split(/\s+/).length : 0;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -161,7 +162,7 @@ export function GrammarCheckerForm() {
                 <FormItem>
                   <FormControl>
                     <Textarea
-                      placeholder="Paste your text here to check for grammar, spelling, and punctuation errors. The free version of this tool does not store your text."
+                      placeholder="Paste your text here to check for grammar, spelling, and punctuation errors..."
                       className="min-h-60"
                       {...field}
                     />
@@ -171,7 +172,7 @@ export function GrammarCheckerForm() {
               )}
             />
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <p className="text-sm text-muted-foreground">{textValue.length} characters</p>
+                <p className="text-sm text-muted-foreground">{wordCount} {wordCount === 1 ? 'word' : 'words'} · {textValue.length} characters</p>
                 <Button type="submit" disabled={isLoading} className="w-full sm:w-auto h-12" size="lg">
                   {isLoading ? (
                     <>
@@ -251,13 +252,6 @@ export function GrammarCheckerForm() {
                     </CardContent>
                 </Card>
             </div>
-            
-             <Alert>
-              <AlertTitle>About This Tool</AlertTitle>
-              <AlertDescription>
-                This tool uses the free version of the LanguageTool API. No text is stored. For more advanced checks, consider their premium offerings.
-              </AlertDescription>
-            </Alert>
         </div>
       )}
 
