@@ -8,13 +8,18 @@ const post = {
     title: 'How to Generate QR Codes Free Online — Complete Guide',
     description: 'A simple guide to creating custom QR codes for URLs, text, Wi-Fi, and more using our free online tool. Learn how QR codes can benefit your business or personal projects.',
     keywords: ['generate qr code', 'free qr code generator', 'create qr code', 'qr code maker', 'url to qr code', 'custom qr code'],
+    author: 'ToolifyHub Team',
+    date: '2026-04-12',
+    readingTime: '5 min read',
     url: '/blog/how-to-generate-qr-code-free',
+    image: 'https://picsum.photos/seed/qrcode/1200/630'
 };
 
 export const metadata: Metadata = {
   title: post.title,
   description: post.description,
   keywords: post.keywords,
+  robots: { index: true, follow: true },
   alternates: {
     canonical: `https://toolifyhub.com${post.url}`,
   },
@@ -22,12 +27,31 @@ export const metadata: Metadata = {
     title: post.title,
     description: post.description,
     url: `https://toolifyhub.com${post.url}`,
+    type: 'article',
+    images: [{ url: post.image, width: 1200, height: 630, alt: post.title }],
   },
+};
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": post.title,
+  "datePublished": post.date,
+  "dateModified": post.date,
+  "author": { "@type": "Organization", "name": "ToolifyHub" },
+  "publisher": { "@type": "Organization", "name": "ToolifyHub", "url": "https://toolifyhub.com" },
+  "description": post.description,
+  "image": post.image
 };
 
 export default function BlogPost() {
   return (
-    <PostLayout title={post.title}>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <PostLayout title={post.title} author={post.author} date="April 12, 2026" readingTime={post.readingTime}>
       <p>
         You see them everywhere: on restaurant menus, event flyers, product packaging, and business cards. QR (Quick Response) codes have become a powerful tool for bridging the gap between the physical and digital worlds. They allow users to access information instantly with a simple scan from their smartphone camera. It's the reason why learning how to <Link href="/tools/qr-code-generator">generate QR codes free online</Link> is such a valuable skill for marketers, business owners, and event planners.
       </p>
@@ -40,7 +64,7 @@ export default function BlogPost() {
         A QR code is essentially a two-dimensional barcode. While a traditional barcode holds a small amount of information in a horizontal line, a QR code stores information in both horizontal and vertical patterns of black and white squares. This structure allows it to hold significantly more data and be read incredibly quickly by digital devices like smartphones.
       </p>
       <p>
-        They were invented in 1994 in Japan for the automotive industry but have since become a ubiquitous part of modern life due to their simplicity and the widespread use of smartphones.
+        They were invented in 1994 in Japan for the automotive industry but have since become a ubiquitous part of modern life due to their simplicity and the widespread use of smartphones. As one of the <Link href="/blog/best-free-online-tools-for-students-2026">best free online tools</Link>, a QR code generator is essential for modern communication.
       </p>
       
       <h2>What Can You Use QR Codes For?</h2>
@@ -96,7 +120,7 @@ export default function BlogPost() {
         Once you're happy with your QR code, click the "Download PNG" button. A high-quality PNG image file will be saved to your computer.
       </p>
       <p>
-        <strong>This is the most important step:</strong> Always test your QR code before you print it on thousands of flyers! Open your smartphone's camera app, point it at the QR code on your screen, and make sure it scans correctly and directs to the right destination.
+        <strong>This is the most important step:</strong> Always test your QR code before you print it on thousands of flyers! Open your smartphone's camera app, point it at the QR code on your screen, and make sure it scans correctly and directs to the right destination. You can also use an <Link href="/tools/image-compressor">image compressor</Link> if you need a smaller file size for web use.
       </p>
       <p>
         That's it! You can now use this image on your printed materials, website, social media posts, or anywhere else you want to connect your physical and digital presence.
@@ -107,5 +131,6 @@ export default function BlogPost() {
         QR codes are a simple yet immensely powerful tool for modern marketing, business, and personal communication. They make information more accessible and engaging for your audience. With a free online tool like ToolifyHub's QR Code Generator, creating them is easier and faster than ever. Start thinking about how you can incorporate them into your own projects today!
       </p>
     </PostLayout>
+    </>
   );
 }

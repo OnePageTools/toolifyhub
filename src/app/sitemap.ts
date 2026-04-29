@@ -8,6 +8,14 @@ const articles = [
     { href: '/blog/how-to-remove-background-from-image-free' },
     { href: '/blog/best-free-grammar-checker-tools-2026' },
     { href: '/blog/how-to-generate-qr-code-free' },
+    { href: '/blog/best-free-pdf-compressor-tools' },
+    { href: '/blog/free-weather-checker-online' },
+    { href: '/blog/how-to-build-a-free-resume-online' },
+    { href: '/blog/image-to-text-ocr-free-online' },
+    { href: '/blog/free-resume-builder-online-2026' },
+    { href: '/blog/plagiarism-checker-free-online' },
+    { href: '/blog/word-to-pdf-converter-free' },
+    { href: '/blog/currency-converter-free-online' },
 ];
  
 export default function sitemap(): MetadataRoute.Sitemap {

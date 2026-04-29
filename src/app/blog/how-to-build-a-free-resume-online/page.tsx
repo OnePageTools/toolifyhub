@@ -1,3 +1,4 @@
+
 import { PostLayout } from "@/components/blog/post-layout";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -7,13 +8,18 @@ const post = {
     title: 'How to Build a Professional Resume Online for Free (2026 Guide)',
     description: 'A step-by-step guide to creating a job-winning resume using a free online builder. Learn how to highlight your skills and experience to land your dream job.',
     keywords: ['build resume online', 'free resume builder', 'how to make a resume', 'online cv maker', 'professional resume', 'resume writing tips'],
+    author: 'ToolifyHub Team',
+    date: '2026-04-08',
+    readingTime: '4 min read',
     url: '/blog/how-to-build-a-free-resume-online',
+    image: 'https://picsum.photos/seed/resume/1200/630'
 };
 
 export const metadata: Metadata = {
   title: post.title,
   description: post.description,
   keywords: post.keywords,
+  robots: { index: true, follow: true },
   alternates: {
     canonical: `https://toolifyhub.com${post.url}`,
   },
@@ -21,17 +27,36 @@ export const metadata: Metadata = {
     title: post.title,
     description: post.description,
     url: `https://toolifyhub.com${post.url}`,
+    type: 'article',
+    images: [{ url: post.image, width: 1200, height: 630, alt: post.title }],
   },
+};
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": post.title,
+  "datePublished": post.date,
+  "dateModified": post.date,
+  "author": { "@type": "Organization", "name": "ToolifyHub" },
+  "publisher": { "@type": "Organization", "name": "ToolifyHub", "url": "https://toolifyhub.com" },
+  "description": post.description,
+  "image": post.image
 };
 
 export default function BlogPost() {
   return (
-    <PostLayout title={post.title}>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <PostLayout title={post.title} author={post.author} date="April 8, 2026" readingTime={post.readingTime}>
       <p>
         In today's competitive job market, a professional, well-structured resume is your single most important tool. It's the first impression you make on a potential employer, and it needs to be perfect. But creating a great resume can be a daunting task, especially if you're not a design expert.
       </p>
       <p>
-        Thankfully, you no longer need expensive software or design skills. With a free online resume builder, you can create a polished, modern resume in minutes. This guide will walk you through the entire process, step by step.
+        Thankfully, you no longer need expensive software or design skills. With a <Link href="/blog/free-resume-builder-online-2026">free resume builder online</Link>, you can create a polished, modern resume in minutes. This guide will walk you through the entire process, step by step.
       </p>
       
       <h2>Why Use an Online Resume Builder?</h2>
@@ -68,7 +93,7 @@ export default function BlogPost() {
       
       <h3>Step 3: Write a Compelling Professional Summary</h3>
       <p>
-        This is your elevator pitch. In 2-3 sentences, summarize your skills, experience, and career goals. Tailor this section to the specific job you are applying for, highlighting what makes you the perfect candidate.
+        This is your elevator pitch. In 2-3 sentences, summarize your skills, experience, and career goals. Tailor this section to the specific job you are applying for, highlighting what makes you the perfect candidate. You can use a <Link href="/tools/text-summarizer">text summarizer</Link> on your own longer bio to get ideas.
       </p>
 
       <h3>Step 4: Detail Your Work Experience</h3>
@@ -83,7 +108,7 @@ export default function BlogPost() {
       
       <h3>Step 6: Download as a High-Quality PDF</h3>
       <p>
-        Once you're happy with your content and design, click the "Download as PDF" button. The tool will generate a perfectly formatted PDF file, ready to be sent to recruiters. Always save the file with a clear name, like `YourName-Resume.pdf`.
+        Once you're happy with your content and design, click the "Download as PDF" button. The tool will generate a perfectly formatted PDF file, ready to be sent to recruiters. Always save the file with a clear name, like `YourName-Resume.pdf`. If the file is too large, use a <Link href="/tools/pdf-compressor">PDF compressor</Link>.
       </p>
 
       <h2>Conclusion</h2>
@@ -91,5 +116,6 @@ export default function BlogPost() {
         Creating a professional resume doesn't have to be a stressful experience. By using a free online tool like the Resume Builder, you can focus on showcasing your strengths and land your dream job. Take your time, proofread everything, and get ready to impress.
       </p>
     </PostLayout>
+    </>
   );
 }

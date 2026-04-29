@@ -15,10 +15,10 @@ const articles = [
     {
         title: '10 Best Free Online Tools You Need in 2026',
         description: 'Boost your productivity with these essential free online tools for everything from writing and design to development and organization.',
-        href: '/blog/best-free-online-tools-for-students-2026', // Slug is kept for now
+        href: '/blog/best-free-online-tools-for-students-2026',
         author: 'ToolifyHub Team',
         date: 'April 26, 2026',
-        readingTime: '9 min read',
+        readingTime: '5 min read',
         category: 'Free Tools',
         image: 'https://picsum.photos/seed/studenttools/800/400',
     },
@@ -28,12 +28,12 @@ const articles = [
         href: '/blog/how-to-compress-pdf-online-free',
         author: 'ToolifyHub Team',
         date: 'April 22, 2026',
-        readingTime: '6 min read',
+        readingTime: '4 min read',
         category: 'How To',
         image: 'https://picsum.photos/seed/pdfguide/800/400',
     },
     {
-        title: 'How to Remove Image Background Online Free in Seconds',
+        title: 'How to Remove the Background from an Image for Free (In 5 Seconds)',
         description: 'Discover the magic of AI-powered background removal. Create transparent PNGs for e-commerce, presentations, or fun projects.',
         href: '/blog/how-to-remove-background-from-image-free',
         author: 'ToolifyHub Team',
@@ -48,7 +48,7 @@ const articles = [
         href: '/blog/best-free-grammar-checker-tools-2026',
         author: 'ToolifyHub Team',
         date: 'April 15, 2026',
-        readingTime: '7 min read',
+        readingTime: '4 min read',
         category: 'Productivity',
         image: 'https://picsum.photos/seed/grammar/800/400',
     },
@@ -58,9 +58,59 @@ const articles = [
         href: '/blog/how-to-generate-qr-code-free',
         author: 'ToolifyHub Team',
         date: 'April 12, 2026',
-        readingTime: '4 min read',
+        readingTime: '5 min read',
         category: 'Utilities',
         image: 'https://picsum.photos/seed/qrcode/800/400',
+    },
+    {
+        title: 'Free Resume Builder Online — Create a Job-Winning CV in Minutes',
+        description: 'Learn how to use our free resume builder to create a professional CV that stands out to recruiters and helps you land your dream job in 2026.',
+        href: '/blog/free-resume-builder-online-2026',
+        author: 'ToolifyHub Team',
+        date: 'May 1, 2026',
+        readingTime: '6 min read',
+        category: 'Productivity',
+        image: 'https://picsum.photos/seed/resumebuilder/800/400',
+    },
+    {
+        title: 'How to Convert Images to Text Online Free (OCR Guide 2026)',
+        description: 'Our complete guide to using a free online OCR tool to convert images to text. Extract text from photos, scans, and PDFs instantly.',
+        href: '/blog/image-to-text-ocr-free-online',
+        author: 'ToolifyHub Team',
+        date: 'May 5, 2026',
+        readingTime: '6 min read',
+        category: 'AI Tools',
+        image: 'https://picsum.photos/seed/ocrguide/800/400',
+    },
+    {
+        title: 'How to Check Plagiarism Free Online — Complete Guide 2026',
+        description: 'Ensure your work is original with our complete guide to using a free online plagiarism checker. Understand uniqueness scores and avoid duplicate content.',
+        href: '/blog/plagiarism-checker-free-online',
+        author: 'ToolifyHub Team',
+        date: 'May 9, 2026',
+        readingTime: '7 min read',
+        category: 'Productivity',
+        image: 'https://picsum.photos/seed/plagiarism/800/400',
+    },
+    {
+        title: 'Best Free Word to PDF Converter Online (No Email Required)',
+        description: 'Discover the easiest and most secure way to convert your Word documents to PDF for free, right in your browser. No software or sign-up needed.',
+        href: '/blog/word-to-pdf-converter-free',
+        author: 'ToolifyHub Team',
+        date: 'May 12, 2026',
+        readingTime: '6 min read',
+        category: 'How To',
+        image: 'https://picsum.photos/seed/wordtopdf/800/400',
+    },
+     {
+        title: 'Free Currency Converter Online — Live Exchange Rates 2026',
+        description: 'A complete guide to using a free online currency converter with live rates. Perfect for travelers, businesses, and anyone dealing with foreign exchange.',
+        href: '/blog/currency-converter-free-online',
+        author: 'ToolifyHub Team',
+        date: 'May 15, 2026',
+        readingTime: '5 min read',
+        category: 'Utilities',
+        image: 'https://picsum.photos/seed/currency/800/400',
     },
 ];
 
@@ -68,12 +118,12 @@ export default function BlogIndexPage() {
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredArticles = useMemo(() => {
-        if (!searchTerm) return articles;
+        if (!searchTerm) return articles.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         return articles.filter(article =>
             article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             article.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
             article.category.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        ).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }, [searchTerm]);
 
     return (

@@ -1,3 +1,4 @@
+
 import { PostLayout } from "@/components/blog/post-layout";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -7,13 +8,18 @@ const post = {
     title: 'How to Check the Weather Online for Any City Instantly (for Free)',
     description: 'Learn how to use a free online weather checker to get real-time forecasts, temperature, humidity, and wind speed for any location worldwide.',
     keywords: ['weather checker', 'online weather forecast', 'live weather', 'free weather tool', 'check temperature', 'city weather'],
+    author: 'ToolifyHub Team',
+    date: '2026-04-05',
+    readingTime: '3 min read',
     url: '/blog/free-weather-checker-online',
+    image: 'https://picsum.photos/seed/weather/1200/630'
 };
 
 export const metadata: Metadata = {
   title: post.title,
   description: post.description,
   keywords: post.keywords,
+  robots: { index: true, follow: true },
   alternates: {
     canonical: `https://toolifyhub.com${post.url}`,
   },
@@ -21,12 +27,31 @@ export const metadata: Metadata = {
     title: post.title,
     description: post.description,
     url: `https://toolifyhub.com${post.url}`,
+    type: 'article',
+    images: [{ url: post.image, width: 1200, height: 630, alt: post.title }],
   },
+};
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": post.title,
+  "datePublished": post.date,
+  "dateModified": post.date,
+  "author": { "@type": "Organization", "name": "ToolifyHub" },
+  "publisher": { "@type": "Organization", "name": "ToolifyHub", "url": "https://toolifyhub.com" },
+  "description": post.description,
+  "image": post.image
 };
 
 export default function BlogPost() {
   return (
-    <PostLayout title={post.title}>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <PostLayout title={post.title} author={post.author} date="April 5, 2026" readingTime={post.readingTime}>
       <p>
         Planning a trip, a weekend outing, or just your daily commute? A quick and accurate weather forecast is essential. While there are many complex weather apps available, sometimes you just need a simple, fast, and free way to check the conditions for any city in the world.
       </p>
@@ -43,7 +68,7 @@ export default function BlogPost() {
         <li><strong>Feels Like Temperature:</strong> This tells you how the temperature actually feels, considering factors like wind and humidity.</li>
         <li><strong>Humidity & Wind Speed:</strong> These metrics are crucial for understanding the overall comfort level and for planning outdoor activities.</li>
         <li><strong>Short-Term Forecast:</strong> A 3-day forecast is perfect for planning the next few days without overwhelming you with data.</li>
-        <li><strong>Clean Interface:</strong> The tool should be easy to read and understand at a glance.</li>
+        <li><strong>Clean Interface:</strong> The tool should be easy to read and understand at a glance. Many of the <Link href="/blog/best-free-online-tools-for-students-2026">best free online tools</Link> prioritize a clean user experience.</li>
       </ul>
       
       <h2>How to Use a Free Online Weather Checker</h2>
@@ -80,8 +105,9 @@ export default function BlogPost() {
       
       <h2>Conclusion</h2>
       <p>
-        You don't need a complicated app for your daily weather needs. A free, well-designed online weather checker gives you all the essential information in a clean, fast, and accessible format. Whether you're on your desktop or mobile, you can get a reliable forecast for any city in the world in just a few seconds.
+        You don't need a complicated app for your daily weather needs. A free, well-designed online weather checker gives you all the essential information in a clean, fast, and accessible format. Whether you're on your desktop or mobile, you can get a reliable forecast for any city in the world in just a few seconds. For other useful travel utilities, consider a <Link href="/tools/currency-converter">currency converter</Link> for your travel planning.
       </p>
     </PostLayout>
+    </>
   );
 }

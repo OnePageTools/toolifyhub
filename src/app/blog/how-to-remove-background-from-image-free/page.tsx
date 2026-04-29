@@ -8,13 +8,18 @@ const post = {
     title: 'How to Remove the Background from an Image for Free (In 5 Seconds)',
     description: 'A step-by-step guide to creating images with transparent backgrounds using our free AI-powered tool. Perfect for product photos, social media posts, and more.',
     keywords: ['remove background from image', 'free background remover', 'transparent background', 'photo editor', 'AI background removal', 'cut out image'],
+    author: 'ToolifyHub Team',
+    date: '2026-04-18',
+    readingTime: '5 min read',
     url: '/blog/how-to-remove-background-from-image-free',
+    image: 'https://picsum.photos/seed/bgremover/1200/630'
 };
 
 export const metadata: Metadata = {
   title: post.title,
   description: post.description,
   keywords: post.keywords,
+  robots: { index: true, follow: true },
   alternates: {
     canonical: `https://toolifyhub.com${post.url}`,
   },
@@ -22,12 +27,31 @@ export const metadata: Metadata = {
     title: post.title,
     description: post.description,
     url: `https://toolifyhub.com${post.url}`,
+    type: 'article',
+    images: [{ url: post.image, width: 1200, height: 630, alt: post.title }],
   },
+};
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": post.title,
+  "datePublished": post.date,
+  "dateModified": post.date,
+  "author": { "@type": "Organization", "name": "ToolifyHub" },
+  "publisher": { "@type": "Organization", "name": "ToolifyHub", "url": "https://toolifyhub.com" },
+  "description": post.description,
+  "image": post.image
 };
 
 export default function BlogPost() {
   return (
-    <PostLayout title={post.title}>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <PostLayout title={post.title} author={post.author} date="April 18, 2026" readingTime={post.readingTime}>
       <p>
         Whether you're an e-commerce store owner, a graphic designer, or just someone trying to create the perfect social media post, you've probably faced a common challenge: how to remove the background from an image. A clean, transparent background can make a product pop, help a logo blend seamlessly, or turn a simple photo into a professional-looking graphic.
       </p>
@@ -42,7 +66,7 @@ export default function BlogPost() {
       <ul>
         <li><strong>Focus on the Subject:</strong> Removing a distracting or irrelevant background immediately draws the viewer's eye to the main subject of the photo. This is crucial for product photography, where the product itself should be the hero.</li>
         <li><strong>Professionalism and Consistency:</strong> For e-commerce sites like Amazon or Shopify, a clean, consistent background (often white or light gray) is the standard. It creates a professional, trustworthy look across your entire product catalog.</li>
-        <li><strong>Creative Freedom:</strong> With a transparent background, you can place your subject anywhere. Put it on a new colored background, overlay it onto another photo, or integrate it into a larger graphic design for a flyer, banner, or social media post.</li>
+        <li><strong>Creative Freedom:</strong> With a transparent background, you can place your subject anywhere. Put it on a new colored background, overlay it onto another photo, or integrate it into a larger graphic design for a flyer, banner, or social media post. You can even use the cutout to create a new image by providing a text prompt with an <Link href="/blog/image-to-text-ocr-free-online">image-to-text tool</Link>.</li>
         <li><strong>Brand Consistency:</strong> Use your logo or branded assets across different platforms and media without being locked into a specific background color. A logo with a transparent background can be placed on your website, presentations, and videos seamlessly.</li>
       </ul>
       
@@ -86,7 +110,7 @@ export default function BlogPost() {
         Once the processing is complete, you'll see a preview of your image with the background removed. It will be placed against a checkerboard pattern, which is the standard way to represent transparency.
       </p>
       <p>
-        If you're happy with the result, just click the "Download" button. A high-resolution PNG file with a fully transparent background will be saved to your computer, ready for you to use in any project.
+        If you're happy with the result, just click the "Download" button. A high-resolution PNG file with a fully transparent background will be saved to your computer, ready for you to use in any project. If you need a smaller file, you can run it through an <Link href="/tools/image-compressor">image compressor</Link>.
       </p>
 
       <h2>Creative Ideas for Your New Images</h2>
@@ -106,5 +130,6 @@ export default function BlogPost() {
         Manually tracing around an object to remove a background is a thing of the past. With modern AI tools, the process is now instant, free, and accessible to everyone. By following the simple steps above, you can create professional-quality images with transparent backgrounds for any purpose, saving you time and unlocking your creative potential.
       </p>
     </PostLayout>
+    </>
   );
 }
