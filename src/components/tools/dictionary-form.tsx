@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -144,12 +145,12 @@ export function DictionaryForm() {
                     <Input
                         id="word-input"
                         placeholder="e.g., knowledge"
-                        className="bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-200"
+                        className="bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-200 h-12 text-lg"
                         value={word}
                         onChange={(e) => setWord(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     />
-                    <Button onClick={() => handleSearch()} disabled={isLoading} variant="ghost" size="icon" className="rounded-full bg-white/30 hover:bg-white/50 dark:bg-black/40 dark:hover:bg-black/60 text-white">
+                    <Button onClick={() => handleSearch()} disabled={isLoading} variant="ghost" size="icon" className="rounded-full bg-white/30 hover:bg-white/50 dark:bg-black/40 dark:hover:bg-black/60 text-white w-12 h-12">
                         {isLoading ? <Loader2 className="animate-spin" /> : <Search />}
                     </Button>
                 </div>
@@ -167,7 +168,7 @@ export function DictionaryForm() {
                                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                                     <div>
                                         <CardTitle className="text-4xl capitalize">{entry.word}</CardTitle>
-                                        <CardDescription className="text-indigo-100">{entry.phonetic}</CardDescription>
+                                        <CardDescription className="text-indigo-100 italic">{entry.phonetic}</CardDescription>
                                     </div>
                                     {entry.audio && (
                                         <Button onClick={playAudio} variant="outline" size="icon" className="bg-white/30 border-white/40 text-white hover:bg-white/50">
@@ -183,7 +184,7 @@ export function DictionaryForm() {
                                             <Badge className={cn('text-base', getPartOfSpeechColor(meaning.partOfSpeech))}>{meaning.partOfSpeech}</Badge>
                                             <Separator className="flex-1 bg-white/30" />
                                         </div>
-                                        <ul className="mt-3 space-y-4 text-indigo-50">
+                                        <ul className="mt-3 space-y-4 text-indigo-50 text-base">
                                             {meaning.definitions.map((def, defIndex) => (
                                                 <li key={defIndex} className="pl-4 border-l-2 border-white/30">
                                                     <p>{def.definition}</p>
@@ -200,7 +201,11 @@ export function DictionaryForm() {
                                     <div>
                                         <h3 className="font-bold text-lg mb-2">Synonyms</h3>
                                         <div className="flex flex-wrap gap-2">
-                                            {allSynonyms.map((s, i) => <Badge key={i} variant="secondary">{s}</Badge>)}
+                                            {allSynonyms.map((s, i) => (
+                                               <Button key={i} variant="secondary" size="sm" className="h-auto" onClick={() => {setWord(s); handleSearch(s);}}>
+                                                   {s}
+                                               </Button>
+                                            ))}
                                         </div>
                                     </div>
                                 )}
