@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -6,10 +5,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Search, Loader2, RefreshCw, BarChart } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+import { Search, Loader2, RefreshCw } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
-// List of common filler words and phrases
+
+// Basic list of English stop words
 const commonPhrases = new Set([
   'in conclusion', 'for example', 'on the other hand', 'as a matter of fact',
   'at the end of the day', 'in the long run', 'it is what it is', 'to be honest',
@@ -114,36 +115,62 @@ export function PlagiarismCheckerForm() {
     setResult(null);
   };
   
-  const plagiarismPercentage = result ? 100 - result.score : 0;
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-600 dark:text-green-400', ring: 'ring-green-500/50' };
+    if (score >= 50) return { bg: 'bg-yellow-100 dark:bg-yellow-900/50', text: 'text-yellow-600 dark:text-yellow-400', ring: 'ring-yellow-500/50' };
+    return { bg: 'bg-red-100 dark:bg-red-900/50', text: 'text-red-600 dark:text-red-400', ring: 'ring-red-500/50' };
+  };
+
+  const highlightText = (originalText: string, phrases: { phrase: string }[]) => {
+    if (phrases.length === 0) return originalText;
+
+    const regex = new RegExp(`(${phrases.map(p => p.phrase.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).join('|')})`, 'gi');
+    
+    return originalText.split(regex).map((part, i) => {
+      const isHighlight = phrases.some(p => p.phrase.toLowerCase() === part.toLowerCase());
+      return isHighlight ? (
+        <mark key={i} className="bg-red-200 dark:bg-red-800/50 text-red-900 dark:text-red-200 rounded px-1 py-0.5">
+          {part}
+        </mark>
+      ) : (
+        <span key={i}>{part}</span>
+      );
+    });
+  };
+
+  const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
 
   return (
     <div className="space-y-6">
       {!result ? (
         <div className="space-y-4">
           <Textarea
-            placeholder="Paste your text here to check for originality. The analysis is done entirely in your browser."
-            className="min-h-60"
+            placeholder="Paste your text here to check for plagiarism. This client-side tool provides an estimated originality score based on internal repetition."
+            className="min-h-[200px] md:min-h-[250px]"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
-          <Button onClick={handleAnalyze} disabled={isLoading} size="lg">
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <Search className="mr-2" />
-                Check Originality
-              </>
-            )}
-          </Button>
+          <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
+             <p className="text-sm text-muted-foreground w-full sm:w-auto text-center sm:text-left">{wordCount} words</p>
+             <Button onClick={handleAnalyze} disabled={isLoading} size="lg" className="w-full sm:w-auto h-12">
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Checking originality...
+                  </>
+                ) : (
+                  <>
+                    <Search className="mr-2" />
+                    Check Originality
+                  </>
+                )}
+             </Button>
+          </div>
         </div>
       ) : (
         <div className="space-y-6 animate-in fade-in-50">
-          <div className="flex flex-wrap gap-2 justify-end">
-            <Button onClick={handleReset} variant="outline">
+          <div className="flex justify-end">
+            <Button onClick={handleReset} variant="outline" size="lg" className="w-full sm:w-auto h-12">
               <RefreshCw className="mr-2" /> Start New Check
             </Button>
           </div>
@@ -151,61 +178,47 @@ export function PlagiarismCheckerForm() {
           <Card>
             <CardHeader>
               <CardTitle className="text-xl">Originality Report</CardTitle>
-              <CardDescription>This is an estimation based on text analysis, not an exhaustive plagiarism check against external sources.</CardDescription>
+              <CardDescription>
+                This is an estimation based on internal text analysis, not an exhaustive check against external sources.
+              </CardDescription>
             </CardHeader>
-            <CardContent className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                 <div className="text-center">
-                    <div className="text-5xl font-bold text-primary">{result.score}%</div>
-                    <div className="text-muted-foreground">Estimated Originality</div>
-                 </div>
-                 <div className="space-y-2">
-                    <div className="flex justify-between text-sm text-muted-foreground mb-1">
-                        <span>Repetitive Content</span>
-                        <span>{plagiarismPercentage}%</span>
-                    </div>
-                    <Progress value={plagiarismPercentage} className="h-2 [&>div]:bg-yellow-500" />
-                 </div>
-              </div>
-               <div className="grid grid-cols-2 gap-4 text-center">
-                    <Card className="p-3 bg-secondary/50">
-                        <p className="text-2xl font-bold">{result.wordCount}</p>
-                        <p className="text-xs text-muted-foreground">Total Words</p>
-                    </Card>
-                     <Card className="p-3 bg-secondary/50">
-                        <p className="text-2xl font-bold">{result.uniqueWords}</p>
-                        <p className="text-xs text-muted-foreground">Unique Words</p>
-                    </Card>
+            <CardContent className="grid md:grid-cols-2 gap-8 items-center">
+              <div className="flex flex-col items-center justify-center gap-2">
+                <div className={cn('relative w-40 h-40 rounded-full flex items-center justify-center', getScoreColor(result.score).bg)}>
+                  <div className={cn('absolute inset-0 rounded-full ring-4 ring-inset', getScoreColor(result.score).ring)} />
+                  <span className={cn('text-5xl font-bold', getScoreColor(result.score).text)}>{result.score}%</span>
                 </div>
+                <p className={cn('font-semibold text-lg mt-2', getScoreColor(result.score).text)}>
+                  {result.score >= 80 ? 'Good Originality' : result.score >= 50 ? 'Needs Review' : 'High Repetition'}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <Card className="p-4 bg-secondary/50">
+                  <p className="text-3xl font-bold">{result.wordCount}</p>
+                  <p className="text-sm text-muted-foreground">Total Words</p>
+                </Card>
+                <Card className="p-4 bg-secondary/50">
+                  <p className="text-3xl font-bold">{result.uniqueWords}</p>
+                  <p className="text-sm text-muted-foreground">Unique Words</p>
+                </Card>
+              </div>
             </CardContent>
           </Card>
           
-          {result.repeatedPhrases.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl flex items-center gap-2"><BarChart/>Most Repeated Phrases</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {result.repeatedPhrases.map((item, index) => (
-                    <li key={index} className="flex justify-between items-center text-sm p-2 bg-secondary rounded-md">
-                      <span className="italic text-muted-foreground">"{item.phrase}"</span>
-                      <span className="font-bold text-primary">{item.count} times</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          )}
-
           <Card>
             <CardHeader>
-              <CardTitle>Your Text</CardTitle>
+              <CardTitle>Analyzed Text</CardTitle>
+              <CardDescription>
+                {result.repeatedPhrases.length > 0 ? "Repetitive phrases are highlighted." : "No significant repetitive phrases were found."}
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="prose prose-sm dark:prose-invert max-w-none p-4 border rounded-md bg-secondary/50 max-h-60 overflow-y-auto">
-                {text}
-              </div>
+              <ScrollArea className="h-72 rounded-md border p-4 bg-secondary/30">
+                <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                  {highlightText(text, result.repeatedPhrases)}
+                </p>
+              </ScrollArea>
             </CardContent>
           </Card>
 
