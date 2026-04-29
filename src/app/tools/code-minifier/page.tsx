@@ -75,7 +75,7 @@ export default function CodeMinifierPage() {
                 A fast, client-side tool to minify JavaScript, CSS, HTML, and JSON to reduce file size and improve performance.
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-2 md:p-4 h-[75vh] md:h-auto">
+            <CardContent className="p-0">
               <CodeMinifierForm />
             </CardContent>
           </Card>
