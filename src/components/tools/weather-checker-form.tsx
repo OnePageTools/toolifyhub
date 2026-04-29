@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
@@ -199,25 +200,30 @@ export function WeatherCheckerForm() {
 
             {/* Search Bar */}
             <div className="w-full max-w-md mb-8">
-                <div className="flex gap-2 backdrop-blur-sm bg-white/20 dark:bg-black/20 p-2 rounded-full shadow-lg">
+                <div className="flex flex-col sm:flex-row gap-2">
                     <Input
                         id="city-input"
                         placeholder="e.g., London, New York..."
-                        className="bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-200"
+                        className="w-full bg-white/20 dark:bg-black/20 border-white/30 placeholder:text-gray-200 text-white focus-visible:ring-white h-12 text-base"
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                         aria-label="City name"
                     />
-                    <Button onClick={handleSearch} disabled={isLoading} variant="ghost" size="icon" className="rounded-full bg-white/30 hover:bg-white/50 dark:bg-black/40 dark:hover:bg-black/60 text-white" aria-label="Search">
+                    <Button onClick={handleSearch} disabled={isLoading} size="lg" className="w-full sm:w-auto h-12">
                         {isLoading ? <Loader2 className="animate-spin" /> : <Search />}
+                        <span className="sm:hidden ml-2">Search</span>
                     </Button>
                 </div>
                  <p className="text-xs text-white/80 text-center mt-2 px-4">Enter any city name for a live weather forecast.</p>
             </div>
             
             <AnimatePresence>
-            {weather ? (
+            {isLoading && !weather ? (
+                <div className="flex justify-center items-center h-96">
+                    <Loader2 className="w-16 h-16 animate-spin text-white" />
+                </div>
+            ) : weather ? (
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -228,32 +234,41 @@ export function WeatherCheckerForm() {
                     <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-lg border-white/30 text-white shadow-2xl overflow-hidden">
                         <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-8">
                             <div className="text-center md:text-left">
-                                <h1 className="text-3xl md:text-4xl font-bold">{weather.name}, {weather.country}</h1>
-                                <p className="capitalize text-lg">{weather.current.description}</p>
+                                <h1 className="text-3xl md:text-4xl font-bold">{weather.name}</h1>
+                                <p className="text-muted-foreground text-white/80">{weather.country}</p>
                                 <p className="text-7xl md:text-8xl font-bold my-4 drop-shadow-xl">{weather.current.temp}°C</p>
-                                <div className="grid grid-cols-3 gap-2 md:gap-x-6 text-center text-sm">
-                                    <div className="flex flex-col items-center gap-1 bg-white/10 p-2 rounded-lg">
-                                        <Thermometer />
-                                        <span className='text-xs opacity-80'>Feels like</span>
-                                        <span className="font-bold">{weather.current.feelsLike}°</span>
-                                    </div>
-                                     <div className="flex flex-col items-center gap-1 bg-white/10 p-2 rounded-lg">
-                                        <Droplets />
-                                         <span className='text-xs opacity-80'>Humidity</span>
-                                        <span className="font-bold">{weather.current.humidity}%</span>
-                                    </div>
-                                     <div className="flex flex-col items-center gap-1 bg-white/10 p-2 rounded-lg">
-                                        <Wind />
-                                         <span className='text-xs opacity-80'>Wind</span>
-                                        <span className="font-bold">{weather.current.windSpeed} km/h</span>
-                                    </div>
-                                </div>
+                                <p className="capitalize text-xl font-semibold">{weather.current.description}</p>
                             </div>
                             <div className="flex flex-col items-center">
                                 <Icon />
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* Stats Row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-md border-white/30 text-white p-4 flex items-center gap-4">
+                            <Thermometer className="w-8 h-8 text-white/80" />
+                            <div>
+                                <p className="text-sm opacity-80">Feels Like</p>
+                                <p className="font-bold text-lg">{weather.current.feelsLike}°C</p>
+                            </div>
+                        </Card>
+                        <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-md border-white/30 text-white p-4 flex items-center gap-4">
+                            <Droplets className="w-8 h-8 text-white/80" />
+                            <div>
+                                <p className="text-sm opacity-80">Humidity</p>
+                                <p className="font-bold text-lg">{weather.current.humidity}%</p>
+                            </div>
+                        </Card>
+                        <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-md border-white/30 text-white p-4 flex items-center gap-4">
+                            <Wind className="w-8 h-8 text-white/80" />
+                            <div>
+                                <p className="text-sm opacity-80">Wind Speed</p>
+                                <p className="font-bold text-lg">{weather.current.windSpeed} km/h</p>
+                            </div>
+                        </Card>
+                    </div>
                     
                     {/* 3-Day Forecast */}
                     <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-lg border-white/30 text-white shadow-xl">
@@ -261,8 +276,8 @@ export function WeatherCheckerForm() {
                             <h2 className="text-lg font-semibold mb-4 text-center md:text-left">3-Day Forecast</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {weather.forecast.map((day, index) => (
-                                    <div key={day.date} className="bg-white/10 p-4 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-                                        <div>
+                                    <div key={day.date} className="bg-white/10 p-4 rounded-lg flex flex-row items-center justify-between gap-4 text-center">
+                                        <div className="text-left">
                                             <p className="font-bold">{index === 0 ? 'Today' : format(new Date(day.date), 'EEE')}</p>
                                             <p className="text-xl md:text-2xl font-bold">{day.avgTemp}°C</p>
                                         </div>
@@ -273,11 +288,7 @@ export function WeatherCheckerForm() {
                         </CardContent>
                     </Card>
                 </motion.div>
-             ) : (
-                <div className="flex justify-center items-center h-96">
-                    {isLoading && <Loader2 className="w-16 h-16 animate-spin text-white" />}
-                </div>
-             )}
+             ) : null}
             </AnimatePresence>
         </div>
     );
