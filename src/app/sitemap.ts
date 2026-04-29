@@ -1,15 +1,13 @@
+
 import { MetadataRoute } from 'next'
 import { tools } from '@/lib/tools';
 
 const articles = [
-    { href: '/blog/how-to-build-a-free-resume-online' },
-    { href: '/blog/best-free-grammar-checker-tools-2026' },
-    { href: '/blog/how-to-generate-qr-code-free' },
-    { href: '/blog/free-weather-checker-online' },
-    { href: '/blog/best-free-pdf-compressor-tools' },
+    { href: '/blog/best-free-online-tools-for-students-2026' },
     { href: '/blog/how-to-compress-pdf-online-free' },
     { href: '/blog/how-to-remove-background-from-image-free' },
-    { href: '/blog/best-free-online-tools-for-students-2026' },
+    { href: '/blog/best-free-grammar-checker-tools-2026' },
+    { href: '/blog/how-to-generate-qr-code-free' },
 ];
  
 export default function sitemap(): MetadataRoute.Sitemap {
