@@ -221,7 +221,7 @@ export function GrammarCheckerForm() {
             <Alert variant={matches.length > 0 ? "destructive" : "default"} className={matches.length === 0 ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : ''}>
                 {matches.length > 0 ? <XCircle className="h-4 w-4" /> : <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />}
                 <AlertTitle className={matches.length === 0 ? 'text-green-800 dark:text-green-300' : ''}>
-                    {matches.length > 0 ? `${matches.length} issue(s) found` : "Perfect! No issues found."}
+                    {matches.length > 0 ? `${matches.length} ${matches.length === 1 ? 'issue' : 'issues'} found` : "Perfect! No issues found."}
                 </AlertTitle>
             </Alert>
             
