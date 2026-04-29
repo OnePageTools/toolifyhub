@@ -10,9 +10,9 @@ export const ModernTemplate = ({ data, theme }: TemplateProps) => {
   };
   
   return (
-    <div className="bg-white text-black font-body text-sm grid grid-cols-3">
+    <div className="bg-white text-black font-body text-sm flex">
       {/* Left Column (Sidebar) */}
-      <aside className="col-span-1 p-8" style={{ backgroundColor: theme.background }}>
+      <aside className="w-[280px] shrink-0 p-8" style={{ backgroundColor: theme.background }}>
         <div className="text-center" style={{ color: theme.text }}>
             {data.photo && <img src={data.photo} alt={data.fullName || 'Profile Photo'} className="w-32 h-32 rounded-full object-cover mx-auto mb-6 border-4 border-white shadow-md" />}
         </div>
@@ -65,7 +65,7 @@ export const ModernTemplate = ({ data, theme }: TemplateProps) => {
       </aside>
 
       {/* Right Column (Main Content) */}
-      <main className="col-span-2 p-8">
+      <main className="flex-1 p-8">
         <header className="text-left mb-8">
             {data.fullName && <h1 className="text-5xl font-bold tracking-tight font-serif" style={{color: theme.primary}}>{data.fullName}</h1>}
             {data.jobTitle && <p className="text-2xl mt-1">{data.jobTitle}</p>}

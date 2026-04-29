@@ -187,13 +187,13 @@ export function ResumeBuilderForm() {
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle>Preview & Download</CardTitle>
-               <Button onClick={handlePrint} size="lg" className="w-full mt-2" disabled={isPrinting}>
+               <Button onClick={handlePrint} size="lg" className="w-full mt-2 h-12" disabled={isPrinting}>
                 {isPrinting ? <Loader2 className="mr-2 animate-spin" /> : <Printer className="mr-2" />} 
                 {isPrinting ? 'Generating PDF...' : 'Download as PDF'}
               </Button>
             </CardHeader>
-            <CardContent className="h-[75vh] overflow-y-auto bg-secondary/50 p-2">
-                <div ref={previewRef}>
+            <CardContent className="h-[75vh] overflow-auto bg-secondary/50 p-2">
+                <div ref={previewRef} className="mx-auto lg:mx-0">
                     <ResumePreview data={data} template={template} theme={colorThemes[colorTheme]} />
                 </div>
             </CardContent>
@@ -387,7 +387,7 @@ const ResumePreview = ({ data, template, theme }: ResumePreviewProps) => {
     });
 
     return (
-        <div className="bg-white shadow-lg aspect-[8.5/11] w-full h-full transform origin-top scale-[0.9] lg:scale-100">
+        <div className="bg-white shadow-lg aspect-[8.5/11] w-[794px]">
             <TemplateComponent data={sanitizedData} theme={theme} />
         </div>
     );
