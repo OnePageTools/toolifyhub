@@ -9,7 +9,7 @@ const post = {
     description: 'A complete guide to using a free online currency converter with live rates. Perfect for travelers, businesses, and anyone dealing with foreign exchange.',
     keywords: ['currency converter free online', 'live exchange rates', 'money converter', 'fx rates', 'travel money', 'online currency tool'],
     author: 'ToolifyHub Team',
-    date: '2026-05-15',
+    date: '2026-04-23',
     readingTime: '5 min read',
     url: '/blog/currency-converter-free-online',
     image: 'https://picsum.photos/seed/currency/1200/630'
