@@ -9,7 +9,7 @@ const post = {
     description: 'Learn how to use our free resume builder to create a professional CV that stands out to recruiters and helps you land your dream job in 2026.',
     keywords: ['free resume builder online', 'create cv online', 'job-winning resume', 'resume maker', 'professional CV', 'resume template 2026'],
     author: 'ToolifyHub Team',
-    date: '2026-05-01',
+    date: '2026-04-07',
     readingTime: '6 min read',
     url: '/blog/free-resume-builder-online-2026',
     image: 'https://picsum.photos/seed/resumebuilder/1200/630'
@@ -51,7 +51,7 @@ export default function BlogPost() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <PostLayout title={post.title} author={post.author} date="May 1, 2026" readingTime={post.readingTime}>
+      <PostLayout title={post.title} author={post.author} date="April 7, 2026" readingTime={post.readingTime}>
         <p>
           In the competitive job market of 2026, your resume (or CV) is more than just a document; it's your personal marketing tool. It’s the very first impression you make on a potential employer. A poorly formatted or unprofessional resume can get your application discarded in seconds. The good news is that you no longer need to be a design wizard or pay for expensive software to create a standout CV. With a <strong>free resume builder online</strong>, you can craft a job-winning resume in minutes.
         </p>

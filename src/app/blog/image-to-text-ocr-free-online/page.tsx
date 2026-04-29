@@ -9,7 +9,7 @@ const post = {
     description: 'Learn how to use a free online OCR tool to convert images to text. This guide explains how image-to-text technology works and its best use cases.',
     keywords: ['image to text online free', 'ocr online', 'convert image to text', 'extract text from image', 'free ocr tool', 'picture to text'],
     author: 'ToolifyHub Team',
-    date: '2026-05-05',
+    date: '2026-04-03',
     readingTime: '6 min read',
     url: '/blog/image-to-text-ocr-free-online',
     image: 'https://picsum.photos/seed/ocrguide/1200/630'
@@ -51,7 +51,7 @@ export default function BlogPost() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <PostLayout title={post.title} author={post.author} date="May 5, 2026" readingTime={post.readingTime}>
+      <PostLayout title={post.title} author={post.author} date="April 3, 2026" readingTime={post.readingTime}>
         <p>
           In our digital age, information comes in many forms, but not all are created equal. Have you ever had a photo of a document, a screenshot of a presentation slide, or a scanned PDF that you needed to edit? Manually retyping all that text is tedious and time-consuming. This is where Optical Character Recognition (OCR) technology comes in. Using an <strong>image to text online free</strong> tool, you can instantly extract editable text from any image.
         </p>

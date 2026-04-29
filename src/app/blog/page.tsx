@@ -13,7 +13,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 
 const articles = [
     {
-        title: '10 Best Free Online Tools You Need in 2026',
+        title: 'The 10 Best Free Online Tools You Need in 2026',
         description: 'Boost your productivity with these essential free online tools for everything from writing and design to development and organization.',
         href: '/blog/best-free-online-tools-for-students-2026',
         author: 'ToolifyHub Team',
@@ -63,24 +63,54 @@ const articles = [
         image: 'https://picsum.photos/seed/qrcode/800/400',
     },
     {
+        title: 'How to Build a Professional Resume Online for Free (2026 Guide)',
+        description: 'A step-by-step guide to creating a job-winning resume using a free online builder. Learn how to highlight your skills and experience to land your dream job.',
+        href: '/blog/how-to-build-a-free-resume-online',
+        author: 'ToolifyHub Team',
+        date: 'April 8, 2026',
+        readingTime: '4 min read',
+        category: 'How To',
+        image: 'https://picsum.photos/seed/resume/800/400',
+    },
+    {
+        title: 'How to Check the Weather Online for Any City Instantly (for Free)',
+        description: 'Learn how to use a free online weather checker to get real-time forecasts, temperature, humidity, and wind speed for any location worldwide.',
+        href: '/blog/free-weather-checker-online',
+        author: 'ToolifyHub Team',
+        date: 'April 5, 2026',
+        readingTime: '3 min read',
+        category: 'Utilities',
+        image: 'https://picsum.photos/seed/weather/800/400',
+    },
+    {
+        title: 'The 3 Best Free PDF Compressor Tools in 2026 (Online & Secure)',
+        description: 'We reviewed the top free online PDF compressors to help you reduce file sizes without sacrificing quality. Find the best tool for your needs, focusing on security and ease of use.',
+        href: '/blog/best-free-pdf-compressor-tools',
+        author: 'ToolifyHub Team',
+        date: 'April 1, 2026',
+        readingTime: '3 min read',
+        category: 'PDF Tools',
+        image: 'https://picsum.photos/seed/pdfcompressor/800/400',
+    },
+    {
+        title: 'How to Convert Images to Text Online Free (OCR Guide 2026)',
+        description: 'Learn how to use a free online OCR tool to convert images to text. This guide explains how image-to-text technology works and its best use cases.',
+        href: '/blog/image-to-text-ocr-free-online',
+        author: 'ToolifyHub Team',
+        date: 'May 5, 2026',
+        readingTime: '6 min read',
+        category: 'Image Tools',
+        image: 'https://picsum.photos/seed/ocrguide/800/400',
+    },
+    {
         title: 'Free Resume Builder Online — Create a Job-Winning CV in Minutes',
         description: 'Learn how to use our free resume builder to create a professional CV that stands out to recruiters and helps you land your dream job in 2026.',
         href: '/blog/free-resume-builder-online-2026',
         author: 'ToolifyHub Team',
         date: 'May 1, 2026',
         readingTime: '6 min read',
-        category: 'Productivity',
+        category: 'Careers',
         image: 'https://picsum.photos/seed/resumebuilder/800/400',
-    },
-    {
-        title: 'How to Convert Images to Text Online Free (OCR Guide 2026)',
-        description: 'Our complete guide to using a free online OCR tool to convert images to text. Extract text from photos, scans, and PDFs instantly.',
-        href: '/blog/image-to-text-ocr-free-online',
-        author: 'ToolifyHub Team',
-        date: 'May 5, 2026',
-        readingTime: '6 min read',
-        category: 'AI Tools',
-        image: 'https://picsum.photos/seed/ocrguide/800/400',
     },
     {
         title: 'How to Check Plagiarism Free Online — Complete Guide 2026',
@@ -89,20 +119,20 @@ const articles = [
         author: 'ToolifyHub Team',
         date: 'May 9, 2026',
         readingTime: '7 min read',
-        category: 'Productivity',
+        category: 'Writing',
         image: 'https://picsum.photos/seed/plagiarism/800/400',
     },
-    {
+     {
         title: 'Best Free Word to PDF Converter Online (No Email Required)',
         description: 'Discover the easiest and most secure way to convert your Word documents to PDF for free, right in your browser. No software or sign-up needed.',
         href: '/blog/word-to-pdf-converter-free',
         author: 'ToolifyHub Team',
         date: 'May 12, 2026',
         readingTime: '6 min read',
-        category: 'How To',
+        category: 'PDF Tools',
         image: 'https://picsum.photos/seed/wordtopdf/800/400',
     },
-     {
+    {
         title: 'Free Currency Converter Online — Live Exchange Rates 2026',
         description: 'A complete guide to using a free online currency converter with live rates. Perfect for travelers, businesses, and anyone dealing with foreign exchange.',
         href: '/blog/currency-converter-free-online',
@@ -118,12 +148,14 @@ export default function BlogIndexPage() {
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredArticles = useMemo(() => {
-        if (!searchTerm) return articles.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        return articles.filter(article =>
+        // Sort by date before filtering
+        const sorted = articles.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        if (!searchTerm) return sorted;
+        return sorted.filter(article =>
             article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             article.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
             article.category.toLowerCase().includes(searchTerm.toLowerCase())
-        ).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        );
     }, [searchTerm]);
 
     return (

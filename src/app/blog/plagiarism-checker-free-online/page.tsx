@@ -9,7 +9,7 @@ const post = {
     description: 'Ensure your work is original with our complete guide to using a free online plagiarism checker. Understand uniqueness scores and avoid duplicate content.',
     keywords: ['plagiarism checker free online', 'check for plagiarism', 'originality checker', 'academic integrity', 'free plagiarism tool', 'duplicate content'],
     author: 'ToolifyHub Team',
-    date: '2026-05-09',
+    date: '2026-04-11',
     readingTime: '7 min read',
     url: '/blog/plagiarism-checker-free-online',
     image: 'https://picsum.photos/seed/plagiarism/1200/630'
@@ -51,7 +51,7 @@ export default function BlogPost() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <PostLayout title={post.title} author={post.author} date="May 9, 2026" readingTime={post.readingTime}>
+      <PostLayout title={post.title} author={post.author} date="April 11, 2026" readingTime={post.readingTime}>
         <p>
           In the world of academia, content creation, and professional writing, originality is king. Submitting work that isn't entirely your own, even accidentally, can lead to serious consequences, from a failing grade to a damaged reputation. This is why using a <strong>plagiarism checker free online</strong> has become an essential step in the writing process for students, writers, and professionals alike.
         </p>
@@ -126,7 +126,7 @@ export default function BlogPost() {
             <li>Have I relied too heavily on a single source or idea?</li>
         </ul>
         <p>
-            Use the report as a guide to improve your writing, not just as a pass/fail test. For a completely original document, you might even start with our <Link href="/blog/free-resume-builder-online-2026">free resume builder</Link> which encourages unique content from the start.
+            Use the report as a guide to improve your writing, not just as a pass/fail test. For a completely original document, you might even start with our <Link href="/blog/how-to-build-a-free-resume-online">free resume builder</Link> which encourages unique content from the start.
         </p>
 
         <h2>Conclusion</h2>

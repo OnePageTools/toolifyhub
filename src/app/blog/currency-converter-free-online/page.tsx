@@ -51,7 +51,7 @@ export default function BlogPost() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <PostLayout title={post.title} author={post.author} date="May 15, 2026" readingTime={post.readingTime}>
+      <PostLayout title={post.title} author={post.author} date="April 23, 2026" readingTime={post.readingTime}>
         <p>
           Whether you are planning an international trip, running an online business, or investing in foreign markets, dealing with different currencies is a daily reality. The value of money fluctuates constantly, making a reliable and up-to-date conversion tool essential. A <strong>currency converter free online</strong> tool is your best friend for navigating the complex world of foreign exchange with confidence.
         </p>
