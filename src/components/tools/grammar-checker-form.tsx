@@ -14,7 +14,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Loader2, Wand2, RefreshCw, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -51,6 +51,7 @@ export function GrammarCheckerForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
+  const [correctedText, setCorrectedText] = useState<string | null>(null);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -60,10 +61,13 @@ export function GrammarCheckerForm() {
     },
   });
 
+  const textValue = form.watch('text');
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setError(null);
     setMatches([]);
+    setCorrectedText(null);
     
     try {
       const params = new URLSearchParams();
@@ -100,42 +104,6 @@ export function GrammarCheckerForm() {
     }
   }
 
-  const highlightedOriginalText = useMemo(() => {
-    const originalText = form.getValues('text');
-    if (!matches.length) return originalText;
-
-    let parts: (string | JSX.Element)[] = [];
-    let lastIndex = 0;
-
-    [...matches].sort((a, b) => a.offset - b.offset).forEach((match, i) => {
-        // Add text before the current match
-        if (match.offset > lastIndex) {
-            parts.push(originalText.substring(lastIndex, match.offset));
-        }
-        // Add the highlighted match
-        const errorText = originalText.substring(match.offset, match.offset + match.length);
-        parts.push(
-            <span key={i} className="bg-red-200 dark:bg-red-900/50 rounded px-1">{errorText}</span>
-        );
-        lastIndex = match.offset + match.length;
-    });
-
-    // Add any remaining text after the last match
-    if (lastIndex < originalText.length) {
-        parts.push(originalText.substring(lastIndex));
-    }
-    
-    return parts;
-  }, [matches, form]);
-
-
-  const handleReset = () => {
-    form.reset();
-    setMatches([]);
-    setError(null);
-    setShowResults(false);
-  };
-  
   const getCategoryColor = (categoryName: string) => {
     const lowerCaseName = categoryName.toLowerCase();
     if (lowerCaseName.includes('spelling')) return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300';
@@ -143,6 +111,42 @@ export function GrammarCheckerForm() {
     if (lowerCaseName.includes('punctuation')) return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300';
     if (lowerCaseName.includes('style')) return 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300';
     return 'bg-secondary text-secondary-foreground';
+  };
+
+  const handleReset = () => {
+    form.reset();
+    setMatches([]);
+    setError(null);
+    setShowResults(false);
+    setCorrectedText(null);
+  };
+  
+  const handleApplyAll = () => {
+      let text = form.getValues('text');
+      const sortedMatches = [...matches].sort((a,b) => b.offset - a.offset);
+
+      sortedMatches.forEach(match => {
+          if (match.replacements[0]) {
+              text = text.substring(0, match.offset) + match.replacements[0].value + text.substring(match.offset + match.length);
+          }
+      });
+      setCorrectedText(text);
+      toast({ title: "Fixes Applied", description: "The corrected text is now available." });
+  };
+  
+  const HighlightedContext = ({ match }: { match: Match }) => {
+    const { text, offset, length } = match.context;
+    const before = text.substring(0, offset);
+    const highlighted = text.substring(offset, offset + length);
+    const after = text.substring(offset + length);
+
+    return (
+        <p className="text-sm my-2 p-2 bg-background rounded-md">
+            {before}
+            <span className="text-red-500 line-through bg-red-500/10 px-1 rounded">{highlighted}</span>
+            {after}
+        </p>
+    );
   };
 
   return (
@@ -157,7 +161,7 @@ export function GrammarCheckerForm() {
                 <FormItem>
                   <FormControl>
                     <Textarea
-                      placeholder="Enter the text you want to check here... The free version of this tool does not store your text."
+                      placeholder="Paste your text here to check for grammar, spelling, and punctuation errors. The free version of this tool does not store your text."
                       className="min-h-60"
                       {...field}
                     />
@@ -166,43 +170,36 @@ export function GrammarCheckerForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={isLoading} size="lg">
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Analyzing...
-                </>
-              ) : (
-                <>
-                  <Wand2 className="mr-2 h-4 w-4" />
-                  Check Text
-                </>
-              )}
-            </Button>
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p className="text-sm text-muted-foreground">{textValue.length} characters</p>
+                <Button type="submit" disabled={isLoading} className="w-full sm:w-auto h-12" size="lg">
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="mr-2 h-4 w-4" />
+                      Check Text
+                    </>
+                  )}
+                </Button>
+            </div>
           </form>
         </Form>
       ) : (
         <div className="space-y-6">
-            <div className="flex flex-wrap gap-2 justify-end">
-                <Button onClick={handleReset} variant="outline" size="lg">
+            <div className="flex flex-col md:flex-row justify-end gap-2">
+                <Button onClick={handleReset} variant="outline" size="lg" className="w-full md:w-auto h-12">
                     <RefreshCw className="mr-2 h-4 w-4" /> Check New Text
+                </Button>
+                <Button onClick={handleApplyAll} size="lg" className="w-full md:w-auto h-12" disabled={matches.length === 0}>
+                    <Wand2 className="mr-2 h-4 w-4" /> Apply All Fixes
                 </Button>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Original Text</CardTitle>
-                        <CardDescription>Highlighted issues</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ScrollArea className="h-72 rounded-md border p-4">
-                            <div className="prose prose-sm dark:prose-invert max-w-none">
-                                {highlightedOriginalText}
-                            </div>
-                        </ScrollArea>
-                    </CardContent>
-                </Card>
                 <Card>
                     <CardHeader>
                         <CardTitle>Suggestions ({matches.length})</CardTitle>
@@ -210,26 +207,45 @@ export function GrammarCheckerForm() {
                     </CardHeader>
                     <CardContent>
                        {matches.length > 0 ? (
-                         <ScrollArea className="h-72 pr-4">
+                         <ScrollArea className="h-[60vh] pr-4">
                             <div className="space-y-4">
                             {matches.map((match, index) => (
-                                <div key={index} className="p-3 border rounded-lg bg-secondary/30 text-sm">
+                                <Card key={index} className="p-3 bg-secondary/30">
                                     <p className="font-semibold mb-2">{match.message}</p>
-                                    <div className="flex items-center gap-2 text-sm my-2 p-2 bg-background rounded-md">
-                                        <span className="text-red-500 line-through">{form.getValues('text').substring(match.offset, match.offset + match.length)}</span>
-                                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                                        <span className="text-green-600 font-semibold">{match.replacements[0]?.value || 'N/A'}</span>
+                                    <HighlightedContext match={match} />
+                                    <div className="flex items-center gap-2">
+                                       <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                                       <span className="text-green-600 dark:text-green-400 font-semibold bg-green-500/10 px-1 rounded">{match.replacements[0]?.value || 'N/A'}</span>
                                     </div>
-                                    <Badge className={getCategoryColor(match.rule.category.name)}>{match.rule.category.name}</Badge>
-                                </div>
+                                    <Badge className={`mt-3 ${getCategoryColor(match.rule.category.name)}`}>{match.rule.category.name}</Badge>
+                                </Card>
                             ))}
                             </div>
                         </ScrollArea>
                        ) : (
-                         <div className="h-72 flex flex-col items-center justify-center text-center text-muted-foreground bg-secondary/50 rounded-md">
+                         <div className="h-[60vh] flex flex-col items-center justify-center text-center text-muted-foreground bg-secondary/50 rounded-md">
                             <Wand2 className="h-10 w-10 mb-2 text-green-500"/>
                             <p className="font-semibold">No issues found!</p>
                             <p className="text-xs">The checker didn't find any suggestions for your text.</p>
+                         </div>
+                       )}
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Corrected Text</CardTitle>
+                        <CardDescription>The text with all suggestions applied.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                       {correctedText ? (
+                         <ScrollArea className="h-[60vh] pr-4">
+                            <div className="prose prose-sm dark:prose-invert max-w-none p-4 border rounded-md bg-secondary/30">
+                                {correctedText}
+                            </div>
+                         </ScrollArea>
+                       ) : (
+                         <div className="h-[60vh] flex flex-col items-center justify-center text-center text-muted-foreground bg-secondary/50 rounded-md">
+                            <p className="font-semibold">Click "Apply All Fixes" to see the corrected version here.</p>
                          </div>
                        )}
                     </CardContent>
