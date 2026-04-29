@@ -19,7 +19,6 @@ import {
   Code,
   MonitorSmartphone,
   Tags,
-  Mail,
   ImageIcon,
   Type,
   Scissors,
@@ -29,11 +28,9 @@ import {
   Calendar,
   Ruler,
   DollarSign,
-  Camera,
   Tag,
   Thermometer,
   BookText,
-  Globe,
   Newspaper,
 } from 'lucide-react';
 
@@ -186,28 +183,12 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
-    name: 'Website Screenshot',
-    description: 'Capture website screenshots',
-    href: '/tools/website-screenshot',
-    icon: Camera,
-    category: 'Utilities',
-    implemented: false,
-  },
-  {
     name: 'Meta Tag Generator',
     description: 'Generate SEO meta tags',
     href: '/tools/meta-tag-generator',
     icon: Tag,
     category: 'Dev',
     implemented: true,
-  },
-  {
-    name: 'Temp Email Generator',
-    description: 'Create temporary email addresses',
-    href: '/tools/temp-email-generator',
-    icon: Mail,
-    category: 'Utilities',
-    implemented: false,
   },
   {
     name: 'Weather Checker',
@@ -224,13 +205,5 @@ export const tools: Tool[] = [
     icon: BookText,
     category: 'Text',
     implemented: true,
-  },
-  {
-    name: 'IP Lookup',
-    description: 'Find your IP address details',
-    href: '/tools/ip-lookup',
-    icon: Globe,
-    category: 'Utilities',
-    implemented: false,
   },
 ];
