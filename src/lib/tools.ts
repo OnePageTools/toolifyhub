@@ -33,9 +33,10 @@ import {
   BookText,
   Newspaper,
   Repeat,
+  Lock,
 } from 'lucide-react';
 
-export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities';
+export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security';
 
 export type Tool = {
   name: string;
@@ -213,6 +214,14 @@ export const tools: Tool[] = [
     href: '/tools/word-counter',
     icon: FileText,
     category: 'Text',
+    implemented: true,
+  },
+  {
+    name: 'Password Generator',
+    description: 'Generate strong secure passwords with custom length and characters instantly',
+    href: '/tools/password-generator',
+    icon: Lock,
+    category: 'Security',
     implemented: true,
   },
 ];
