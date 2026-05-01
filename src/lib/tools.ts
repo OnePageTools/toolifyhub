@@ -34,9 +34,10 @@ import {
   Newspaper,
   Repeat,
   Lock,
+  Receipt,
 } from 'lucide-react';
 
-export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security';
+export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business';
 
 export type Tool = {
   name: string;
@@ -134,6 +135,14 @@ export const tools: Tool[] = [
     href: '/tools/ai-essay-writer',
     icon: PenTool,
     category: 'Text',
+    implemented: true,
+  },
+  {
+    name: 'Invoice Generator',
+    description: 'Create professional invoices and download as PDF instantly for free',
+    href: '/tools/invoice-generator',
+    icon: Receipt,
+    category: 'Business',
     implemented: true,
   },
   {
