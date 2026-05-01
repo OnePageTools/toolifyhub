@@ -207,4 +207,12 @@ export const tools: Tool[] = [
     category: 'Text',
     implemented: true,
   },
+  {
+    name: 'Word Counter',
+    description: 'Count words, characters, sentences and reading time instantly',
+    href: '/tools/word-counter',
+    icon: FileText,
+    category: 'Text',
+    implemented: true,
+  },
 ];
