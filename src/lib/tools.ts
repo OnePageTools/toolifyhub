@@ -32,6 +32,7 @@ import {
   Thermometer,
   BookText,
   Newspaper,
+  Repeat,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities';
@@ -195,6 +196,14 @@ export const tools: Tool[] = [
     description: 'Find word definitions',
     href: '/tools/dictionary',
     icon: BookText,
+    category: 'Text',
+    implemented: true,
+  },
+  {
+    name: 'Text Repeater',
+    description: 'Repeat any text multiple times with custom separators instantly',
+    href: '/tools/text-repeater',
+    icon: Repeat,
     category: 'Text',
     implemented: true,
   },
