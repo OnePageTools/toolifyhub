@@ -75,7 +75,7 @@ export default function WordCounterPage() {
               </CardDescription>
               {/* Animated decorative line */}
               <div className="absolute bottom-0 left-0 w-full h-[2px] bg-slate-700/50">
-                <div className="h-full w-1/3 bg-gradient-to-r from-transparent via-blue-500 to-transparent animate-[shimmer_3s_infinite]" style={{ backgroundSize: '200% 100%' }}></div>
+                <div className="h-full w-1/3 bg-gradient-to-r from-transparent via-blue-500 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
               </div>
             </CardHeader>
             <CardContent className="p-6 md:p-10 bg-slate-900">
@@ -84,12 +84,6 @@ export default function WordCounterPage() {
           </Card>
         </div>
       </div>
-      <style jsx global>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(300%); }
-        }
-      `}</style>
     </>
   );
 }
