@@ -52,6 +52,7 @@ import {
   Expand,
   Youtube,
   Video,
+  Rocket,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design' | 'Fun' | 'Social Media';
@@ -224,6 +225,14 @@ export const tools: Tool[] = [
     href: '/tools/pomodoro-timer',
     icon: Timer,
     category: 'Productivity',
+    implemented: true,
+  },
+  {
+    name: 'Age on Planets',
+    description: 'Calculate your age on Mercury Mars Jupiter and all planets free',
+    href: '/tools/age-on-planets',
+    icon: Rocket,
+    category: 'Fun',
     implemented: true,
   },
   {
