@@ -37,9 +37,10 @@ import {
   Receipt,
   Keyboard,
   Sparkles,
+  HeartPulse,
 } from 'lucide-react';
 
-export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web';
+export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health';
 
 export type Tool = {
   name: string;
@@ -169,6 +170,14 @@ export const tools: Tool[] = [
     href: '/tools/favicon-generator',
     icon: Sparkles,
     category: 'Web',
+    implemented: true,
+  },
+  {
+    name: 'BMI Calculator',
+    description: 'Calculate your Body Mass Index and check your health category free',
+    href: '/tools/bmi-calculator',
+    icon: HeartPulse,
+    category: 'Health',
     implemented: true,
   },
   {
