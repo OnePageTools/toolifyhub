@@ -1,33 +1,8 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { Base64EncoderForm } from '@/components/tools/base64-encoder-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { SquareCode } from 'lucide-react';
-
-const tool = {
-  name: 'Base64 Encoder & Decoder',
-  url: '/tools/base64-encoder',
-  title: 'Base64 Encoder Decoder Online Free — Encode & Decode Instantly',
-  description: 'Free online Base64 encoder and decoder. Encode or decode any text or file to Base64 instantly. No signup needed.',
-  keywords: 'base64 encoder, base64 decoder, text to base64, base64 to text, file to base64, image to base64, data url generator',
-};
-
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
 
 export default function Base64EncoderPage() {
   return (

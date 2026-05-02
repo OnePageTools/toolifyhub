@@ -1,33 +1,8 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { ImageCompressorForm } from '@/components/tools/image-compressor-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { ImageIcon } from 'lucide-react';
-
-const tool = {
-  name: 'Image Compressor',
-  url: '/tools/image-compressor',
-  title: 'Image Compressor Online - Free Tool to Compress JPG, PNG, WEBP',
-  description: 'Reduce the file size of your images without losing quality. Our free online image compressor supports JPG, PNG, and WEBP. Batch processing and resizing available.',
-  keywords: 'image compressor, compress image, reduce image size, image optimizer, jpg compressor, png compressor, webp compressor',
-};
-
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
 
 export default function ImageCompressorPage() {
   return (

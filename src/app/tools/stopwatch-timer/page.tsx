@@ -1,33 +1,8 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { StopwatchTimerForm } from '@/components/tools/stopwatch-timer-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { Timer } from 'lucide-react';
-
-const tool = {
-  name: 'Stopwatch & Timer',
-  url: '/tools/stopwatch-timer',
-  title: 'Stopwatch & Timer Online Free — Count Up and Countdown Timer',
-  description: 'Free online stopwatch and countdown timer. Count up or countdown with lap times. No signup needed.',
-  keywords: 'stopwatch, timer, countdown, lap timer, online stopwatch, focus timer, productivity tool',
-};
-
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
 
 export default function StopwatchTimerPage() {
   return (

@@ -1,33 +1,8 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { GrammarCheckerForm } from '@/components/tools/grammar-checker-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { SpellCheck } from 'lucide-react';
-
-const tool = {
-  name: 'Grammar and Spell Checker',
-  url: '/tools/grammar-checker',
-  title: 'Free Grammar and Spell Checker - AI Writing Assistant',
-  description: 'Improve your writing with our free AI-powered grammar and spell checker. Corrects spelling, punctuation, and style errors instantly for flawless text.',
-  keywords: 'grammar checker, spell checker, punctuation checker, proofreading tool, writing assistant, check grammar online',
-};
-
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
 
 export default function GrammarCheckerPage() {
   return (

@@ -1,33 +1,8 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { FileDown } from 'lucide-react';
 import { WordToPdfForm } from '@/components/tools/word-to-pdf-form';
-
-const tool = {
-  name: 'Word to PDF Converter',
-  url: '/tools/word-to-pdf',
-  title: 'Free Word to PDF Converter - Convert DOCX to PDF Online',
-  description: 'Easily convert your Word documents (.docx) to PDF format online for free. Your files are processed securely in your browser and are never uploaded.',
-  keywords: 'word to pdf, docx to pdf, convert word to pdf, free pdf converter, online converter',
-};
-
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
 
 export default function WordToPdfPage() {
   return (

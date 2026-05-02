@@ -1,33 +1,8 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { PdfCompressorForm } from '@/components/tools/pdf-compressor-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { FileArchive } from 'lucide-react';
-
-const tool = {
-  name: 'PDF Compressor',
-  url: '/tools/pdf-compressor',
-  title: 'Free PDF Compressor Online - Reduce PDF File Size by 90%',
-  description: 'Reduce PDF file size online for free without losing quality. Our PDF compressor makes files smaller, faster, and easier to share or store.',
-  keywords: 'pdf compressor, compress pdf, reduce pdf size, free pdf compressor, optimize pdf, shrink pdf',
-};
-
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
 
 export default function PdfCompressorPage() {
   return (

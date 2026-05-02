@@ -1,33 +1,8 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { HashGeneratorForm } from '@/components/tools/hash-generator-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { ShieldCheck } from 'lucide-react';
-
-const tool = {
-  name: 'Hash Generator',
-  url: '/tools/hash-generator',
-  title: 'Hash Generator Online Free — Generate MD5 SHA1 SHA256 Hash Instantly',
-  description: 'Free online hash generator. Generate MD5, SHA1, SHA256, SHA512 hash from any text instantly. No signup needed.',
-  keywords: 'hash generator, md5 generator, sha256 generator, sha512 online, sha1 hash, file integrity checker, checksum generator',
-};
-
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
 
 export default function HashGeneratorPage() {
   return (

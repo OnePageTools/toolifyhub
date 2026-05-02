@@ -1,4 +1,5 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { PassportPhotoMakerForm } from '@/components/tools/passport-photo-maker-form';
 import {
   Card,
@@ -9,80 +10,30 @@ import {
 } from '@/components/ui/card';
 import { Camera } from 'lucide-react';
 
-const tool = {
-  name: 'Passport Photo Maker',
-  url: '/tools/passport-photo-maker',
-  title: 'Passport Photo Maker Online Free — Create Passport Size Photos Instantly',
-  description: 'Free online passport photo maker. Create passport size photos for any country standard. Download instantly. No signup needed.',
-  keywords: 'passport photo maker, create passport photo online, free passport size photo, visa photo maker, id photo generator',
-};
-
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
-
-const WebAppSchema = () => (
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{ __html: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": tool.name,
-      "description": tool.description,
-      "applicationCategory": "MultimediaApplication",
-      "operatingSystem": "All",
-      "url": `https://toolifyhub.com${tool.url}`,
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      }
-    })}}
-  />
-);
-
 export default function PassportPhotoMakerPage() {
   return (
-    <>
-      <WebAppSchema />
-      <div className="container mx-auto py-10 px-4">
-        <div className="max-w-6xl mx-auto">
-          <Card className="shadow-2xl border-slate-700 bg-slate-900 rounded-[20px] overflow-hidden">
-            <CardHeader className="text-center bg-slate-800/50 p-8 pb-10 relative">
-               <div className="mx-auto w-fit p-5 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg shadow-blue-500/20">
-                  <Camera className="w-10 h-10 text-white" />
-               </div>
-              <CardTitle className="font-headline text-3xl sm:text-4xl font-bold text-slate-100 mb-2">
-                Passport Photo Maker
-              </CardTitle>
-              <CardDescription className="text-slate-400 text-lg max-w-xl mx-auto">
-                Transform any photo into a professional passport-size image compatible with global standards.
-              </CardDescription>
-              {/* Animated decorative line */}
-              <div className="absolute bottom-0 left-0 w-full h-[2px] bg-slate-700/50">
-                <div className="h-full w-1/3 bg-gradient-to-r from-transparent via-blue-500 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-6 md:p-10 bg-slate-900">
-              <PassportPhotoMakerForm />
-            </CardContent>
-          </Card>
-        </div>
+    <div className="container mx-auto py-10 px-4">
+      <div className="max-w-6xl mx-auto">
+        <Card className="shadow-2xl border-slate-700 bg-slate-900 rounded-[20px] overflow-hidden">
+          <CardHeader className="text-center bg-slate-800/50 p-8 pb-10 relative">
+             <div className="mx-auto w-fit p-5 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg shadow-blue-500/20">
+                <Camera className="w-10 h-10 text-white" />
+             </div>
+            <CardTitle className="font-headline text-3xl sm:text-4xl font-bold text-slate-100 mb-2">
+              Passport Photo Maker
+            </CardTitle>
+            <CardDescription className="text-slate-400 text-lg max-w-xl mx-auto">
+              Transform any photo into a professional passport-size image compatible with global standards.
+            </CardDescription>
+            <div className="absolute bottom-0 left-0 w-full h-[2px] bg-slate-700/50">
+              <div className="h-full w-1/3 bg-gradient-to-r from-transparent via-blue-500 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6 md:p-10 bg-slate-900">
+            <PassportPhotoMakerForm />
+          </CardContent>
+        </Card>
       </div>
-    </>
+    </div>
   );
 }

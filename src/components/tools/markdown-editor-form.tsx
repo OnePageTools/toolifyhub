@@ -25,14 +25,11 @@ import {
   Trash2, 
   ClipboardCheck,
   Eye,
-  Type,
-  FileCode,
-  FileText
+  FileCode
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { marked } from 'marked';
-import DOMPurify from 'dompurify';
 import { cn } from '@/lib/utils';
 
 const SAMPLE_MARKDOWN = `# Welcome to ToolifyHub Markdown Editor!
@@ -65,9 +62,16 @@ export function MarkdownEditorForm() {
   const [markdown, setMarkdown] = useState(SAMPLE_MARKDOWN);
   const [activeTab, setActiveTab] = useState('write');
   const [isCopied, setIsCopied] = useState<'md' | 'html' | null>(null);
+  const [DOMPurify, setDOMPurify] = useState<any>(null);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Only initialize on the client
+    const createDOMPurify = require('dompurify');
+    setDOMPurify(createDOMPurify(window));
+  }, []);
 
   const wordCount = useMemo(() => {
     return markdown.trim() ? markdown.trim().split(/\s+/).length : 0;
@@ -75,8 +79,11 @@ export function MarkdownEditorForm() {
 
   const htmlOutput = useMemo(() => {
     const rawHtml = marked.parse(markdown) as string;
-    return DOMPurify.sanitize(rawHtml);
-  }, [markdown]);
+    if (DOMPurify) {
+      return DOMPurify.sanitize(rawHtml);
+    }
+    return rawHtml; // Fallback until DOMPurify is ready
+  }, [markdown, DOMPurify]);
 
   const insertText = useCallback((before: string, after: string = '') => {
     const textarea = textareaRef.current;
@@ -89,7 +96,6 @@ export function MarkdownEditorForm() {
     
     setMarkdown(newText);
     
-    // Focus back and set selection
     setTimeout(() => {
       textarea.focus();
       textarea.setSelectionRange(start + before.length, end + before.length);
@@ -142,7 +148,6 @@ export function MarkdownEditorForm() {
 
   return (
     <div className="space-y-4">
-      {/* Toolbar */}
       <div className="flex flex-wrap gap-1 p-2 bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden sticky top-0 z-20 backdrop-blur-md">
         {toolbarButtons.map((btn, idx) => (
           <Button
@@ -162,9 +167,7 @@ export function MarkdownEditorForm() {
         </Button>
       </div>
 
-      {/* Editor & Preview Area */}
       <div className="hidden lg:grid grid-cols-2 gap-4 h-[70vh]">
-        {/* Write */}
         <Card className="bg-[#1E293B] border-slate-700 flex flex-col overflow-hidden">
           <div className="p-3 border-b border-slate-800 flex justify-between items-center bg-slate-900/30">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
@@ -183,7 +186,6 @@ export function MarkdownEditorForm() {
           </CardContent>
         </Card>
 
-        {/* Preview */}
         <Card className="bg-white border-slate-700 flex flex-col overflow-hidden">
           <div className="p-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
@@ -201,7 +203,6 @@ export function MarkdownEditorForm() {
         </Card>
       </div>
 
-      {/* Mobile Tabs */}
       <div className="lg:hidden">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 bg-slate-800 border-slate-700 h-12">
@@ -237,7 +238,6 @@ export function MarkdownEditorForm() {
         </Tabs>
       </div>
 
-      {/* Footer Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 pt-4 border-t border-slate-800">
         <Button onClick={() => handleCopy('md')} variant="outline" className="bg-slate-800/40 border-slate-700 text-slate-300 hover:text-white h-11 font-bold">
           {isCopied === 'md' ? <ClipboardCheck className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
@@ -251,7 +251,7 @@ export function MarkdownEditorForm() {
           <Download className="mr-2 h-4 w-4" /> Download .md
         </Button>
         <Button onClick={() => handleDownload('html')} className="bg-purple-600 hover:bg-purple-500 h-11 font-bold">
-          <FileText className="mr-2 h-4 w-4" /> Download .html
+          <Download className="mr-2 h-4 w-4" /> Download .html
         </Button>
       </div>
 
@@ -260,8 +260,6 @@ export function MarkdownEditorForm() {
         .prose h2 { font-size: 1.5em; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.3em; margin-top: 1.5em; margin-bottom: 0.5em; }
         .prose h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.5em; margin-bottom: 0.5em; }
         .prose p { margin-top: 0.5em; margin-bottom: 1em; line-height: 1.6; }
-        .prose ul, .prose ol { padding-left: 1.5em; margin-bottom: 1em; list-style-position: outside; }
-        .prose li { margin-bottom: 0.25em; }
         .prose blockquote { border-left: 4px solid #3b82f6; padding-left: 1em; color: #64748b; font-style: italic; margin: 1.5em 0; }
         .prose code { background: #f1f5f9; padding: 0.2em 0.4em; border-radius: 4px; font-family: monospace; font-size: 0.9em; color: #e11d48; }
         .prose pre { background: #0f172a; color: #f8fafc; padding: 1.2em; border-radius: 8px; overflow-x: auto; margin: 1.5em 0; }

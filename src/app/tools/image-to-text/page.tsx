@@ -1,33 +1,8 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { ImageToTextForm } from '@/components/tools/image-to-text-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { Type } from 'lucide-react';
-
-const tool = {
-  name: 'Image to Text Converter (OCR)',
-  url: '/tools/image-to-text',
-  title: 'Image to Text Converter (OCR) - Free Online Tool',
-  description: 'Extract text from any image with our powerful and free client-side OCR tool. Convert pictures to editable text instantly and securely in your browser.',
-  keywords: 'image to text, ocr online, picture to text, extract text from image, image text extractor, tesseract.js, free ocr',
-};
-
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
 
 export default function ImageToTextPage() {
   return (

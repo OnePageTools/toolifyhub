@@ -1,33 +1,8 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { EssayWriterForm } from '@/components/tools/essay-writer-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { PenTool } from 'lucide-react';
-
-const tool = {
-  name: 'Essay Draft Generator',
-  url: '/tools/ai-essay-writer',
-  title: 'Free Essay Writer & Generator - Professional Essay Writing Tool',
-  description: 'Generate a structured essay draft on any topic with our free template-based tool. Get a formatted essay with introduction, body, and conclusion in seconds.',
-  keywords: 'essay writer, essay generator, free essay writer, essay template, writing tool, essay structure',
-};
-
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
 
 export default function AIEssayWriterPage() {
   return (

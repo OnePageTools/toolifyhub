@@ -1,33 +1,8 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { TextSummarizerForm } from '@/components/tools/text-summarizer-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { BookOpen } from 'lucide-react';
-
-const tool = {
-  name: 'Text Summarizer',
-  url: '/tools/text-summarizer',
-  title: 'Free Text Summarizer - AI-Powered Summarizing Tool Online',
-  description: 'Quickly summarize long articles, documents, or any text into concise, easy-to-read points with our free client-side summarizing tool. Get key insights in seconds.',
-  keywords: 'text summarizer, summarizer, summarizing tool, summarize text, article summarizer, paragraph summarizer',
-};
-
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
 
 export default function TextSummarizerPage() {
   return (
