@@ -1,37 +1,17 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { ImageResizerForm } from '@/components/tools/image-resizer-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { Expand } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
 
-const tool = {
-  name: 'Image Resizer',
-  url: '/tools/image-resizer',
-  title: 'Image Resizer Online Free — Resize Images to Any Size Instantly',
-  description: 'Free online image resizer. Resize any image to custom dimensions or preset sizes instantly. No signup needed.',
-  keywords: 'image resizer, resize image online, change image dimensions, photo resizer, crop image, social media image sizes, free web tools',
-};
-
-export const metadata: Metadata = {
-  title: tool.title,
-  description: tool.description,
-  keywords: tool.keywords.split(','),
-  alternates: {
-    canonical: tool.url,
-  },
-  openGraph: {
-    title: tool.title,
-    description: tool.description,
-    url: tool.url,
-  },
-  twitter: {
-    title: tool.title,
-    description: tool.description,
-  },
-};
-
 export default function ImageResizerPage() {
+  const tool = {
+    name: 'Image Resizer',
+    url: '/tools/image-resizer',
+  };
+
   return (
     <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
       <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
