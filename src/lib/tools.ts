@@ -44,6 +44,7 @@ import {
   Monitor,
   CaseSensitive,
   Hash,
+  SquarePen,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design';
@@ -168,6 +169,14 @@ export const tools: Tool[] = [
     href: '/tools/ai-essay-writer',
     icon: PenTool,
     category: 'Text',
+    implemented: true,
+  },
+  {
+    name: 'Markdown Editor',
+    description: 'Write markdown with live preview and download as MD or HTML free',
+    href: '/tools/markdown-editor',
+    icon: SquarePen,
+    category: 'Dev',
     implemented: true,
   },
   {
