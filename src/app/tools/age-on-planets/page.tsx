@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { AgeOnPlanetsForm } from '@/components/tools/age-on-planets-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { Rocket } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/tool-header';
+import { RelatedTools } from '@/components/tools/related-tools';
 
 const tool = {
   name: 'Age on Planets',
@@ -31,26 +33,22 @@ export const metadata: Metadata = {
 
 export default function AgeOnPlanetsPage() {
   return (
-    <div className="container mx-auto py-12 px-4 page-transition">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <header className="flex flex-col items-center text-center space-y-4 mb-8">
-          <div className="w-[60px] h-[60px] rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-xl text-white">
-            <Rocket className="w-8 h-8" />
-          </div>
-          <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-black text-foreground">Age on Other Planets</h1>
-            <div className="w-[60px] h-[3px] bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto" />
-          </div>
-          <p className="text-muted-foreground text-lg max-w-xl">
-            Calculate your precise age across the entire solar system and discover fascinating planetary facts.
-          </p>
-        </header>
+    <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
+        <ToolHeader 
+          title="Age on Other Planets"
+          description="Calculate your precise age across the entire solar system and discover fascinating planetary facts."
+          icon={Rocket}
+          category="Fun"
+        />
 
-        <Card className="border-border/50 bg-[#1E293B]">
-          <CardContent className="p-8 md:p-12">
+        <Card className="border-white/[0.08] bg-[#1E293B] rounded-none md:rounded-[24px] border-x-0 md:border-x">
+          <CardContent className="p-5 md:p-12">
             <AgeOnPlanetsForm />
           </CardContent>
         </Card>
+
+        <RelatedTools currentToolHref={tool.url} />
       </div>
     </div>
   );

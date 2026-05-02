@@ -1,13 +1,9 @@
 import type { Metadata } from 'next';
 import { AgeCalculatorForm } from '@/components/tools/age-calculator-form';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { CalendarClock } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/tool-header';
+import { RelatedTools } from '@/components/tools/related-tools';
 
 const tool = {
   name: 'Age Calculator',
@@ -37,26 +33,22 @@ export const metadata: Metadata = {
 
 export default function AgeCalculatorPage() {
   return (
-    <div className="container mx-auto py-12 px-4 page-transition">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <header className="flex flex-col items-center text-center space-y-4 mb-8">
-          <div className="w-[60px] h-[60px] rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-xl text-white">
-            <CalendarClock className="w-8 h-8" />
-          </div>
-          <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-black text-foreground">Age Calculator</h1>
-            <div className="w-[60px] h-[3px] bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto" />
-          </div>
-          <p className="text-muted-foreground text-lg max-w-xl">
-            Instantly calculate your age and discover fun facts about your journey through time.
-          </p>
-        </header>
+    <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
+        <ToolHeader 
+          title="Age Calculator"
+          description="Instantly calculate your age and discover fun facts about your journey through time."
+          icon={CalendarClock}
+          category="Utilities"
+        />
 
-        <Card className="border-border/50">
-          <CardContent className="p-8 md:p-12">
+        <Card className="border-white/[0.08] bg-white/[0.02] md:bg-white/[0.03] rounded-none md:rounded-[24px] border-x-0 md:border-x">
+          <CardContent className="p-5 md:p-12">
             <AgeCalculatorForm />
           </CardContent>
         </Card>
+
+        <RelatedTools currentToolHref={tool.url} />
       </div>
     </div>
   );
