@@ -76,8 +76,8 @@ export function InvoiceGeneratorForm() {
     clientName: '',
     clientEmail: '',
     clientAddress: '',
-    invoiceNumber: `INV-${Math.floor(1000 + Math.random() * 9000)}`,
-    invoiceDate: new Date().toISOString().split('T')[0],
+    invoiceNumber: '', // Initialized empty to prevent hydration mismatch
+    invoiceDate: '',   // Initialized empty to prevent hydration mismatch
     dueDate: '',
     currency: '$',
     items: [{ id: '1', description: '', quantity: 1, rate: 0 }],
@@ -89,6 +89,15 @@ export function InvoiceGeneratorForm() {
   const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Set dynamic/random values only on the client after mount
+    setData(prev => ({
+      ...prev,
+      invoiceNumber: `INV-${Math.floor(1000 + Math.random() * 9000)}`,
+      invoiceDate: new Date().toISOString().split('T')[0],
+    }));
+  }, []);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
