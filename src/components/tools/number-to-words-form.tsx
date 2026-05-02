@@ -91,7 +91,7 @@ const convertToUrdu = (num: string, isRegional = false): string => {
     11: 'گیارہ', 12: 'بارہ', 13: 'تیرہ', 14: 'چودہ', 15: 'پندرہ', 16: 'سولہ', 17: 'سترہ', 18: 'اٹھارہ', 19: 'انیس', 20: 'بیس',
     21: 'اکیس', 22: 'بائیس', 23: 'تیئیس', 24: 'چوبیس', 25: 'پچیس', 26: 'چھبیس', 27: 'ستائیس', 28: 'اٹھائیس', 29: 'انتیس', 30: 'تیس',
     31: 'اکتیس', 32: 'بتیس', 33: 'تینتیس', 34: 'چونتیس', 35: 'پینتیس', 36: 'چھتیس', 37: 'سینتیس', 38: 'اڑتیس', 39: 'انتالیس', 40: 'چالیس',
-    41: 'اکتالیس', 42: 'بیالیس', 43: 'تینتالیس', 44: 'چوالیس', 45: 'پینتالیس', 46: 'چھیالیس', 47: 'سینتالیس', 48: 'اڑتالیس', 49: 'انچاس', 50: 'پچاس',
+    41: 'اکتالیس', 42: 'بیالیس', 43: 'تینتالیس', 44: 'چوالیس', 45: 'پینتالیس', 46: 'چھیالیس', 47: 'سینتالیس', 48: 'اڑتیس', 49: 'انچاس', 50: 'پچاس',
     51: 'اکیاون', 52: 'باون', 53: 'تریپن', 54: 'چون', 55: 'پچپن', 56: 'چھپن', 57: 'ستاون', 58: 'اٹھاون', 59: 'انسٹھ', 60: 'ساٹھ',
     61: 'اکسٹھ', 62: 'باسٹھ', 63: 'تریسٹھ', 64: 'چونسٹھ', 65: 'پینسٹھ', 66: 'چھیسٹھ', 67: 'ستسٹھ', 68: 'اٹھسٹھ', 69: 'انہتر', 70: 'ستر',
     71: 'اکہتر', 72: 'بہتر', 73: 'تہتر', 74: 'چوہتر', 75: 'پچھتر', 76: 'چھہتر', 77: 'ستتر', 78: 'اٹھتر', 79: 'اناسی', 80: 'اسی',
@@ -148,6 +148,17 @@ const currencies = [
   { id: 'USD', label: 'USD (US Dollar)', unit: 'Dollars', urduUnit: 'ڈالر', isRegional: false },
   { id: 'SAR', label: 'SAR (Saudi Riyal)', unit: 'Riyals', urduUnit: 'ریال', isRegional: false },
   { id: 'AED', label: 'AED (UAE Dirham)', unit: 'Dirhams', urduUnit: 'درہم', isRegional: false },
+  { id: 'GBP', label: 'GBP (British Pound)', unit: 'Pounds', urduUnit: 'پاؤنڈ', isRegional: false },
+  { id: 'EUR', label: 'EUR (Euro)', unit: 'Euros', urduUnit: 'یورو', isRegional: false },
+  { id: 'CAD', label: 'CAD (Canadian Dollar)', unit: 'Canadian Dollars', urduUnit: 'کینیڈین ڈالر', isRegional: false },
+  { id: 'AUD', label: 'AUD (Australian Dollar)', unit: 'Australian Dollars', urduUnit: 'آسٹریلین ڈالر', isRegional: false },
+  { id: 'INR', label: 'INR (Indian Rupee)', unit: 'Indian Rupees', urduUnit: 'انڈین روپے', isRegional: true },
+  { id: 'BDT', label: 'BDT (Bangladeshi Taka)', unit: 'Taka', urduUnit: 'ٹکا', isRegional: true },
+  { id: 'OMR', label: 'OMR (Omani Rial)', unit: 'Omani Rials', urduUnit: 'عمانی ریال', isRegional: false },
+  { id: 'KWD', label: 'KWD (Kuwaiti Dinar)', unit: 'Kuwaiti Dinars', urduUnit: 'کویتی دینار', isRegional: false },
+  { id: 'QAR', label: 'QAR (Qatari Riyal)', unit: 'Qatari Riyals', urduUnit: 'قطری ریال', isRegional: false },
+  { id: 'MYR', label: 'MYR (Malaysian Ringgit)', unit: 'Malaysian Ringgits', urduUnit: 'ملائیشین رنگٹ', isRegional: false },
+  { id: 'TRY', label: 'TRY (Turkish Lira)', unit: 'Turkish Lira', urduUnit: 'ترکش لیرا', isRegional: false },
 ];
 
 export function NumberToWordsForm() {
@@ -374,11 +385,6 @@ export function NumberToWordsForm() {
                      </div>
                   </div>
                </div>
-            </div>
-            
-            <div className="flex items-center gap-2 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl text-blue-400 text-xs">
-               <Info className="w-4 h-4 shrink-0" />
-               <p>This is a visual reference only to help you fill out real cheques accurately. Not for actual printing as a valid instrument.</p>
             </div>
           </motion.div>
         )}
