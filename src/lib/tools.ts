@@ -38,6 +38,7 @@ import {
   Keyboard,
   Sparkles,
   HeartPulse,
+  Camera,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health';
@@ -89,6 +90,14 @@ export const tools: Tool[] = [
     description: 'Remove background from images',
     href: '/tools/background-remover',
     icon: Scissors,
+    category: 'Image',
+    implemented: true,
+  },
+  {
+    name: 'Passport Photo Maker',
+    description: 'Create passport size photos for any country standard instantly free',
+    href: '/tools/passport-photo-maker',
+    icon: Camera,
     category: 'Image',
     implemented: true,
   },
