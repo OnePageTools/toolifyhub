@@ -48,9 +48,10 @@ import {
   SquareCode,
   ShieldCheck,
   Link2,
+  User,
 } from 'lucide-react';
 
-export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design';
+export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design' | 'Fun';
 
 export type Tool = {
   name: string;
@@ -204,6 +205,14 @@ export const tools: Tool[] = [
     href: '/tools/pomodoro-timer',
     icon: Timer,
     category: 'Productivity',
+    implemented: true,
+  },
+  {
+    name: 'Random Name Generator',
+    description: 'Generate random names by gender and nationality instantly for free',
+    href: '/tools/random-name-generator',
+    icon: User,
+    category: 'Fun',
     implemented: true,
   },
   {
