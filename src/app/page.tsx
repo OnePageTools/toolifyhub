@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -29,7 +30,7 @@ import { tools as allTools } from '@/lib/tools';
 import type { Tool, ToolCategory } from "@/lib/tools";
 import { cn } from "@/lib/utils";
 
-const MotionLink = motion(Link);
+const MotionLink = motion.create(Link);
 
 const categories: ToolCategory[] = ["PDF", "Image", "Text", "Dev", "Utilities"];
 
@@ -46,7 +47,7 @@ export default function Home() {
   const filteredTools = allTools
     .filter((tool) => tool.implemented)
     .filter((tool) =>
-      selectedCategory === "All" ? true : tool.category === selected
+      selectedCategory === "All" ? true : tool.category === selectedCategory
     )
     .filter(
       (tool) =>

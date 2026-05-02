@@ -40,6 +40,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    allowedDevOrigins: ["*.cloudworkstations.dev"],
+  },
   async headers() {
     return [
       {
