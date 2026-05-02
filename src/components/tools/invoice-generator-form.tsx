@@ -185,7 +185,7 @@ export function InvoiceGeneratorForm() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Business Name</Label>
-                <Input placeholder="Your Business" value={data.businessName} onChange={e => setData({...data, businessName: e.target.value})} className="bg-slate-900 border-slate-700" />
+                <Input placeholder="Your Business Name" value={data.businessName} onChange={e => setData({...data, businessName: e.target.value})} className="bg-slate-900 border-slate-700" />
               </div>
               <div className="space-y-2">
                 <Label>Logo</Label>
@@ -289,7 +289,7 @@ export function InvoiceGeneratorForm() {
                 )}
                 <div className="space-y-2">
                   <Label>Description</Label>
-                  <Input placeholder="Service or product description" value={item.description} onChange={e => updateItem(item.id, 'description', e.target.value)} className="bg-slate-950 border-slate-800" />
+                  <Input placeholder="Service or product description" value={item.description} onChange={e => updateItem(item.id, 'description', e.target.value)} className="bg-slate-950 border-slate-800 w-full" />
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1">
@@ -394,7 +394,7 @@ export function InvoiceGeneratorForm() {
                         <p className="text-slate-500 font-medium mt-1">#{data.invoiceNumber}</p>
                    </div>
                    <div className="text-right">
-                        <h2 className="text-xl font-bold text-slate-800">{data.businessName || 'Your Business'}</h2>
+                        <h2 className="text-xl font-bold text-slate-800">{data.businessName || 'Your Business Name'}</h2>
                         <p className="text-sm text-slate-500 whitespace-pre-wrap">{data.businessAddress}</p>
                         <p className="text-sm text-slate-500 mt-1">{data.businessEmail}</p>
                         <p className="text-sm text-slate-500">{data.businessPhone}</p>
