@@ -50,9 +50,11 @@ import {
   Link2,
   User,
   Expand,
+  Youtube,
+  Video,
 } from 'lucide-react';
 
-export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design' | 'Fun';
+export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design' | 'Fun' | 'Social Media';
 
 export type Tool = {
   name: string;
@@ -118,6 +120,14 @@ export const tools: Tool[] = [
     href: '/tools/passport-photo-maker',
     icon: Camera,
     category: 'Image',
+    implemented: true,
+  },
+  {
+    name: 'YouTube Thumbnail Downloader',
+    description: 'Download any YouTube video thumbnail in HD quality instantly for free',
+    href: '/tools/youtube-thumbnail-downloader',
+    icon: Youtube,
+    category: 'Social Media',
     implemented: true,
   },
   {
