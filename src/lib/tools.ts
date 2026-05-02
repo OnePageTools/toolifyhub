@@ -49,6 +49,7 @@ import {
   ShieldCheck,
   Link2,
   User,
+  Expand,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design' | 'Fun';
@@ -84,6 +85,14 @@ export const tools: Tool[] = [
     description: 'Compress images quickly',
     href: '/tools/image-compressor',
     icon: ImageIcon,
+    category: 'Image',
+    implemented: true,
+  },
+  {
+    name: 'Image Resizer',
+    description: 'Resize images to any custom size or social media presets free',
+    href: '/tools/image-resizer',
+    icon: Expand,
     category: 'Image',
     implemented: true,
   },
