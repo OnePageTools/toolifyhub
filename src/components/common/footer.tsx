@@ -22,12 +22,17 @@ export default function Footer() {
             </p>
             <div className="flex gap-4">
                 {[
-                    { icon: Twitter, href: "#" },
-                    { icon: Github, href: "#" },
-                    { icon: Globe, href: "#" },
-                    { icon: Mail, href: "mailto:goherkhan12131415@gmail.com" },
+                    { icon: Twitter, href: "#", label: "ToolifyHub on Twitter" },
+                    { icon: Github, href: "#", label: "ToolifyHub on GitHub" },
+                    { icon: Globe, href: "#", label: "ToolifyHub Official Website" },
+                    { icon: Mail, href: "mailto:goherkhan12131415@gmail.com", label: "Contact Support Email" },
                 ].map((social, i) => (
-                    <a key={i} href={social.href} className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/[0.05] flex items-center justify-center hover:bg-blue-500/10 hover:border-blue-500/50 hover:text-blue-400 transition-all">
+                    <a 
+                      key={i} 
+                      href={social.href} 
+                      aria-label={social.label}
+                      className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/[0.05] flex items-center justify-center hover:bg-blue-500/10 hover:border-blue-500/50 hover:text-blue-400 transition-all"
+                    >
                         <social.icon className="w-5 h-5" />
                     </a>
                 ))}

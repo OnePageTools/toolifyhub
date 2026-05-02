@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 
 type ThumbnailSize = {
   id: string;
@@ -51,14 +52,10 @@ export function YoutubeThumbnailDownloaderForm() {
   const { toast } = useToast();
 
   const extractVideoId = (input: string) => {
-    // Regex for various YouTube URL patterns
     const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
     const match = input.match(regex);
     if (match && match[1]) return match[1];
-    
-    // Fallback if input is just the 11 char ID
     if (input.trim().length === 11) return input.trim();
-    
     return null;
   };
 
@@ -88,7 +85,6 @@ export function YoutubeThumbnailDownloaderForm() {
 
   const downloadImage = async (imgUrl: string, filename: string) => {
     try {
-      // Fetch the image as a blob to bypass CORS/browser redirect issues
       const response = await fetch(imgUrl);
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
@@ -100,9 +96,7 @@ export function YoutubeThumbnailDownloaderForm() {
       document.body.removeChild(a);
       URL.revokeObjectURL(blobUrl);
     } catch (err) {
-      // Fallback to opening URL if fetch fails (CORS)
       window.open(imgUrl, '_blank');
-      toast({ title: 'Downloading', description: 'If download doesn\'t start, right-click the image and save.' });
     }
   };
 
@@ -142,12 +136,11 @@ export function YoutubeThumbnailDownloaderForm() {
 
   return (
     <div className="space-y-10">
-      {/* 1. INPUT SECTION */}
       <div className="space-y-4">
         <Label className="text-slate-300 font-bold uppercase tracking-wider text-xs ml-1">YouTube URL or ID</Label>
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1 group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-pink-600 rounded-2xl blur opacity-25 group-focus-within:opacity-50 transition duration-500"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-pink-600 rounded-2xl blur opacity-10 group-focus-within:opacity-30 transition duration-500"></div>
             <div className="relative flex items-center bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden h-14">
                <div className="pl-4 text-slate-500">
                   <Video className="w-6 h-6" />
@@ -163,6 +156,7 @@ export function YoutubeThumbnailDownloaderForm() {
                 variant="ghost" 
                 size="icon" 
                 onClick={handlePaste}
+                aria-label="Paste from clipboard"
                 className="mr-2 h-10 w-10 text-slate-500 hover:text-white"
                >
                  <ClipboardPaste className="w-5 h-5" />
@@ -172,7 +166,7 @@ export function YoutubeThumbnailDownloaderForm() {
           <Button 
             onClick={handleGetThumbnails}
             disabled={!url.trim()}
-            className="h-14 px-8 bg-red-600 hover:bg-red-500 font-bold text-lg rounded-2xl shadow-xl shadow-red-600/20"
+            className="h-14 px-8 bg-red-600 hover:bg-red-500 font-bold text-lg rounded-2xl shadow-xl"
           >
             Get Thumbnails
           </Button>
@@ -182,22 +176,22 @@ export function YoutubeThumbnailDownloaderForm() {
       <AnimatePresence mode="wait">
         {videoId && (
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             className="space-y-10"
           >
-            {/* 2. GRID SECTION */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {SIZES.map((size) => (
-                <Card key={size.id} className="bg-[#1E293B] border-slate-700 overflow-hidden group hover:border-red-500/50 transition-all duration-300">
+                <Card key={size.id} className="bg-[#1E293B] border-slate-700 overflow-hidden group hover:border-red-500/40 transition-all duration-300">
                   <div className="relative aspect-video bg-slate-950 flex items-center justify-center">
-                    <img 
+                    <Image 
                       src={`https://img.youtube.com/vi/${videoId}/${size.suffix}`} 
-                      alt={size.label}
+                      alt={`YouTube thumbnail ${size.label}`}
+                      width={size.width}
+                      height={size.height}
+                      loading="lazy"
                       className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://placehold.co/1280x720/1e293b/white?text=HD+Not+Available';
-                      }}
+                      unoptimized // YouTube images don't need additional optimization
                     />
                     <div className="absolute top-3 left-3">
                       <Badge className="bg-black/60 backdrop-blur-md border-white/10 text-white font-bold uppercase tracking-widest text-[10px]">
@@ -214,6 +208,7 @@ export function YoutubeThumbnailDownloaderForm() {
                          <Button 
                           variant="ghost" 
                           size="icon" 
+                          aria-label={`Copy ${size.label} image URL`}
                           onClick={() => handleCopy(`https://img.youtube.com/vi/${videoId}/${size.suffix}`, `${videoId}-${size.id}`)}
                           className="h-9 w-9 rounded-xl hover:bg-slate-800 text-slate-500"
                         >
@@ -233,7 +228,6 @@ export function YoutubeThumbnailDownloaderForm() {
               ))}
             </div>
 
-            {/* 3. QUICK ACTIONS & INFO */}
             <div className="space-y-6">
               <Button 
                 onClick={handleDownloadAll} 
@@ -256,6 +250,7 @@ export function YoutubeThumbnailDownloaderForm() {
                         href={`https://youtube.com/watch?v=${videoId}`} 
                         target="_blank" 
                         rel="noreferrer"
+                        aria-label="Watch video on YouTube"
                         className="p-1.5 bg-slate-800 rounded-lg text-slate-400 hover:text-red-400 transition-colors"
                       >
                         <ExternalLink className="w-4 h-4" />

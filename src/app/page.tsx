@@ -56,14 +56,14 @@ export default function Home() {
       );
   }, [query, selectedCategory]);
 
-  // Star generation logic
+  // Optimized star generation
   const stars = useMemo(() => {
     if (!mounted) return [];
-    return Array.from({ length: 100 }).map((_, i) => ({
+    return Array.from({ length: 50 }).map((_, i) => ({
       id: i,
       top: `${Math.random() * 100}%`,
       left: `${Math.random() * 100}%`,
-      size: `${Math.random() * 2 + 1}px`,
+      size: `${Math.random() * 1.5 + 1}px`,
       duration: `${Math.random() * 3 + 2}s`,
       delay: `${Math.random() * 3}s`,
     }));
@@ -93,12 +93,12 @@ export default function Home() {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.04 }
+      transition: { staggerChildren: 0.03 }
     }
   };
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 15 },
     visible: { opacity: 1, y: 0 }
   };
 
@@ -106,8 +106,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-[#0A0F1E] text-white selection:bg-blue-500/30">
-      {/* 1. Animated Background */}
-      <div className="fixed inset-0 pointer-events-none">
+      {/* Optimized Background */}
+      <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-500/[0.05] to-purple-500/[0.05]" />
         {stars.map((star) => (
           <div
@@ -139,7 +139,7 @@ export default function Home() {
 
       <div className="relative z-10 flex flex-col">
         {/* Navbar */}
-        <header className="flex items-center justify-between px-6 py-4 backdrop-blur-xl bg-white/[0.02] sticky top-0 border-b border-white/[0.05]">
+        <header className="flex items-center justify-between px-6 py-4 backdrop-blur-xl bg-white/[0.02] sticky top-0 border-b border-white/[0.05] z-50">
           <div className="font-extrabold text-xl tracking-tight flex items-center gap-2">
             <div className="p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg">
                 <Zap className="w-5 h-5 text-white" />
@@ -155,12 +155,13 @@ export default function Home() {
             <button
               onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
               className="p-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] transition-all border border-white/[0.1]"
+              aria-label="Toggle visual theme"
             >
                 {resolvedTheme === 'dark' ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-blue-400" />}
             </button>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="p-2 rounded-xl bg-white/[0.05] md:hidden">
+                <Button variant="ghost" size="icon" className="p-2 rounded-xl bg-white/[0.05] md:hidden" aria-label="Open navigation menu">
                   <Menu className="w-5 h-5" />
                 </Button>
               </SheetTrigger>
@@ -187,18 +188,18 @@ export default function Home() {
           </div>
         </header>
 
-        {/* 2. Hero Section */}
-        <div className="container mx-auto px-6 py-20 text-center">
+        {/* Hero Section */}
+        <div className="container mx-auto px-6 py-20 text-center relative">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.1] text-sm font-semibold text-blue-400 mb-8 animate-glow"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.1] text-sm font-semibold text-blue-400 mb-8 shadow-inner"
           >
             <Sparkles className="w-4 h-4" /> 35+ Free Tools — No Signup Required
           </motion.div>
           
           <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-6"
           >
@@ -209,7 +210,7 @@ export default function Home() {
           </motion.h1>
           
           <motion.p 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
@@ -218,12 +219,12 @@ export default function Home() {
           </motion.p>
 
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
           >
-            <Button size="lg" className="rounded-full px-10 h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] transition-all">
+            <Button size="lg" className="rounded-full px-10 h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] transition-all">
                 Explore All Tools <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
             <Button 
@@ -250,7 +251,7 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* 6. Stats Section */}
+        {/* Stats Section */}
         <div className="w-full bg-white/[0.01] border-y border-white/[0.05] py-12 mb-16">
             <div className="container mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
                 {[
@@ -263,16 +264,16 @@ export default function Home() {
                         <p className="text-4xl font-black bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent mb-1">
                             {stat.value}
                         </p>
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{stat.label}</p>
+                        <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest">{stat.label}</p>
                     </div>
                 ))}
             </div>
         </div>
 
-        {/* 3. Search Bar */}
+        {/* Search Bar */}
         <div className="container mx-auto px-6 mb-12">
             <div className="max-w-3xl mx-auto relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur opacity-25 group-focus-within:opacity-50 transition duration-1000"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur opacity-10 group-focus-within:opacity-30 transition duration-500"></div>
                 <div className="relative flex items-center bg-white/[0.05] border border-white/[0.1] rounded-full px-6 h-16 backdrop-blur-2xl">
                     <Search className="w-5 h-5 text-slate-500 mr-4" />
                     <input
@@ -280,7 +281,7 @@ export default function Home() {
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Search 35+ tools instantly..."
-                        className="bg-transparent flex-1 outline-none text-lg placeholder:text-slate-600"
+                        className="bg-transparent flex-1 outline-none text-lg placeholder:text-slate-600 text-white"
                     />
                     <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.1] text-[10px] font-bold text-slate-500">
                         <Command className="w-3 h-3" /> K
@@ -289,7 +290,7 @@ export default function Home() {
             </div>
         </div>
 
-        {/* 4. Category Filter */}
+        {/* Category Filter */}
         <div className="container mx-auto px-6 mb-12">
             <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-4 justify-start md:justify-center">
                 {categories.map((category) => (
@@ -299,8 +300,8 @@ export default function Home() {
                         className={cn(
                             "px-6 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap shrink-0 border",
                             selectedCategory === category
-                                ? "bg-gradient-to-r from-blue-600 to-purple-600 border-transparent shadow-lg shadow-blue-500/20"
-                                : "bg-white/[0.03] border-white/[0.05] text-slate-400 hover:border-blue-500/50 hover:text-white"
+                                ? "bg-gradient-to-r from-blue-600 to-purple-600 border-transparent shadow-lg shadow-blue-500/10"
+                                : "bg-white/[0.03] border-white/[0.05] text-slate-400 hover:border-blue-500/30 hover:text-white"
                         )}
                     >
                         {category}
@@ -309,7 +310,7 @@ export default function Home() {
             </div>
         </div>
 
-        {/* 5. Tools Grid */}
+        {/* Tools Grid */}
         <div className="container mx-auto px-6 pb-20">
           <motion.div 
             variants={containerVariants}
@@ -326,7 +327,7 @@ export default function Home() {
               >
                 <Link
                   href={tool.href}
-                  className="block h-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl rounded-[20px] p-6 hover:bg-blue-500/[0.05] hover:border-blue-500/50 transition-all duration-300"
+                  className="block h-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl rounded-[20px] p-6 hover:bg-blue-500/[0.04] hover:border-blue-500/40 transition-all duration-300"
                 >
                   <div className="space-y-4 h-full flex flex-col">
                     <div className={cn(
@@ -357,10 +358,10 @@ export default function Home() {
           )}
         </div>
 
-        {/* 7. How It Works Section */}
+        {/* How It Works Section */}
         <section id="how-it-works" className="container mx-auto px-6 py-32 border-t border-white/[0.05]">
             <motion.div 
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 className="text-center mb-20"
@@ -395,7 +396,7 @@ export default function Home() {
                 ].map((step, i) => (
                     <motion.div 
                         key={i}
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 15 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: i * 0.1 }}

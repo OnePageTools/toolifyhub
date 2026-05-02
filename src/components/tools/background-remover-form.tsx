@@ -80,7 +80,7 @@ export function BackgroundRemoverForm() {
     const startTime = performance.now();
 
     try {
-      setStatus('Uploading image...');
+      setStatus('Processing background...');
       
       const resultBlob = await removeBackgroundClient(selectedFile, {
           progress: (key, current, total) => {
@@ -93,11 +93,11 @@ export function BackgroundRemoverForm() {
                       setProgress(progressPercentage / 4); // First 25%
                       break;
                   case 'compute':
-                      setStatus('Analyzing image & removing background...');
+                      setStatus('Analyzing image...');
                       setProgress(25 + (progressPercentage / 2)); // Next 50%
                       break;
                   case 'encode':
-                       setStatus('Almost done...');
+                       setStatus('Optimizing result...');
                        setProgress(75 + (progressPercentage / 4)); // Last 25%
                        break;
               }
@@ -122,7 +122,7 @@ export function BackgroundRemoverForm() {
       console.error(error);
       toast({
         variant: "destructive",
-        title: "An unexpected error occurred",
+        title: "Process Failed",
         description: error.message || "Failed to remove background. Please try again.",
       });
       setStatus('Error!');
@@ -169,13 +169,12 @@ export function BackgroundRemoverForm() {
             onDrop={onDrop}
         >
             {preview ? (
-              <>
-                <Image src={preview} alt="Original image preview" width={400} height={400} className="max-h-80 w-auto object-contain rounded-md" />
-                <Button variant="destructive" size="icon" onClick={(e) => { e.preventDefault(); handleClear()}} className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-md">
+              <div className="relative w-full h-80">
+                <Image src={preview} alt="Original image preview" fill className="object-contain rounded-md" loading="lazy" />
+                <Button variant="destructive" size="icon" aria-label="Clear image" onClick={(e) => { e.preventDefault(); handleClear()}} className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-md z-10">
                     <Trash2 className="h-4 w-4" />
-                    <span className='sr-only'>Clear</span>
                 </Button>
-              </>
+              </div>
             ) : (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                     <ImageIcon className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
@@ -211,34 +210,36 @@ export function BackgroundRemoverForm() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[256px]">
         <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 space-y-2">
-            <h3 className="text-sm font-semibold text-center">Original Image</h3>
+            <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Original</h3>
             {preview ? (
-                <Image src={preview} alt="Original image preview" width={256} height={256} className="max-h-64 w-full h-auto object-contain rounded-md" />
+                <div className="relative w-full h-64">
+                    <Image src={preview} alt="Original input" fill className="object-contain rounded-md" loading="lazy" />
+                </div>
             ) : (
-                <div className="flex flex-col items-center justify-center text-muted-foreground text-center flex-grow">
-                    <Upload className="w-10 h-10 mb-2" />
-                    <span>Your image will appear here</span>
+                <div className="flex flex-col items-center justify-center text-muted-foreground text-center flex-grow opacity-40">
+                    <Upload className="w-8 h-8 mb-2" />
+                    <span className="text-[10px] font-bold">Awaiting Upload</span>
                 </div>
             )}
         </div>
         <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 space-y-2">
-             <h3 className="text-sm font-semibold text-center">Result</h3>
+             <h3 className="text-xs font-black uppercase tracking-widest text-blue-500">Result</h3>
             {result?.imageDataUri ? (
-                <>
-                  <button onClick={() => setIsPreviewOpen(true)} className="cursor-zoom-in">
-                    <Image src={result.imageDataUri} alt="Background removed" width={256} height={256} className="max-h-64 w-full h-auto object-contain rounded-md" />
+                <div className="space-y-2 w-full flex flex-col items-center">
+                  <button onClick={() => setIsPreviewOpen(true)} className="cursor-zoom-in relative w-full h-64">
+                    <Image src={result.imageDataUri} alt="Removed background result" fill className="object-contain rounded-md" unoptimized />
                   </button>
                   {processingTime && (
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 pt-2 uppercase">
                       <Clock className="w-3 h-3" />
-                      <span>Processed in {processingTime.toFixed(2)}s</span>
+                      <span>{processingTime.toFixed(2)}s</span>
                     </div>
                   )}
-                </>
+                </div>
             ) : (
-                 <div className="flex flex-col items-center justify-center text-muted-foreground text-center flex-grow">
-                    <Wand2 className="w-10 h-10 mb-2" />
-                    <span>The result will be shown here</span>
+                 <div className="flex flex-col items-center justify-center text-muted-foreground text-center flex-grow opacity-40">
+                    <Wand2 className="w-8 h-8 mb-2" />
+                    <span className="text-[10px] font-bold">Awaiting Process</span>
                 </div>
             )}
         </div>
@@ -246,14 +247,14 @@ export function BackgroundRemoverForm() {
       
       {(result && result.imageDataUri) && (
         <div className="flex flex-col sm:flex-row gap-2">
-           <Button variant="outline" onClick={() => setIsPreviewOpen(true)} className="w-full h-12">
+           <Button variant="outline" onClick={() => setIsPreviewOpen(true)} className="w-full h-12 rounded-xl">
               <Eye className="mr-2 h-4 w-4" />
-              Preview
+              Fullscreen Preview
           </Button>
           <a href={result.imageDataUri} download="background-removed.png" className='w-full'>
-              <Button variant="default" className="w-full h-12">
+              <Button variant="default" className="w-full h-12 rounded-xl shadow-lg shadow-blue-500/20">
                   <Download className="mr-2 h-4 w-4" />
-                  Download
+                  Download PNG
               </Button>
           </a>
         </div>
