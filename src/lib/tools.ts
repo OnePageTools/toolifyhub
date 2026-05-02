@@ -47,6 +47,7 @@ import {
   SquarePen,
   SquareCode,
   ShieldCheck,
+  Link2,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design';
@@ -226,6 +227,14 @@ export const tools: Tool[] = [
     description: 'Encode and decode text and files to Base64 format instantly free',
     href: '/tools/base64-encoder',
     icon: SquareCode,
+    category: 'Dev',
+    implemented: true,
+  },
+  {
+    name: 'URL Encoder',
+    description: 'Encode and decode URLs and special characters instantly for free',
+    href: '/tools/url-encoder',
+    icon: Link2,
     category: 'Dev',
     implemented: true,
   },
