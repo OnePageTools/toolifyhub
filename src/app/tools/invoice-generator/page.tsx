@@ -1,12 +1,5 @@
 import type { Metadata } from 'next';
 import { InvoiceGeneratorForm } from '@/components/tools/invoice-generator-form';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
 import { Receipt } from 'lucide-react';
 
 const tool = {
