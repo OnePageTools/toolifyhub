@@ -17,6 +17,7 @@ import {
   Menu,
   Check,
   Command,
+  Download,
 } from "lucide-react";
 import {
   Sheet,
@@ -225,7 +226,12 @@ export default function Home() {
             <Button size="lg" className="rounded-full px-10 h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] transition-all">
                 Explore All Tools <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
-            <Button variant="outline" size="lg" className="rounded-full px-10 h-14 bg-transparent border-white/[0.1] hover:bg-white/[0.05]">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="rounded-full px-10 h-14 bg-transparent border-white/[0.1] hover:bg-white/[0.05]"
+              onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+            >
                 How It Works
             </Button>
           </motion.div>
@@ -304,7 +310,7 @@ export default function Home() {
         </div>
 
         {/* 5. Tools Grid */}
-        <div className="container mx-auto px-6 pb-32">
+        <div className="container mx-auto px-6 pb-20">
           <motion.div 
             variants={containerVariants}
             initial="hidden"
@@ -350,6 +356,71 @@ export default function Home() {
             </div>
           )}
         </div>
+
+        {/* 7. How It Works Section */}
+        <section id="how-it-works" className="container mx-auto px-6 py-32 border-t border-white/[0.05]">
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center mb-20"
+            >
+                <h2 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">How It Works</h2>
+                <p className="text-slate-400 text-lg max-w-xl mx-auto">Get started in seconds — no signup, no download required</p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                {[
+                    { 
+                        num: "01", 
+                        icon: Search, 
+                        title: "Choose Your Tool", 
+                        desc: "Browse our 35+ free tools or search for what you need instantly",
+                        color: "from-blue-600 to-cyan-500" 
+                    },
+                    { 
+                        num: "02", 
+                        icon: Zap, 
+                        title: "Use It Instantly", 
+                        desc: "No signup required. Just open the tool and start using it right away",
+                        color: "from-purple-600 to-pink-500" 
+                    },
+                    { 
+                        num: "03", 
+                        icon: Download, 
+                        title: "Get Your Results", 
+                        desc: "Download or copy your results instantly. Fast, free, and private always",
+                        color: "from-emerald-600 to-teal-500" 
+                    },
+                ].map((step, i) => (
+                    <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                        className="relative group"
+                    >
+                        <div className="bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl rounded-[32px] p-8 h-full hover:bg-white/[0.05] transition-all duration-300">
+                            <span className="text-5xl font-black text-white/5 absolute top-6 right-8 select-none">{step.num}</span>
+                            <div className={cn(
+                                "w-16 h-16 rounded-2xl bg-gradient-to-br flex items-center justify-center mb-6 shadow-xl",
+                                step.color
+                            )}>
+                                <step.icon className="w-8 h-8 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-3">{step.title}</h3>
+                            <p className="text-slate-400 leading-relaxed text-sm">{step.desc}</p>
+                        </div>
+                        {i < 2 && (
+                            <div className="hidden lg:block absolute -right-4 top-1/2 -translate-y-1/2 z-20 text-slate-800">
+                                <ArrowRight className="w-8 h-8" />
+                            </div>
+                        )}
+                    </motion.div>
+                ))}
+            </div>
+        </section>
       </div>
     </div>
   );
