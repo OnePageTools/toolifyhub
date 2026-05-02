@@ -46,6 +46,7 @@ import {
   Hash,
   SquarePen,
   SquareCode,
+  ShieldCheck,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design';
@@ -234,6 +235,14 @@ export const tools: Tool[] = [
     href: '/tools/favicon-generator',
     icon: Sparkles,
     category: 'Web',
+    implemented: true,
+  },
+  {
+    name: 'Hash Generator',
+    description: 'Generate MD5 SHA256 and other hashes from text or files instantly',
+    href: '/tools/hash-generator',
+    icon: ShieldCheck,
+    category: 'Dev',
     implemented: true,
   },
   {
