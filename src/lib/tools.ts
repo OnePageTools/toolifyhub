@@ -35,9 +35,10 @@ import {
   Repeat,
   Lock,
   Receipt,
+  Keyboard,
 } from 'lucide-react';
 
-export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance';
+export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity';
 
 export type Tool = {
   name: string;
@@ -135,6 +136,14 @@ export const tools: Tool[] = [
     href: '/tools/ai-essay-writer',
     icon: PenTool,
     category: 'Text',
+    implemented: true,
+  },
+  {
+    name: 'Typing Speed Test',
+    description: 'Test your typing speed and accuracy in WPM instantly for free',
+    href: '/tools/typing-speed-test',
+    icon: Keyboard,
+    category: 'Productivity',
     implemented: true,
   },
   {
