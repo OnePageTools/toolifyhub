@@ -43,6 +43,15 @@ const nextConfig: NextConfig = {
   experimental: {
     allowedDevOrigins: ["*.cloudworkstations.dev"],
   },
+  async redirects() {
+    return [
+      {
+        source: '/tools/pdf-compressor%F0%9F%92%A1',
+        destination: '/tools/pdf-compressor',
+        permanent: true,
+      },
+    ]
+  },
   async headers() {
     return [
       {
