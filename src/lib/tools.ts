@@ -43,6 +43,7 @@ import {
   Timer,
   Monitor,
   CaseSensitive,
+  Hash,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design';
@@ -198,6 +199,14 @@ export const tools: Tool[] = [
     description: 'Calculate monthly EMI and total interest for any loan instantly',
     href: '/tools/loan-calculator',
     icon: Calculator,
+    category: 'Finance',
+    implemented: true,
+  },
+  {
+    name: 'Number to Words',
+    description: 'Convert numbers to words in English and Urdu for cheques and invoices',
+    href: '/tools/number-to-words',
+    icon: Hash,
     category: 'Finance',
     implemented: true,
   },

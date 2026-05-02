@@ -1,10 +1,9 @@
-
 import type { Metadata } from 'next';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
-import { Poppins, Inter, Playfair_Display } from 'next/font/google';
+import { Poppins, Inter, Playfair_Display, Noto_Nastaliq_Urdu } from 'next/font/google';
 import Footer from '@/components/common/footer';
 
 const siteConfig = {
@@ -87,13 +86,19 @@ const playfair = Playfair_Display({
   variable: '--font-playfair',
 });
 
+const notoUrdu = Noto_Nastaliq_Urdu({
+  subsets: ['arabic'],
+  display: 'swap',
+  variable: '--font-noto-urdu',
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${poppins.variable} ${inter.variable} ${playfair.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${poppins.variable} ${inter.variable} ${playfair.variable} ${notoUrdu.variable}`}>
       <head />
       <body className="font-body antialiased">
         <ThemeProvider
