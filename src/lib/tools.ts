@@ -40,6 +40,7 @@ import {
   HeartPulse,
   Camera,
   Palette,
+  Timer,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design';
@@ -163,6 +164,14 @@ export const tools: Tool[] = [
     description: 'Test your typing speed and accuracy in WPM instantly for free',
     href: '/tools/typing-speed-test',
     icon: Keyboard,
+    category: 'Productivity',
+    implemented: true,
+  },
+  {
+    name: 'Pomodoro Timer',
+    description: 'Boost productivity with focus sessions and breaks using Pomodoro technique',
+    href: '/tools/pomodoro-timer',
+    icon: Timer,
     category: 'Productivity',
     implemented: true,
   },
