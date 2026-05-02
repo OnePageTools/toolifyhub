@@ -39,9 +39,10 @@ import {
   Sparkles,
   HeartPulse,
   Camera,
+  Palette,
 } from 'lucide-react';
 
-export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health';
+export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design';
 
 export type Tool = {
   name: string;
@@ -99,6 +100,14 @@ export const tools: Tool[] = [
     href: '/tools/passport-photo-maker',
     icon: Camera,
     category: 'Image',
+    implemented: true,
+  },
+  {
+    name: 'Color Picker',
+    description: 'Pick colors and generate beautiful palettes with HEX RGB HSL codes',
+    href: '/tools/color-picker',
+    icon: Palette,
+    category: 'Design',
     implemented: true,
   },
   {
