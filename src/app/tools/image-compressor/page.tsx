@@ -1,14 +1,6 @@
-
 import type { Metadata } from 'next';
 import { ImageCompressorForm } from '@/components/tools/image-compressor-form';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
-import AIHelper from '@/components/ai-assistant';
+import { Card, CardContent } from '@/components/ui/card';
 import { ImageIcon } from 'lucide-react';
 
 const tool = {
@@ -37,49 +29,29 @@ export const metadata: Metadata = {
   },
 };
 
-const WebAppSchema = () => (
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{ __html: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": tool.name,
-      "description": tool.description,
-      "applicationCategory": "MultimediaApplication",
-      "operatingSystem": "All",
-      "url": `https://toolifyhub.com${tool.url}`,
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      }
-    })}}
-  />
-);
-
 export default function ImageCompressorPage() {
   return (
-    <>
-      <WebAppSchema />
-      <div className="container mx-auto py-10 px-4">
-        <div className="max-w-4xl mx-auto">
-          <Card className="shadow-lg border-primary/20">
-            <CardHeader className="text-center bg-secondary/50 p-8">
-               <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
-                  <ImageIcon className="w-10 h-10 text-primary" />
-               </div>
-              <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">Advanced Image Compressor</CardTitle>
-              <CardDescription className="text-lg mt-2">
-                Compress, resize, and convert multiple images (JPG, PNG, WEBP) at once.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-6 md:p-8">
-              <ImageCompressorForm />
-            </CardContent>
-          </Card>
-        </div>
-        <AIHelper toolName="Image Compressor" />
+    <div className="container mx-auto py-12 px-4 page-transition">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <header className="flex flex-col items-center text-center space-y-4 mb-8">
+          <div className="w-[60px] h-[60px] rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-xl text-white">
+            <ImageIcon className="w-8 h-8" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-3xl md:text-4xl font-black text-foreground">Image Compressor</h1>
+            <div className="w-[60px] h-[3px] bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto" />
+          </div>
+          <p className="text-muted-foreground text-lg max-w-xl">
+            Compress, resize, and convert multiple images (JPG, PNG, WEBP) at once.
+          </p>
+        </header>
+
+        <Card className="border-border/50">
+          <CardContent className="p-8 md:p-12">
+            <ImageCompressorForm />
+          </CardContent>
+        </Card>
       </div>
-    </>
+    </div>
   );
 }
