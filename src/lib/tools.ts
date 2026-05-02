@@ -42,6 +42,7 @@ import {
   Palette,
   Timer,
   Monitor,
+  CaseSensitive,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design';
@@ -133,6 +134,14 @@ export const tools: Tool[] = [
     description: 'Grammar & spell check',
     href: '/tools/grammar-checker',
     icon: SpellCheck,
+    category: 'Text',
+    implemented: true,
+  },
+  {
+    name: 'Case Converter',
+    description: 'Convert text to uppercase lowercase title case camelCase and more',
+    href: '/tools/case-converter',
+    icon: CaseSensitive,
     category: 'Text',
     implemented: true,
   },
