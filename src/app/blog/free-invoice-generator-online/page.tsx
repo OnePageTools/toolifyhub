@@ -8,7 +8,7 @@ const post = {
     description: 'Get paid faster with a free invoice generator online. Create professional, branded PDF invoices without any software or signup. Ideal for freelancers.',
     keywords: ['free invoice generator online', 'professional invoice maker', 'freelance billing tool', 'pdf invoice creator', 'business tools 2026'],
     author: 'ToolifyHub Team',
-    date: '2026-05-10',
+    date: '2026-05-07',
     readingTime: '6 min read',
     url: '/blog/free-invoice-generator-online',
     image: 'https://picsum.photos/seed/invoice/1200/630'
@@ -44,7 +44,7 @@ export default function BlogPost() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <PostLayout title={post.title} author={post.author} date="May 10, 2026" readingTime={post.readingTime}>
+      <PostLayout title={post.title} author={post.author} date="May 7, 2026" readingTime={post.readingTime}>
         <p>
           In the competitive world of freelancing and small business, your professional image is everything. How you bill your clients says as much about your brand as the work you deliver. Using a <strong>free invoice generator online</strong> allows you to create high-quality, branded invoices that ensure you get paid on time and keep your records organized.
         </p>

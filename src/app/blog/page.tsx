@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -32,7 +31,7 @@ export default function BlogIndexPage() {
                  <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
                     <Newspaper className="w-10 h-10 text-primary" />
                  </div>
-                <h1 className="font-headline text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">Our Blog</h1>
+                <h1 className="font-headline text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-[#94A3B8]">Our Blog</h1>
                 <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
                     Productivity tips, step-by-step guides, and inspiration to help you get more done with our free online tools.
                 </p>

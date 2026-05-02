@@ -8,7 +8,7 @@ const post = {
     description: 'Avoid mistakes when writing cheques or invoices. Use our number to words converter free to get accurate English and Urdu text for any amount.',
     keywords: ['number to words converter', 'cheque amount to words', 'invoice number converter', 'amount in words english urdu', 'accounting tools 2026'],
     author: 'ToolifyHub Team',
-    date: '2026-05-22',
+    date: '2026-05-15',
     readingTime: '5 min read',
     url: '/blog/number-to-words-converter-free',
     image: 'https://picsum.photos/seed/numwords/1200/630'
@@ -44,7 +44,7 @@ export default function BlogPost() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <PostLayout title={post.title} author={post.author} date="May 22, 2026" readingTime={post.readingTime}>
+      <PostLayout title={post.title} author={post.author} date="May 15, 2026" readingTime={post.readingTime}>
         <p>
           In professional finance and accounting, precision is mandatory. Writing a cheque for a large amount can be stressful if you aren't sure of the exact spelling of the number in words. A <strong>number to words converter</strong> solves this problem instantly, ensuring your financial documents are accurate and professional.
         </p>

@@ -8,7 +8,7 @@ const post = {
     description: 'Grab high-quality YouTube thumbnails for free. Our online downloader pulls HD images from any video instantly. Perfect for creators and marketers.',
     keywords: ['youtube thumbnail downloader free', 'get yt thumbnail hd', 'download video thumbnail online', 'social media tools 2026', 'youtube creator utilities'],
     author: 'ToolifyHub Team',
-    date: '2026-05-28',
+    date: '2026-05-19',
     readingTime: '6 min read',
     url: '/blog/youtube-thumbnail-downloader-free',
     image: 'https://picsum.photos/seed/ytthumb/1200/630'
@@ -44,7 +44,7 @@ export default function BlogPost() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <PostLayout title={post.title} author={post.author} date="May 28, 2026" readingTime={post.readingTime}>
+      <PostLayout title={post.title} author={post.author} date="May 19, 2026" readingTime={post.readingTime}>
         <p>
           In the visual-first world of social media, thumbnails are the "front door" to your content. A <strong>youtube thumbnail downloader free</strong> tool is an essential asset for marketers, designers, and creators who need to analyze competitors or reuse their own assets across different platforms.
         </p>

@@ -8,7 +8,7 @@ const post = {
     description: 'Measure your typing speed and accuracy with our typing speed test online free. Improve your WPM score and boost your professional productivity today.',
     keywords: ['typing speed test online free', 'check wpm score', 'typing accuracy test', 'improve typing speed 2026', 'productivity tools for students'],
     author: 'ToolifyHub Team',
-    date: '2026-05-16',
+    date: '2026-05-11',
     readingTime: '7 min read',
     url: '/blog/typing-speed-test-online-free',
     image: 'https://picsum.photos/seed/type/1200/630'
@@ -44,7 +44,7 @@ export default function BlogPost() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <PostLayout title={post.title} author={post.author} date="May 16, 2026" readingTime={post.readingTime}>
+      <PostLayout title={post.title} author={post.author} date="May 11, 2026" readingTime={post.readingTime}>
         <p>
           In a world dominated by digital communication, your ability to type quickly and accurately is a superpower. A <strong>typing speed test online free</strong> is more than just a game; it's a benchmark for your professional efficiency. Whether you're coding, emailing, or chatting, increasing your words per minute (WPM) directly translates to saved time and reduced mental fatigue.
         </p>

@@ -8,7 +8,7 @@ const post = {
     description: 'Planning a loan? Use our loan EMI calculator free online to see your monthly payments, interest, and amortization schedule. Take control of your debt.',
     keywords: ['loan emi calculator free', 'monthly payment calculator', 'mortgage emi calculator', 'finance tools 2026', 'debt planning online'],
     author: 'ToolifyHub Team',
-    date: '2026-05-13',
+    date: '2026-05-09',
     readingTime: '6 min read',
     url: '/blog/loan-emi-calculator-free-online',
     image: 'https://picsum.photos/seed/loan/1200/630'
@@ -44,7 +44,7 @@ export default function BlogPost() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <PostLayout title={post.title} author={post.author} date="May 13, 2026" readingTime={post.readingTime}>
+      <PostLayout title={post.title} author={post.author} date="May 9, 2026" readingTime={post.readingTime}>
         <p>
           Taking out a loan is a major financial commitment. Whether it's for a new home, a car, or personal expenses, understanding exactly how much you'll pay each month is vital. A <strong>loan emi calculator free</strong> online tool empowers you to see the true cost of borrowing before you sign any contracts.
         </p>

@@ -8,7 +8,7 @@ const post = {
     description: 'Check your Body Mass Index with our BMI calculator online free. Understand your weight category and get tips for a healthier lifestyle instantly.',
     keywords: ['bmi calculator online free', 'check bmi instantly', 'healthy weight range', 'body mass index guide', 'health tools 2026'],
     author: 'ToolifyHub Team',
-    date: '2026-05-07',
+    date: '2026-05-05',
     readingTime: '5 min read',
     url: '/blog/bmi-calculator-online-free',
     image: 'https://picsum.photos/seed/bmi/1200/630'
@@ -44,7 +44,7 @@ export default function BlogPost() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <PostLayout title={post.title} author={post.author} date="May 7, 2026" readingTime={post.readingTime}>
+      <PostLayout title={post.title} author={post.author} date="May 5, 2026" readingTime={post.readingTime}>
         <p>
           Maintaining a healthy weight is one of the most important things you can do for your long-term well-being. A <strong>bmi calculator online free</strong> tool provides a quick, scientific starting point to understand where you stand. By comparing your weight to your height, BMI offers a standardized metric used by healthcare professionals worldwide.
         </p>

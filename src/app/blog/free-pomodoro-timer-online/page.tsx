@@ -8,7 +8,7 @@ const post = {
     description: 'Master time management with our free pomodoro timer online. Learn the technique, stay focused, and achieve your goals faster with timed sessions.',
     keywords: ['pomodoro timer online free', 'productivity timer', 'study timer 2026', 'time management technique', 'focus tool online'],
     author: 'ToolifyHub Team',
-    date: '2026-05-25',
+    date: '2026-05-17',
     readingTime: '7 min read',
     url: '/blog/free-pomodoro-timer-online',
     image: 'https://picsum.photos/seed/pomo/1200/630'
@@ -44,7 +44,7 @@ export default function BlogPost() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <PostLayout title={post.title} author={post.author} date="May 25, 2026" readingTime={post.readingTime}>
+      <PostLayout title={post.title} author={post.author} date="May 17, 2026" readingTime={post.readingTime}>
         <p>
           Are you struggling to stay focused on long tasks? The Pomodoro Technique might be the solution you need. A <strong>pomodoro timer online free</strong> utility helps you break your work into manageable chunks, usually 25 minutes long, separated by short breaks. This method is scientifically proven to improve focus and prevent burnout.
         </p>

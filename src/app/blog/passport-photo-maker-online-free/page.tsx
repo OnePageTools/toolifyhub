@@ -8,7 +8,7 @@ const post = {
     description: 'Save money and time with our passport photo maker online free. Create biometric-ready ID photos for USA, Pakistan, UK, and more in seconds at home.',
     keywords: ['passport photo maker online free', 'id photo generator', 'biometric photo online', 'visa photo maker 2026', 'diy passport photo'],
     author: 'ToolifyHub Team',
-    date: '2026-05-19',
+    date: '2026-05-13',
     readingTime: '6 min read',
     url: '/blog/passport-photo-maker-online-free',
     image: 'https://picsum.photos/seed/passphoto/1200/630'
@@ -44,7 +44,7 @@ export default function BlogPost() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <PostLayout title={post.title} author={post.author} date="May 19, 2026" readingTime={post.readingTime}>
+      <PostLayout title={post.title} author={post.author} date="May 13, 2026" readingTime={post.readingTime}>
         <p>
           Planning a trip abroad? One of the most tedious tasks is getting your ID photos taken at a studio. With a <strong>passport photo maker online free</strong>, you can skip the expensive studio fees and long queues. By using your smartphone camera and our AI-powered tool, you can create biometric-ready photos that meet official standards for any country.
         </p>
