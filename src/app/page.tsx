@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTheme } from "next-themes";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
   Sun,
@@ -12,10 +12,11 @@ import {
   Zap,
   Sparkles,
   Home as HomeIcon,
-  Grid3X3,
   Heart,
   Settings,
   Menu,
+  Check,
+  Command,
 } from "lucide-react";
 import {
   Sheet,
@@ -29,76 +30,154 @@ import { tools as allTools } from '@/lib/tools';
 import type { Tool, ToolCategory } from "@/lib/tools";
 import { cn } from "@/lib/utils";
 
-const categories: (ToolCategory | "All")[] = ["All", "PDF", "Image", "Text", "Dev", "Utilities", "Finance", "Productivity", "Web", "Fun"];
+const categories: (ToolCategory | "All")[] = ["All", "PDF", "Image", "Text", "Dev", "Utilities", "Finance", "Productivity", "Web", "Fun", "Security", "Health"];
 
 export default function Home() {
   const { resolvedTheme, setTheme } = useTheme();
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<ToolCategory | "All">("All");
-
   const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const filteredTools = allTools
-    .filter((tool) => tool.implemented)
-    .filter((tool) =>
-      selectedCategory === "All" ? true : tool.category === selectedCategory
-    )
-    .filter(
-      (tool) =>
-        tool.name.toLowerCase().includes(query.toLowerCase()) ||
-        tool.description.toLowerCase().includes(query.toLowerCase())
-    );
+  const filteredTools = useMemo(() => {
+    return allTools
+      .filter((tool) => tool.implemented)
+      .filter((tool) =>
+        selectedCategory === "All" ? true : tool.category === selectedCategory
+      )
+      .filter(
+        (tool) =>
+          tool.name.toLowerCase().includes(query.toLowerCase()) ||
+          tool.description.toLowerCase().includes(query.toLowerCase())
+      );
+  }, [query, selectedCategory]);
+
+  // Star generation logic
+  const stars = useMemo(() => {
+    if (!mounted) return [];
+    return Array.from({ length: 100 }).map((_, i) => ({
+      id: i,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      size: `${Math.random() * 2 + 1}px`,
+      duration: `${Math.random() * 3 + 2}s`,
+      delay: `${Math.random() * 3}s`,
+    }));
+  }, [mounted]);
+
+  const shootingStars = Array.from({ length: 5 }).map((_, i) => ({
+    id: i,
+    top: `${Math.random() * 50}%`,
+    left: `${Math.random() * 50}%`,
+    delay: `${Math.random() * 10}s`,
+  }));
+
+  const getIconGradient = (category: string) => {
+    switch (category) {
+      case 'PDF': return 'from-blue-500 to-cyan-400';
+      case 'Image': return 'from-purple-500 to-pink-500';
+      case 'Text': return 'from-emerald-500 to-teal-400';
+      case 'Dev': return 'from-orange-500 to-red-500';
+      case 'Finance': return 'from-yellow-400 to-orange-500';
+      case 'Health': return 'from-pink-500 to-red-400';
+      case 'Fun': return 'from-indigo-500 to-blue-500';
+      default: return 'from-blue-600 to-purple-600';
+    }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.04 }
+    }
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
+  if (!mounted) return null;
 
   return (
-    <div className="min-h-screen relative overflow-hidden font-body bg-background text-foreground page-transition">
-      {/* Optimized gradient background */}
-      <motion.div
-        animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="absolute inset-0 bg-gradient-to-r from-blue-900/20 via-indigo-900/20 to-purple-900/20 bg-[length:300%_300%]"
-      />
+    <div className="min-h-screen relative overflow-hidden bg-[#0A0F1E] text-white selection:bg-blue-500/30">
+      {/* 1. Animated Background */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-500/[0.05] to-purple-500/[0.05]" />
+        {stars.map((star) => (
+          <div
+            key={star.id}
+            className="absolute bg-white rounded-full animate-twinkle"
+            style={{
+              top: star.top,
+              left: star.left,
+              width: star.size,
+              height: star.size,
+              '--duration': star.duration,
+              '--delay': star.delay,
+            } as any}
+          />
+        ))}
+        {shootingStars.map((s) => (
+          <div
+            key={s.id}
+            className="shooting-star"
+            style={{
+              top: s.top,
+              left: s.left,
+              animation: `shooting-star 1.2s ease-in infinite`,
+              animationDelay: s.delay,
+            }}
+          />
+        ))}
+      </div>
 
-      <div className="relative z-10 min-h-screen flex flex-col">
+      <div className="relative z-10 flex flex-col">
         {/* Navbar */}
-        <header className="flex items-center justify-between px-4 sm:px-6 py-3 backdrop-blur-lg bg-white/5 dark:bg-black/20 sticky top-0 rounded-b-2xl shadow-lg border-b border-white/10">
-          <div className="font-extrabold text-lg tracking-wide flex items-center gap-2 text-foreground">
-            <Zap className="w-5 h-5 text-yellow-400" /> ToolifyHub
+        <header className="flex items-center justify-between px-6 py-4 backdrop-blur-xl bg-white/[0.02] sticky top-0 border-b border-white/[0.05]">
+          <div className="font-extrabold text-xl tracking-tight flex items-center gap-2">
+            <div className="p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg">
+                <Zap className="w-5 h-5 text-white" />
+            </div>
+            ToolifyHub
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+            <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
+                <Link href="/" className="hover:text-white transition-colors">Tools</Link>
+                <Link href="/blog" className="hover:text-white transition-colors">Resources</Link>
+                <Link href="/about" className="hover:text-white transition-colors">About</Link>
+            </nav>
             <button
               onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-full bg-white/10 dark:bg-white/5 hover:scale-110 transition-transform"
+              className="p-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] transition-all border border-white/[0.1]"
             >
-              {mounted ? (
-                resolvedTheme === 'dark' ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5 text-indigo-400" />
-              ) : (
-                <div className="w-5 h-5" />
-              )}
+                {resolvedTheme === 'dark' ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-blue-400" />}
             </button>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="p-2 rounded-full hover:scale-110 transition-transform">
+                <Button variant="ghost" size="icon" className="p-2 rounded-xl bg-white/[0.05] md:hidden">
                   <Menu className="w-5 h-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent>
+              <SheetContent side="right" className="bg-[#0A0F1E] border-white/[0.1] text-white">
                 <SheetHeader>
-                  <SheetTitle>Navigation</SheetTitle>
+                  <SheetTitle className="text-white">Navigation</SheetTitle>
                 </SheetHeader>
                 <nav className="mt-8 flex flex-col gap-4">
-                  <Link href="/" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
+                  <Link href="/" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.05]">
                     <HomeIcon className="w-5 h-5" /> Home
                   </Link>
-                  <Link href="/blog" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
+                  <Link href="/blog" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.05]">
                     <Sparkles className="w-5 h-5" /> Blog
                   </Link>
-                  <Link href="/favorites" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
+                  <Link href="/favorites" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.05]">
                     <Heart className="w-5 h-5" /> Favorites
                   </Link>
-                  <Link href="/settings" className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary">
+                  <Link href="/settings" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.05]">
                     <Settings className="w-5 h-5" /> Settings
                   </Link>
                 </nav>
@@ -107,83 +186,169 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Hero */}
-        <div className="px-4 py-12 text-center">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl sm:text-6xl font-black drop-shadow-xl flex items-center justify-center gap-3 text-foreground"
+        {/* 2. Hero Section */}
+        <div className="container mx-auto px-6 py-20 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.1] text-sm font-semibold text-blue-400 mb-8 animate-glow"
           >
-            <Sparkles className="text-primary w-8 h-8" />
-            Productivity Reimagined
+            <Sparkles className="w-4 h-4" /> 35+ Free Tools — No Signup Required
+          </motion.div>
+          
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-6"
+          >
+            Your Ultimate Free<br/>
+            <span className="bg-gradient-to-r from-[#3B82F6] via-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">
+              Productivity Hub
+            </span>
           </motion.h1>
-          <p className="mt-4 text-muted-foreground text-lg max-w-2xl mx-auto">
-            Experience our suite of professional, fast, and free online utilities. No registration, no fuss.
-          </p>
-        </div>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
+          >
+            35+ powerful free tools at your fingertips. No registration. No limits. Just results.
+          </motion.p>
 
-        {/* Search */}
-        <div className="px-4 sm:px-6 max-w-3xl mx-auto w-full">
-          <div className="flex items-center gap-2 backdrop-blur-xl bg-white/5 rounded-2xl px-6 py-4 shadow-2xl border border-white/10 focus-within:border-primary/50 transition-all">
-            <Search className="w-5 h-5 opacity-70 text-muted-foreground" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="What do you want to do today?"
-              className="flex-1 bg-transparent outline-none text-lg placeholder-muted-foreground text-foreground"
-            />
-          </div>
-        </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+          >
+            <Button size="lg" className="rounded-full px-10 h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] transition-all">
+                Explore All Tools <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+            <Button variant="outline" size="lg" className="rounded-full px-10 h-14 bg-transparent border-white/[0.1] hover:bg-white/[0.05]">
+                How It Works
+            </Button>
+          </motion.div>
 
-        {/* Category Filters */}
-        <div className="px-4 pt-8 sm:px-6">
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category as any)}
-                className={cn(
-                  "px-6 py-2 text-sm font-bold rounded-full transition-all duration-300 border border-white/10",
-                  selectedCategory === category
-                    ? "bg-primary text-white shadow-[0_0_15px_rgba(59,130,246,0.4)] border-transparent"
-                    : "bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
-                )}
-              >
-                {category}
-              </button>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-wrap items-center justify-center gap-6"
+          >
+            {["35+ Tools", "100% Free", "No Signup"].map((stat) => (
+                <div key={stat} className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.05] border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-widest">
+                    <Check className="w-3.5 h-3.5" /> {stat}
+                </div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
-        {/* Tools Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 py-12 sm:px-12 flex-1">
-          {filteredTools.map((tool: Tool) => (
-            <motion.div
-              key={tool.name}
-              whileHover={{ scale: 1.03, y: -5 }}
-              className="relative"
-            >
-              <Link
-                href={tool.href}
-                className="group h-full rounded-2xl backdrop-blur-xl bg-card border border-white/10 p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_8px_30px_rgba(59,130,246,0.15)] hover:border-primary/40"
+        {/* 6. Stats Section */}
+        <div className="w-full bg-white/[0.01] border-y border-white/[0.05] py-12 mb-16">
+            <div className="container mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
+                {[
+                    { label: "Free Tools", value: "35+" },
+                    { label: "Monthly Users", value: "100K+" },
+                    { label: "Registration Required", value: "0" },
+                    { label: "Usage Limit", value: "∞" },
+                ].map((stat, i) => (
+                    <div key={i} className="text-center md:border-r last:border-r-0 border-white/[0.05] px-4">
+                        <p className="text-4xl font-black bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent mb-1">
+                            {stat.value}
+                        </p>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{stat.label}</p>
+                    </div>
+                ))}
+            </div>
+        </div>
+
+        {/* 3. Search Bar */}
+        <div className="container mx-auto px-6 mb-12">
+            <div className="max-w-3xl mx-auto relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur opacity-25 group-focus-within:opacity-50 transition duration-1000"></div>
+                <div className="relative flex items-center bg-white/[0.05] border border-white/[0.1] rounded-full px-6 h-16 backdrop-blur-2xl">
+                    <Search className="w-5 h-5 text-slate-500 mr-4" />
+                    <input
+                        type="text"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Search 35+ tools instantly..."
+                        className="bg-transparent flex-1 outline-none text-lg placeholder:text-slate-600"
+                    />
+                    <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.1] text-[10px] font-bold text-slate-500">
+                        <Command className="w-3 h-3" /> K
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {/* 4. Category Filter */}
+        <div className="container mx-auto px-6 mb-12">
+            <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-4 justify-start md:justify-center">
+                {categories.map((category) => (
+                    <button
+                        key={category}
+                        onClick={() => setSelectedCategory(category)}
+                        className={cn(
+                            "px-6 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap shrink-0 border",
+                            selectedCategory === category
+                                ? "bg-gradient-to-r from-blue-600 to-purple-600 border-transparent shadow-lg shadow-blue-500/20"
+                                : "bg-white/[0.03] border-white/[0.05] text-slate-400 hover:border-blue-500/50 hover:text-white"
+                        )}
+                    >
+                        {category}
+                    </button>
+                ))}
+            </div>
+        </div>
+
+        {/* 5. Tools Grid */}
+        <div className="container mx-auto px-6 pb-32">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+          >
+            {filteredTools.map((tool: Tool) => (
+              <motion.div
+                key={tool.name}
+                variants={cardVariants}
+                whileHover={{ y: -4 }}
+                className="group relative"
               >
-                <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg text-white group-hover:rotate-6 transition-transform">
-                    {tool.icon && <tool.icon className="w-6 h-6" />}
+                <Link
+                  href={tool.href}
+                  className="block h-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl rounded-[20px] p-6 hover:bg-blue-500/[0.05] hover:border-blue-500/50 transition-all duration-300"
+                >
+                  <div className="space-y-4 h-full flex flex-col">
+                    <div className={cn(
+                        "w-12 h-12 rounded-xl bg-gradient-to-br flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500",
+                        getIconGradient(tool.category)
+                    )}>
+                      {tool.icon && <tool.icon className="w-6 h-6 text-white" />}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-base text-white mb-1.5">{tool.name}</h3>
+                      <p className="text-[13px] text-slate-400 leading-snug line-clamp-2">{tool.description}</p>
+                    </div>
+                    <div className="mt-auto pt-4 flex justify-end">
+                        <div className="w-8 h-8 rounded-full bg-white/[0.05] flex items-center justify-center transform translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+                            <ArrowRight className="w-4 h-4 text-blue-400" />
+                        </div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors">{tool.name}</h3>
-                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{tool.description}</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-end mt-6 text-primary font-bold text-sm">
-                  <span className="opacity-0 group-hover:opacity-100 transition-opacity mr-2">Try Now</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {filteredTools.length === 0 && (
+            <div className="text-center py-20">
+                <p className="text-slate-500 font-medium">No tools found matching your search.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

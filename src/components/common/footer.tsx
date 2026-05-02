@@ -1,49 +1,67 @@
-
 import Link from 'next/link';
-import { Mail } from 'lucide-react';
+import { Mail, Github, Twitter, Globe, Zap, Heart } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="w-full mt-auto print:hidden">
-      <div className="mx-4 md:mx-6 py-8 border-t border-white/20 backdrop-blur-lg bg-white/10 dark:bg-white/10 rounded-t-2xl">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
-            
-            {/* About Section */}
-            <div className="md:col-span-2">
-              <h3 className="font-bold text-lg mb-2 text-foreground">ToolifyHub</h3>
-              <p className="text-sm text-muted-foreground max-w-md mx-auto md:mx-0">
-                Your one-stop solution for professional, fast, and free online utilities to boost your productivity.
-              </p>
+    <footer className="w-full bg-[#050A14] border-t border-white/[0.05] pt-20 pb-10 print:hidden relative z-20">
+      <div className="container mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+          
+          {/* Logo & Tagline */}
+          <div className="md:col-span-2 space-y-6">
+            <div className="flex items-center gap-2 font-black text-2xl tracking-tighter">
+                <div className="p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg">
+                    <Zap className="w-5 h-5 text-white" />
+                </div>
+                ToolifyHub
             </div>
-
-            {/* Company Section */}
-            <div>
-              <h3 className="font-bold text-lg mb-2 text-foreground">Company</h3>
-              <ul className="space-y-2">
-                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-opacity">About Us</Link></li>
-                <li><Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-opacity">Blog</Link></li>
-                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-opacity">Contact Us</Link></li>
-              </ul>
+            <p className="text-slate-400 text-sm max-w-sm leading-relaxed">
+                The web's most powerful collection of free, high-performance utilities. 
+                Built for developers, designers, and power users. 
+                No tracking, no signups, just speed.
+            </p>
+            <div className="flex gap-4">
+                {[
+                    { icon: Twitter, href: "#" },
+                    { icon: Github, href: "#" },
+                    { icon: Globe, href: "#" },
+                    { icon: Mail, href: "mailto:goherkhan12131415@gmail.com" },
+                ].map((social, i) => (
+                    <a key={i} href={social.href} className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/[0.05] flex items-center justify-center hover:bg-blue-500/10 hover:border-blue-500/50 hover:text-blue-400 transition-all">
+                        <social.icon className="w-5 h-5" />
+                    </a>
+                ))}
             </div>
-
-            {/* Legal Section */}
-            <div>
-              <h3 className="font-bold text-lg mb-2 text-foreground">Legal</h3>
-              <ul className="space-y-2">
-                <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-foreground transition-opacity">Privacy Policy</Link></li>
-                <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-foreground transition-opacity">Terms of Service</Link></li>
-              </ul>
-            </div>
-
           </div>
-          <div className="border-t border-black/10 dark:border-white/10 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-             <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} ToolifyHub. All rights reserved.</p>
-            <div className="flex justify-center md:justify-start space-x-4 text-muted-foreground">
-                <a href="mailto:goherkhan12131415@gmail.com" aria-label="Email" className="hover:text-foreground transition-opacity">
-                  <Mail className="w-6 h-6" />
-                </a>
-              </div>
+
+          {/* Links Grid */}
+          <div className="grid grid-cols-2 md:col-span-2 gap-8">
+            <div className="space-y-4">
+              <h3 className="font-bold text-xs uppercase tracking-[0.2em] text-blue-500">Platform</h3>
+              <ul className="space-y-3">
+                <li><Link href="/about" className="text-slate-400 hover:text-white transition-colors text-sm">About Us</Link></li>
+                <li><Link href="/blog" className="text-slate-400 hover:text-white transition-colors text-sm">Our Blog</Link></li>
+                <li><Link href="/contact" className="text-slate-400 hover:text-white transition-colors text-sm">Contact Support</Link></li>
+              </ul>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="font-bold text-xs uppercase tracking-[0.2em] text-purple-500">Legal</h3>
+              <ul className="space-y-3">
+                <li><Link href="/privacy-policy" className="text-slate-400 hover:text-white transition-colors text-sm">Privacy Policy</Link></li>
+                <li><Link href="/terms-of-service" className="text-slate-400 hover:text-white transition-colors text-sm">Terms of Service</Link></li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+
+        <div className="border-t border-white/[0.05] pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-slate-500 text-xs font-medium">
+            © {new Date().getFullYear()} ToolifyHub. Global high-performance tools for everyone.
+          </p>
+          <div className="flex items-center gap-2 text-slate-500 text-xs">
+              Built with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> globally.
           </div>
         </div>
       </div>
