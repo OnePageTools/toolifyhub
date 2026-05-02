@@ -1,4 +1,3 @@
-
 import { MetadataRoute } from 'next'
 import { tools } from '@/lib/tools';
 
@@ -16,6 +15,16 @@ const articles = [
     { href: '/blog/plagiarism-checker-free-online' },
     { href: '/blog/word-to-pdf-converter-free' },
     { href: '/blog/currency-converter-free-online' },
+    { href: '/blog/free-password-generator-online' },
+    { href: '/blog/free-word-counter-online' },
+    { href: '/blog/bmi-calculator-online-free' },
+    { href: '/blog/free-invoice-generator-online' },
+    { href: '/blog/loan-emi-calculator-free-online' },
+    { href: '/blog/typing-speed-test-online-free' },
+    { href: '/blog/passport-photo-maker-online-free' },
+    { href: '/blog/number-to-words-converter-free' },
+    { href: '/blog/free-pomodoro-timer-online' },
+    { href: '/blog/youtube-thumbnail-downloader-free' },
 ];
  
 export default function sitemap(): MetadataRoute.Sitemap {
