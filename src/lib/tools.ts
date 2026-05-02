@@ -41,6 +41,7 @@ import {
   Camera,
   Palette,
   Timer,
+  Monitor,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design';
@@ -196,6 +197,14 @@ export const tools: Tool[] = [
     description: 'Create custom favicons for your website with text or emoji free',
     href: '/tools/favicon-generator',
     icon: Sparkles,
+    category: 'Web',
+    implemented: true,
+  },
+  {
+    name: 'Screen Resolution Checker',
+    description: 'Check your screen resolution width height and device type instantly free',
+    href: '/tools/screen-resolution-checker',
+    icon: Monitor,
     category: 'Web',
     implemented: true,
   },
