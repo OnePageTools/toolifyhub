@@ -36,9 +36,10 @@ import {
   Lock,
   Receipt,
   Keyboard,
+  Sparkles,
 } from 'lucide-react';
 
-export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity';
+export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web';
 
 export type Tool = {
   name: string;
@@ -160,6 +161,14 @@ export const tools: Tool[] = [
     href: '/tools/loan-calculator',
     icon: Calculator,
     category: 'Finance',
+    implemented: true,
+  },
+  {
+    name: 'Favicon Generator',
+    description: 'Create custom favicons for your website with text or emoji free',
+    href: '/tools/favicon-generator',
+    icon: Sparkles,
+    category: 'Web',
     implemented: true,
   },
   {
