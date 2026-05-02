@@ -45,6 +45,7 @@ import {
   CaseSensitive,
   Hash,
   SquarePen,
+  SquareCode,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design';
@@ -217,6 +218,14 @@ export const tools: Tool[] = [
     href: '/tools/number-to-words',
     icon: Hash,
     category: 'Finance',
+    implemented: true,
+  },
+  {
+    name: 'Base64 Encoder',
+    description: 'Encode and decode text and files to Base64 format instantly free',
+    href: '/tools/base64-encoder',
+    icon: SquareCode,
+    category: 'Dev',
     implemented: true,
   },
   {
