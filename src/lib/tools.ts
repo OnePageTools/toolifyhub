@@ -183,6 +183,14 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    name: 'Stopwatch & Timer',
+    description: 'Online stopwatch with lap times and countdown timer with alerts free',
+    href: '/tools/stopwatch-timer',
+    icon: Timer,
+    category: 'Productivity',
+    implemented: true,
+  },
+  {
     name: 'Typing Speed Test',
     description: 'Test your typing speed and accuracy in WPM instantly for free',
     href: '/tools/typing-speed-test',
