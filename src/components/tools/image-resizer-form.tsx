@@ -23,9 +23,7 @@ import {
   ImageIcon, 
   Lock, 
   Unlock, 
-  Maximize2, 
   RefreshCw,
-  Scaling,
   ArrowRight,
   CheckCircle2,
   Loader2
@@ -55,22 +53,20 @@ export function ImageResizerForm() {
   const [width, setWidth] = useState<string>('');
   const [height, setHeight] = useState<string>('');
   const [lockAspectRatio, setLockAspectRatio] = useState(true);
-  const [aspectRatio, setAspectRatio] = useState(1);
   const [percentage, setPercentage] = useState<number>(100);
   
   // Output State
-  const [format, setFormat] = useState<OutputFormat | 'original'>('image/jpeg');
+  const [format, setFormat] = useState<OutputFormat>('image/jpeg');
   const [quality, setQuality] = useState(90);
-  const [resizedBlob, setResizedBlob] = useState<Blob | null>(null);
   const [resizedPreview, setResizedPreview] = useState<string | null>(null);
   
-  const [isLoading, setIsLoading] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isDownloaded, setIsDownloaded] = useState(false);
+  const [isLoadingFile, setIsLoadingFile] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  // Reset and Load Image
   const handleFileSelect = (file: File | undefined) => {
     if (file) {
       if (file.size > 20 * 1024 * 1024) {
@@ -78,7 +74,7 @@ export function ImageResizerForm() {
         return;
       }
 
-      setIsLoading(true);
+      setIsLoadingFile(true);
       setSelectedFile(file);
       
       const reader = new FileReader();
@@ -88,9 +84,8 @@ export function ImageResizerForm() {
           setOriginalImage(img);
           setWidth(img.width.toString());
           setHeight(img.height.toString());
-          setAspectRatio(img.width / img.height);
           setPreviewUrl(e.target?.result as string);
-          setIsLoading(false);
+          setIsLoadingFile(false);
         };
         img.src = e.target?.result as string;
       };
@@ -100,24 +95,26 @@ export function ImageResizerForm() {
 
   const handleWidthChange = (val: string) => {
     setWidth(val);
-    const numWidth = parseInt(val);
-    if (lockAspectRatio && !isNaN(numWidth) && originalImage) {
-      setHeight(Math.round(numWidth / aspectRatio).toString());
+    const newWidth = parseInt(val);
+    if (lockAspectRatio && !isNaN(newWidth) && originalImage) {
+      const newHeight = Math.round(newWidth * (originalImage.height / originalImage.width));
+      setHeight(newHeight.toString());
     }
   };
 
   const handleHeightChange = (val: string) => {
     setHeight(val);
-    const numHeight = parseInt(val);
-    if (lockAspectRatio && !isNaN(numHeight) && originalImage) {
-      setWidth(Math.round(numHeight * aspectRatio).toString());
+    const newHeight = parseInt(val);
+    if (lockAspectRatio && !isNaN(newHeight) && originalImage) {
+      const newWidth = Math.round(newHeight * (originalImage.width / originalImage.height));
+      setWidth(newWidth.toString());
     }
   };
 
   const applyPreset = (pWidth: number, pHeight: number) => {
+    setLockAspectRatio(false);
     setWidth(pWidth.toString());
     setHeight(pHeight.toString());
-    setLockAspectRatio(false); // Presets usually have fixed ratios
   };
 
   const applyPercentage = (p: number) => {
@@ -128,52 +125,83 @@ export function ImageResizerForm() {
     }
   };
 
-  const processResize = useCallback(async () => {
-    if (!originalImage || !width || !height) return;
-
-    setIsLoading(true);
-    const canvas = document.createElement('canvas');
-    canvas.width = parseInt(width);
-    canvas.height = parseInt(height);
-    const ctx = canvas.getContext('2d');
-
-    if (ctx) {
-      // High quality scaling
+  const resizeImage = useCallback((img: HTMLImageElement, newWidth: number, newHeight: number, fmt: string, q: number): Promise<Blob | null> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(null);
+        return;
+      }
+      // Use high quality interpolation
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, newWidth, newHeight);
       
-      const targetFormat = format === 'original' ? selectedFile?.type as OutputFormat : format;
-      
+      const qualityValue = q / 100;
       canvas.toBlob((blob) => {
-        if (blob) {
-          setResizedBlob(blob);
-          if (resizedPreview) URL.revokeObjectURL(resizedPreview);
-          setResizedPreview(URL.createObjectURL(blob));
-        }
-        setIsLoading(false);
-      }, targetFormat, quality / 100);
-    }
-  }, [originalImage, width, height, format, quality, selectedFile, resizedPreview]);
+        resolve(blob);
+      }, fmt, qualityValue);
+    });
+  }, []);
 
-  // Auto-process on changes
+  // Update preview when settings change
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (originalImage) processResize();
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [width, height, format, quality, originalImage, processResize]);
+    if (!originalImage || !width || !height) return;
 
-  const handleDownload = () => {
-    if (!resizedBlob) return;
-    const url = URL.createObjectURL(resizedBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    const ext = (format === 'original' ? selectedFile?.type.split('/')[1] : format.split('/')[1]) || 'jpg';
-    link.download = `resized-${selectedFile?.name.split('.')[0]}.${ext}`;
-    link.click();
-    URL.revokeObjectURL(url);
-    toast({ title: 'Download Started', description: 'Your resized image is being saved.' });
+    const updatePreview = async () => {
+      const w = parseInt(width);
+      const h = parseInt(height);
+      if (isNaN(w) || isNaN(h) || w <= 0 || h <= 0) return;
+
+      const blob = await resizeImage(originalImage, w, h, format, quality);
+      if (blob) {
+        if (resizedPreview) URL.revokeObjectURL(resizedPreview);
+        setResizedPreview(URL.createObjectURL(blob));
+      }
+    };
+
+    const timer = setTimeout(updatePreview, 300);
+    return () => clearTimeout(timer);
+  }, [width, height, format, quality, originalImage, resizeImage]);
+
+  const handleDownload = async () => {
+    if (!originalImage || !selectedFile || !width || !height) return;
+
+    setIsProcessing(true);
+    const w = parseInt(width);
+    const h = parseInt(height);
+
+    if (isNaN(w) || isNaN(h) || w <= 0 || h <= 0) {
+      setIsProcessing(false);
+      return;
+    }
+
+    try {
+      const blob = await resizeImage(originalImage, w, h, format, quality);
+      
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const ext = format.split('/')[1] === 'jpeg' ? 'jpg' : format.split('/')[1];
+        a.download = `resized-${selectedFile.name.split('.')[0]}.${ext}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        setIsDownloaded(true);
+        setTimeout(() => setIsDownloaded(false), 2000);
+      }
+    } catch (err) {
+      console.error("Resize failed:", err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to resize image.' });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleClear = () => {
@@ -181,7 +209,8 @@ export function ImageResizerForm() {
     setOriginalImage(null);
     setPreviewUrl(null);
     setResizedPreview(null);
-    setResizedBlob(null);
+    setWidth('');
+    setHeight('');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -197,16 +226,23 @@ export function ImageResizerForm() {
     <div className="space-y-8">
       {!previewUrl ? (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <label className="flex flex-col items-center justify-center w-full h-80 border-2 border-dashed border-slate-700 rounded-3xl bg-slate-800/30 hover:bg-slate-800/50 transition-all cursor-pointer group">
-            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-              <div className="p-4 bg-blue-500/10 rounded-full mb-4 group-hover:scale-110 transition-transform">
-                <Upload className="w-10 h-10 text-blue-500" />
-              </div>
-              <p className="mb-2 text-xl font-bold text-slate-200">Click to upload or drag & drop</p>
-              <p className="text-sm text-slate-500">JPG, PNG, WEBP or GIF (Max 20MB)</p>
+          {isLoadingFile ? (
+            <div className="flex flex-col items-center justify-center w-full h-80 border-2 border-dashed border-slate-700 rounded-3xl bg-slate-800/30">
+               <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
+               <p className="text-lg font-bold text-slate-200">Loading Image...</p>
             </div>
-            <Input type="file" ref={fileInputRef} accept="image/*" onChange={(e) => handleFileSelect(e.target.files?.[0])} className="hidden" />
-          </label>
+          ) : (
+            <label className="flex flex-col items-center justify-center w-full h-80 border-2 border-dashed border-slate-700 rounded-3xl bg-slate-800/30 hover:bg-slate-800/50 transition-all cursor-pointer group">
+              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <div className="p-4 bg-blue-500/10 rounded-full mb-4 group-hover:scale-110 transition-transform">
+                  <Upload className="w-10 h-10 text-blue-500" />
+                </div>
+                <p className="mb-2 text-xl font-bold text-slate-200">Click to upload or drag & drop</p>
+                <p className="text-sm text-slate-500">JPG, PNG, WEBP or GIF (Max 20MB)</p>
+              </div>
+              <Input type="file" ref={fileInputRef} accept="image/*" onChange={(e) => handleFileSelect(e.target.files?.[0])} className="hidden" />
+            </label>
+          )}
         </motion.div>
       ) : (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -301,15 +337,14 @@ export function ImageResizerForm() {
               <div className="space-y-6 pt-6 border-t border-slate-800">
                 <div className="space-y-4">
                   <Label className="text-slate-300 font-bold uppercase tracking-wider text-xs">Output Format</Label>
-                  <Select value={format} onValueChange={(v: any) => setFormat(v)}>
-                    <SelectTrigger className="bg-slate-900 border-slate-700 h-12">
+                  <Select value={format} onValueChange={(v: OutputFormat) => setFormat(v)}>
+                    <SelectTrigger className="bg-slate-900 border-slate-700 h-12 text-slate-200">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-slate-900 border-slate-700 text-slate-200">
                       <SelectItem value="image/jpeg">JPEG (Smaller Size)</SelectItem>
                       <SelectItem value="image/png">PNG (Lossless)</SelectItem>
                       <SelectItem value="image/webp">WEBP (Optimized)</SelectItem>
-                      <SelectItem value="original">Same as Original</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -328,11 +363,21 @@ export function ImageResizerForm() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
                 <Button 
                   onClick={handleDownload} 
-                  disabled={isLoading || !resizedBlob}
-                  className="h-14 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 font-bold text-lg rounded-xl shadow-xl shadow-emerald-600/20"
+                  disabled={isProcessing || !width || !height}
+                  className={cn(
+                    "h-14 font-bold text-lg rounded-xl shadow-xl transition-all duration-300",
+                    isDownloaded 
+                      ? "bg-emerald-600 hover:bg-emerald-500 text-white" 
+                      : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-emerald-600/20"
+                  )}
                 >
-                  {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Download className="mr-2 h-5 w-5" />}
-                  Download Image
+                  {isProcessing ? (
+                    <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Processing...</>
+                  ) : isDownloaded ? (
+                    <><CheckCircle2 className="mr-2 h-5 w-5" /> Downloaded!</>
+                  ) : (
+                    <><Download className="mr-2 h-5 w-5" /> Download Image</>
+                  )}
                 </Button>
                 <Button variant="ghost" onClick={handleClear} className="h-14 text-slate-500 hover:text-red-400">
                   <Trash2 className="mr-2 h-5 w-5" /> Start Over
@@ -358,16 +403,11 @@ export function ImageResizerForm() {
                 <Card className="bg-slate-800/40 border-slate-700 overflow-hidden">
                    <div className="p-3 border-b border-slate-700 bg-slate-900/50 flex justify-between items-center">
                     <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Resized Preview</span>
-                    <span className="text-[10px] font-mono text-blue-400">{width}x{height} {resizedBlob && `• ~${formatBytes(resizedBlob.size)}`}</span>
+                    <span className="text-[10px] font-mono text-blue-400">{width}x{height}</span>
                   </div>
                   <CardContent className="p-4 flex items-center justify-center min-h-[250px] bg-slate-950/20 relative">
                     <AnimatePresence mode="wait">
-                      {isLoading ? (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-3">
-                          <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
-                          <span className="text-xs text-slate-500 font-bold uppercase tracking-widest">Processing...</span>
-                        </motion.div>
-                      ) : resizedPreview ? (
+                      {resizedPreview ? (
                         <motion.img 
                           key={resizedPreview}
                           initial={{ opacity: 0, scale: 0.95 }} 
@@ -378,8 +418,8 @@ export function ImageResizerForm() {
                         />
                       ) : (
                         <div className="flex flex-col items-center gap-2 text-slate-600">
-                          <RefreshCw className="w-8 h-8" />
-                          <span className="text-[10px] font-bold uppercase">Awaiting Changes</span>
+                          <RefreshCw className="w-8 h-8 animate-spin" />
+                          <span className="text-[10px] font-bold uppercase">Preparing Preview...</span>
                         </div>
                       )}
                     </AnimatePresence>
@@ -388,19 +428,19 @@ export function ImageResizerForm() {
               </div>
 
               {/* Comparison Info */}
-              {resizedBlob && selectedFile && (
+              {originalImage && width && height && (
                 <div className="bg-[#1E293B] border border-slate-700 p-4 rounded-2xl flex flex-wrap items-center justify-around gap-6 shadow-lg">
                   <div className="flex flex-col items-center">
                     <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Scale Factor</span>
-                    <span className="text-lg font-black text-slate-100">{(parseInt(width) / originalImage!.width).toFixed(2)}x</span>
+                    <span className="text-lg font-black text-slate-100">{(parseInt(width) / originalImage.width).toFixed(2)}x</span>
                   </div>
                   <div className="h-8 w-px bg-slate-800 hidden sm:block" />
                   <div className="flex flex-col items-center">
                     <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Format Transition</span>
                     <div className="flex items-center gap-2">
-                       <span className="text-xs font-bold text-slate-400">{selectedFile.type.split('/')[1].toUpperCase()}</span>
+                       <span className="text-xs font-bold text-slate-400">{selectedFile?.type.split('/')[1].toUpperCase()}</span>
                        <ArrowRight className="w-3 h-3 text-slate-600" />
-                       <span className="text-xs font-bold text-blue-400">{(format === 'original' ? selectedFile.type : format).split('/')[1].toUpperCase()}</span>
+                       <span className="text-xs font-bold text-blue-400">{format.split('/')[1].toUpperCase()}</span>
                     </div>
                   </div>
                   <div className="h-8 w-px bg-slate-800 hidden sm:block" />
