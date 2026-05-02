@@ -35,6 +35,7 @@ import {
   Legend
 } from 'recharts';
 import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type ResultData = {
   monthlyPayment: number;
