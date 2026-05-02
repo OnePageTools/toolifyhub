@@ -15,12 +15,14 @@ import {
   ClipboardCheck, 
   RotateCcw,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  RefreshCw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-// --- Utils ---
+// --- Color Conversion Utilities ---
+
 const hexToRgb = (hex: string) => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? {
@@ -31,7 +33,11 @@ const hexToRgb = (hex: string) => {
 };
 
 const rgbToHex = (r: number, g: number, b: number) => {
-  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+  const toHex = (c: number) => {
+    const hex = Math.round(c).toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  };
+  return "#" + toHex(r) + toHex(g) + toHex(b);
 };
 
 const rgbToHsl = (r: number, g: number, b: number) => {
@@ -77,315 +83,310 @@ const hslToRgb = (h: number, s: number, l: number) => {
   return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
 };
 
-const rgbToCmyk = (r: number, g: number, b: number) => {
-  let c = 1 - (r / 255);
-  let m = 1 - (g / 255);
-  let y = 1 - (b / 255);
-  let k = Math.min(c, m, y);
-  
-  if (k === 1) return { c: 0, m: 0, y: 0, k: 100 };
-  
-  c = Math.round(((c - k) / (1 - k)) * 100);
-  m = Math.round(((m - k) / (1 - k)) * 100);
-  y = Math.round(((y - k) / (1 - k)) * 100);
-  k = Math.round(k * 100);
-  
-  return { c, m, y, k };
-};
-
 export function ColorPickerForm() {
   const [hex, setHex] = useState('#3B82F6');
-  const [hex2, setHex2] = useState('#8B5CF6'); // For gradient
-  const [gradientDir, setGradientDir] = useState('to right');
   const [history, setHistory] = useState<string[]>([]);
   const [isCopied, setIsCopied] = useState<string | null>(null);
+  
+  // Gradient state
+  const [gradColor1, setGradColor1] = useState('#3B82F6');
+  const [gradColor2, setGradColor2] = useState('#8B5CF6');
+  const [gradDir, setGradDir] = useState('to right');
+
+  // Random palette state
+  const [randomPalette, setRandomPalette] = useState<string[]>([]);
+
   const { toast } = useToast();
 
   const rgb = useMemo(() => hexToRgb(hex), [hex]);
   const hsl = useMemo(() => rgbToHsl(rgb.r, rgb.g, rgb.b), [rgb]);
-  const cmyk = useMemo(() => rgbToCmyk(rgb.r, rgb.g, rgb.b), [rgb]);
-
-  const addToHistory = useCallback((newHex: string) => {
-    setHistory(prev => {
-      const filtered = prev.filter(h => h !== newHex);
-      return [newHex, ...filtered].slice(0, 10);
-    });
-  }, []);
-
-  const handleColorChange = (newHex: string) => {
-    setHex(newHex.toUpperCase());
-    addToHistory(newHex.toUpperCase());
-  };
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text).then(() => {
       setIsCopied(id);
       setTimeout(() => setIsCopied(null), 2000);
-      toast({ title: "Copied!", description: `"${text}" copied to clipboard.` });
+      toast({ title: "Copied!", description: text });
     });
   };
 
-  const generateRandom = () => {
-    const r = Math.floor(Math.random() * 256);
-    const g = Math.floor(Math.random() * 256);
-    const b = Math.floor(Math.random() * 256);
-    handleColorChange(rgbToHex(r, g, b));
+  const updateMainColor = (newHex: string) => {
+    const upperHex = newHex.toUpperCase();
+    setHex(upperHex);
+    setHistory(prev => {
+      const filtered = prev.filter(h => h !== upperHex);
+      return [upperHex, ...filtered].slice(0, 10);
+    });
   };
 
   const generateRandomPalette = () => {
-      const newPalette = Array.from({ length: 5 }, () => {
-          const r = Math.floor(Math.random() * 256);
-          const g = Math.floor(Math.random() * 256);
-          const b = Math.floor(Math.random() * 256);
-          return rgbToHex(r, g, b);
-      });
-      handleColorChange(newPalette[0]);
-      toast({ title: "New Palette!", description: "Random color palette generated." });
+    const palette = Array.from({ length: 5 }, () => {
+      const r = Math.floor(Math.random() * 256);
+      const g = Math.floor(Math.random() * 256);
+      const b = Math.floor(Math.random() * 256);
+      return rgbToHex(r, g, b).toUpperCase();
+    });
+    setRandomPalette(palette);
   };
 
-  // --- Harmonies ---
-  const harmonies = useMemo(() => {
+  useEffect(() => {
+    generateRandomPalette();
+  }, []);
+
+  // --- Palettes Logic ---
+  const palettes = useMemo(() => {
     const { h, s, l } = hsl;
-
-    const complementary = rgbToHex(...Object.values(hslToRgb((h + 180) % 360, s, l)) as [number, number, number]);
     
-    const analogous = [
-        rgbToHex(...Object.values(hslToRgb((h + 30) % 360, s, l)) as [number, number, number]),
-        rgbToHex(...Object.values(hslToRgb((h - 30 + 360) % 360, s, l)) as [number, number, number]),
-    ];
+    const getHexFromHsl = (newH: number, newS: number, newL: number) => {
+      const rxt = hslToRgb((newH + 360) % 360, newS, newL);
+      return rgbToHex(rxt.r, rxt.g, rxt.b).toUpperCase();
+    };
 
-    const triadic = [
-        rgbToHex(...Object.values(hslToRgb((h + 120) % 360, s, l)) as [number, number, number]),
-        rgbToHex(...Object.values(hslToRgb((h + 240) % 360, s, l)) as [number, number, number]),
-    ];
-
-    const monochromatic = [10, 30, 50, 70, 90].map(light => 
-        rgbToHex(...Object.values(hslToRgb(h, s, light)) as [number, number, number])
-    );
-
-    return { complementary, analogous, triadic, monochromatic };
+    return {
+      complementary: [getHexFromHsl(h + 180, s, l)],
+      analogous: [getHexFromHsl(h - 30, s, l), getHexFromHsl(h + 30, s, l)],
+      triadic: [getHexFromHsl(h + 120, s, l), getHexFromHsl(h + 240, s, l)],
+      monochromatic: [20, 35, 50, 65, 80].map(lightness => getHexFromHsl(h, s, lightness))
+    };
   }, [hsl]);
 
-  const gradientCss = `linear-gradient(${gradientDir}, ${hex}, ${hex2})`;
+  const gradientCss = `background: linear-gradient(${gradDir}, ${gradColor1}, ${gradColor2});`;
+
+  const Swatch = ({ color, size = "md", label = false }: { color: string, size?: "sm" | "md" | "lg", label?: boolean }) => (
+    <div className="flex flex-col items-center gap-2 group">
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => {
+          updateMainColor(color);
+          handleCopy(color, `swatch-${color}`);
+        }}
+        className={cn(
+          "rounded-xl border-2 border-slate-700 shadow-lg cursor-pointer relative overflow-hidden",
+          size === "sm" ? "w-8 h-8 rounded-full" : size === "md" ? "w-14 h-14" : "w-20 h-20"
+        )}
+        style={{ backgroundColor: color }}
+      >
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
+          {isCopied === `swatch-${color}` ? <ClipboardCheck className="w-5 h-5 text-white" /> : <Copy className="w-5 h-5 text-white" />}
+        </div>
+      </motion.button>
+      {label && <span className="font-mono text-[10px] text-slate-500 font-bold">{color}</span>}
+      {isCopied === `swatch-${color}` && <span className="text-[10px] text-emerald-400 font-bold animate-in fade-in zoom-in">Copied!</span>}
+    </div>
+  );
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* Left Column: Picker & Values */}
-        <div className="lg:col-span-5 space-y-6">
-          <Card className="bg-[#1E293B] border-slate-700 overflow-hidden">
-            <CardHeader className="border-b border-slate-800/50 pb-4">
+        {/* SECTION 1: COLOR PICKER */}
+        <div className="space-y-6">
+          <Card className="bg-[#1E293B] border-slate-700 shadow-xl overflow-hidden">
+            <CardHeader className="border-b border-slate-800/50">
               <CardTitle className="text-lg flex items-center gap-2">
-                <Pipette className="w-5 h-5 text-blue-400" /> Main Picker
+                <Pipette className="w-5 h-5 text-blue-400" /> Color Selection
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
               <div className="flex flex-col items-center gap-6">
                 <div 
-                    className="w-full h-40 rounded-2xl shadow-2xl border-4 border-slate-800 relative group cursor-pointer overflow-hidden"
-                    style={{ backgroundColor: hex }}
+                  className="w-full h-48 rounded-2xl shadow-2xl border-4 border-slate-800 relative group"
+                  style={{ backgroundColor: hex }}
                 >
-                    <input 
-                        type="color" 
-                        value={hex} 
-                        onChange={(e) => handleColorChange(e.target.value)}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 text-white font-bold">
-                        CLICK TO PICK
-                    </div>
+                  <input 
+                    type="color" 
+                    value={hex} 
+                    onChange={(e) => updateMainColor(e.target.value)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10 pointer-events-none">
+                    <span className="bg-white/90 text-slate-900 px-3 py-1 rounded-full text-xs font-bold shadow-lg">CLICK TO CHANGE</span>
+                  </div>
                 </div>
-                
+
                 <div className="w-full grid grid-cols-1 gap-3">
-                   {[
+                  {[
                     { label: 'HEX', value: hex },
                     { label: 'RGB', value: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` },
                     { label: 'HSL', value: `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)` },
-                    { label: 'CMYK', value: `cmyk(${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%)` },
-                   ].map((item) => (
-                    <div key={item.label} className="flex items-center justify-between p-3 bg-slate-900/50 border border-slate-800 rounded-xl hover:bg-slate-900 transition-colors">
-                        <div className="flex flex-col">
-                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.label}</span>
-                            <span className="font-mono text-sm text-slate-200 font-semibold">{item.value}</span>
-                        </div>
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => handleCopy(item.value, item.label)}
-                            className="h-8 w-8 text-slate-400 hover:text-blue-400"
-                        >
-                            {isCopied === item.label ? <ClipboardCheck className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                        </Button>
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center justify-between p-3 bg-slate-900/50 border border-slate-800 rounded-xl">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.label}</span>
+                        <span className="font-mono text-sm text-slate-200 font-semibold">{item.value}</span>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleCopy(item.value, item.label)}
+                        className="h-8 text-slate-400 hover:text-blue-400"
+                      >
+                        {isCopied === item.label ? <><ClipboardCheck className="w-4 h-4 mr-2" /> Copied!</> : <><Copy className="w-4 h-4 mr-2" /> Copy</>}
+                      </Button>
                     </div>
-                   ))}
-                </div>
-
-                <div className="w-full flex gap-2">
-                    <Button onClick={generateRandom} variant="outline" className="flex-1 border-slate-700 hover:bg-slate-800">
-                        <RotateCcw className="w-4 h-4 mr-2" /> Shuffle
-                    </Button>
-                    <Button onClick={generateRandomPalette} className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600">
-                        <Sparkles className="w-4 h-4 mr-2" /> Random Palette
-                    </Button>
+                  ))}
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* History */}
+          {/* SECTION 5: COLOR HISTORY */}
           <Card className="bg-[#1E293B] border-slate-700">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                <History className="w-4 h-4" /> Recent History
+            <CardHeader className="py-3">
+              <CardTitle className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                <History className="w-4 h-4" /> Recent Colors
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-4 pt-0">
-               <div className="flex flex-wrap gap-2">
-                 {history.length > 0 ? history.map((h, i) => (
-                    <button 
-                        key={i}
-                        onClick={() => handleColorChange(h)}
-                        className="w-10 h-10 rounded-lg border border-slate-700 shadow-sm transition-transform hover:scale-110 active:scale-95"
-                        style={{ backgroundColor: h }}
-                        title={h}
-                    />
-                 )) : (
-                    <p className="text-xs text-slate-500 italic">No colors picked yet.</p>
-                 )}
-               </div>
+            <CardContent className="px-6 pb-4">
+              <div className="flex flex-wrap gap-3">
+                {history.length > 0 ? history.map((h, i) => (
+                  <Swatch key={`${h}-${i}`} color={h} size="sm" />
+                )) : (
+                  <p className="text-xs text-slate-500 italic">No history yet.</p>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Right Column: Palettes & More */}
-        <div className="lg:col-span-7 space-y-6">
-          
-          {/* Palettes */}
-          <Card className="bg-[#1E293B] border-slate-700">
-            <CardHeader>
+        {/* SECTION 2: PALETTE GENERATOR */}
+        <div className="space-y-6">
+          <Card className="bg-[#1E293B] border-slate-700 shadow-xl h-full">
+            <CardHeader className="border-b border-slate-800/50">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Palette className="w-5 h-5 text-purple-400" /> Color Harmonies
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-8">
-              
-              <div className="space-y-4">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Complementary</p>
-                <div className="flex gap-4">
-                    <Swatch color={hex} onClick={handleColorChange} onCopy={(c) => handleCopy(c, 'comp1')} />
-                    <Swatch color={harmonies.complementary} onClick={handleColorChange} onCopy={(c) => handleCopy(c, 'comp2')} />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Analogous</p>
-                <div className="flex gap-4">
-                    <Swatch color={harmonies.analogous[0]} onClick={handleColorChange} onCopy={(c) => handleCopy(c, 'ana1')} />
-                    <Swatch color={hex} onClick={handleColorChange} onCopy={(c) => handleCopy(c, 'ana2')} />
-                    <Swatch color={harmonies.analogous[1]} onClick={handleColorChange} onCopy={(c) => handleCopy(c, 'ana3')} />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Triadic</p>
-                <div className="flex gap-4">
-                    <Swatch color={harmonies.triadic[0]} onClick={handleColorChange} onCopy={(c) => handleCopy(c, 'tri1')} />
-                    <Swatch color={hex} onClick={handleColorChange} onCopy={(c) => handleCopy(c, 'tri2')} />
-                    <Swatch color={harmonies.triadic[1]} onClick={handleColorChange} onCopy={(c) => handleCopy(c, 'tri3')} />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Monochromatic</p>
-                <div className="flex gap-4 flex-wrap">
-                    {harmonies.monochromatic.map((c, i) => (
-                        <Swatch key={i} color={c} onClick={handleColorChange} onCopy={(c) => handleCopy(c, `mono${i}`)} />
+              {[
+                { title: 'Complementary', colors: palettes.complementary },
+                { title: 'Analogous', colors: palettes.analogous },
+                { title: 'Triadic', colors: palettes.triadic },
+                { title: 'Monochromatic', colors: palettes.monochromatic },
+              ].map((group) => (
+                <div key={group.title} className="space-y-3">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{group.title}</p>
+                  <div className="flex flex-wrap gap-4">
+                    {group.colors.map((c, i) => (
+                      <Swatch key={`${group.title}-${i}`} color={c} label />
                     ))}
+                  </div>
                 </div>
-              </div>
-
+              ))}
             </CardContent>
           </Card>
-
-          {/* Gradient Generator */}
-          <Card className="bg-[#1E293B] border-slate-700 overflow-hidden">
-            <CardHeader className="border-b border-slate-800/50">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Layers className="w-5 h-5 text-emerald-400" /> Gradient Builder
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6 space-y-6">
-                <div 
-                    className="w-full h-24 rounded-xl shadow-inner border border-white/5"
-                    style={{ background: gradientCss }}
-                />
-                
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
-                    <div className="space-y-2">
-                        <Label className="text-[10px] uppercase font-bold text-slate-500">Color Start</Label>
-                        <div className="flex gap-2">
-                            <input type="color" value={hex} onChange={(e) => setHex(e.target.value)} className="w-10 h-10 p-0 border-0 bg-transparent cursor-pointer rounded-lg overflow-hidden" />
-                            <Input value={hex} onChange={(e) => setHex(e.target.value)} className="bg-slate-900 border-slate-800 font-mono text-xs uppercase" />
-                        </div>
-                    </div>
-                    <div className="flex justify-center text-slate-600">
-                        <ArrowRight className="hidden sm:block" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-[10px] uppercase font-bold text-slate-500">Color End</Label>
-                        <div className="flex gap-2">
-                            <input type="color" value={hex2} onChange={(e) => setHex2(e.target.value)} className="w-10 h-10 p-0 border-0 bg-transparent cursor-pointer rounded-lg overflow-hidden" />
-                            <Input value={hex2} onChange={(e) => setHex2(e.target.value)} className="bg-slate-900 border-slate-800 font-mono text-xs uppercase" />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                    {['to right', 'to bottom', 'to bottom right', 'to top right'].map(dir => (
-                        <Button 
-                            key={dir} 
-                            variant={gradientDir === dir ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => setGradientDir(dir)}
-                            className="text-[10px] uppercase font-bold rounded-full h-8"
-                        >
-                            {dir}
-                        </Button>
-                    ))}
-                </div>
-
-                <Button 
-                    onClick={() => handleCopy(`background: ${gradientCss};`, 'grad')} 
-                    variant="secondary" 
-                    className="w-full font-bold h-12"
-                >
-                    {isCopied === 'grad' ? <ClipboardCheck className="w-4 h-4 mr-2 text-emerald-400" /> : <Copy className="w-4 h-4 mr-2" />}
-                    Copy CSS Gradient
-                </Button>
-            </CardContent>
-          </Card>
-
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* SECTION 4: GRADIENT GENERATOR */}
+        <Card className="bg-[#1E293B] border-slate-700 shadow-xl overflow-hidden">
+          <CardHeader className="border-b border-slate-800/50">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Layers className="w-5 h-5 text-emerald-400" /> Gradient Builder
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 space-y-6">
+            <div 
+              className="w-full h-32 rounded-xl shadow-inner border border-white/5"
+              style={{ background: `linear-gradient(${gradDir}, ${gradColor1}, ${gradColor2})` }}
+            />
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-xs font-bold text-slate-500 uppercase">Start Color</Label>
+                <div className="flex gap-2">
+                  <input type="color" value={gradColor1} onChange={(e) => setGradColor1(e.target.value)} className="w-10 h-10 p-0 border-0 bg-transparent cursor-pointer rounded-lg overflow-hidden" />
+                  <Input value={gradColor1} onChange={(e) => setGradColor1(e.target.value)} className="bg-slate-900 border-slate-800 font-mono text-xs uppercase h-10" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-bold text-slate-500 uppercase">End Color</Label>
+                <div className="flex gap-2">
+                  <input type="color" value={gradColor2} onChange={(e) => setGradColor2(e.target.value)} className="w-10 h-10 p-0 border-0 bg-transparent cursor-pointer rounded-lg overflow-hidden" />
+                  <Input value={gradColor2} onChange={(e) => setGradColor2(e.target.value)} className="bg-slate-900 border-slate-800 font-mono text-xs uppercase h-10" />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-xs font-bold text-slate-500 uppercase">Direction</Label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: 'Horizontal', value: 'to right' },
+                  { label: 'Vertical', value: 'to bottom' },
+                  { label: 'Diagonal', value: 'to bottom right' },
+                ].map(dir => (
+                  <Button 
+                    key={dir.value} 
+                    variant={gradDir === dir.value ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setGradDir(dir.value)}
+                    className="text-[10px] uppercase font-bold rounded-full h-8"
+                  >
+                    {dir.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-3 bg-slate-900/50 border border-slate-800 rounded-xl space-y-2">
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">CSS Code</p>
+              <code className="block font-mono text-xs text-emerald-400 break-all">{gradientCss}</code>
+            </div>
+
+            <Button 
+              onClick={() => handleCopy(gradientCss, 'grad')} 
+              variant="secondary" 
+              className="w-full font-bold h-12"
+            >
+              {isCopied === 'grad' ? <ClipboardCheck className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
+              {isCopied === 'grad' ? 'Copied CSS!' : 'Copy CSS Gradient'}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* SECTION 3: RANDOM PALETTE */}
+        <Card className="bg-[#1E293B] border-slate-700 shadow-xl">
+          <CardHeader className="border-b border-slate-800/50 flex flex-row items-center justify-between">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-400" /> Random Palette
+            </CardTitle>
+            <Button onClick={generateRandomPalette} size="sm" variant="ghost" className="text-slate-400 hover:text-white">
+              <RefreshCw className="w-4 h-4 mr-2" /> Shuffle
+            </Button>
+          </CardHeader>
+          <CardContent className="p-6 space-y-6">
+            <div className="grid grid-cols-5 gap-3">
+              {randomPalette.map((c, i) => (
+                <div key={i} className="space-y-2 flex flex-col items-center">
+                  <div 
+                    className="w-full aspect-square rounded-xl border border-white/5 shadow-lg"
+                    style={{ backgroundColor: c }}
+                  />
+                  <span className="font-mono text-[10px] text-slate-500 font-bold">{c}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 hover:bg-slate-800" 
+                    onClick={() => handleCopy(c, `rand-${i}`)}
+                  >
+                    {isCopied === `rand-${i}` ? <ClipboardCheck className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  </Button>
+                </div>
+              ))}
+            </div>
+            
+            <Button 
+              onClick={() => handleCopy(randomPalette.join(', '), 'rand-all')} 
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 font-bold h-12"
+            >
+              <Copy className="w-4 h-4 mr-2" /> 
+              {isCopied === 'rand-all' ? 'All Codes Copied!' : 'Copy All HEX Codes'}
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
-
-const Swatch = ({ color, onClick, onCopy }: { color: string, onClick: (c: string) => void, onCopy: (c: string) => void }) => (
-    <div className="flex flex-col items-center gap-2 group">
-        <div 
-            className="w-14 h-14 rounded-full border-2 border-slate-800 shadow-lg cursor-pointer transition-all hover:scale-110 active:scale-95 relative"
-            style={{ backgroundColor: color }}
-            onClick={() => onClick(color)}
-        >
-            <button 
-                onClick={(e) => { e.stopPropagation(); onCopy(color); }}
-                className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 rounded-full text-white"
-            >
-                <Copy className="w-4 h-4" />
-            </button>
-        </div>
-        <span className="font-mono text-[10px] text-slate-500 font-bold uppercase">{color}</span>
-    </div>
-);
