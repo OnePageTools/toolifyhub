@@ -37,7 +37,7 @@ import {
   Receipt,
 } from 'lucide-react';
 
-export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business';
+export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance';
 
 export type Tool = {
   name: string;
@@ -143,6 +143,14 @@ export const tools: Tool[] = [
     href: '/tools/invoice-generator',
     icon: Receipt,
     category: 'Business',
+    implemented: true,
+  },
+  {
+    name: 'Loan Calculator',
+    description: 'Calculate monthly EMI and total interest for any loan instantly',
+    href: '/tools/loan-calculator',
+    icon: Calculator,
+    category: 'Finance',
     implemented: true,
   },
   {
