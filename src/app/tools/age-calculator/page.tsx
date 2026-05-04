@@ -1,10 +1,14 @@
-'use client';
-
 import { AgeCalculatorForm } from '@/components/tools/age-calculator-form';
 import { Card, CardContent } from '@/components/ui/card';
-import { CalendarClock } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Free Age Calculator Online — Calculate Exact Age Instantly | ToolifyHub",
+  description: "Calculate your exact age in years months and days free online. No signup needed.",
+};
 
 export default function AgeCalculatorPage() {
   const tool = {
@@ -18,7 +22,7 @@ export default function AgeCalculatorPage() {
         <ToolHeader 
           title="Age Calculator"
           description="Instantly calculate your age and discover fun facts about your journey through time."
-          icon={CalendarClock}
+          icon={<Calendar className="w-6 h-6 md:w-8 md:h-8" />}
           category="Utilities"
         />
 

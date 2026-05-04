@@ -1,10 +1,14 @@
-'use client';
-
 import { YoutubeThumbnailDownloaderForm } from '@/components/tools/youtube-thumbnail-downloader-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { Youtube } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Free YouTube Thumbnail Downloader — Download HD Thumbnails | ToolifyHub",
+  description: "Download any YouTube video thumbnail in HD quality free online. No signup needed.",
+};
 
 export default function YoutubeThumbnailDownloaderPage() {
   const tool = {
@@ -17,8 +21,8 @@ export default function YoutubeThumbnailDownloaderPage() {
       <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
         <ToolHeader 
           title="YouTube Thumbnail Downloader"
-          description="Instantly extract and download high-quality thumbnails from any YouTube video. Just paste the URL or ID below."
-          icon={Youtube}
+          description="Instantly extract and download high-quality thumbnails from any YouTube video."
+          icon={<Youtube className="w-6 h-6 md:w-8 md:h-8" />}
           category="Social Media"
         />
 

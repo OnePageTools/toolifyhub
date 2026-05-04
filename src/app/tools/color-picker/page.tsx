@@ -1,38 +1,34 @@
-'use client';
-
 import { ColorPickerForm } from '@/components/tools/color-picker-form';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Palette } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/tool-header';
+import { RelatedTools } from '@/components/tools/related-tools';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Free Color Picker Online — Pick Colors & Generate Palettes | ToolifyHub",
+  description: "Pick colors get HEX RGB HSL codes and generate palettes free online. No signup needed.",
+};
 
 export default function ColorPickerPage() {
+  const tool = {
+    name: 'Color Picker',
+    url: '/tools/color-picker',
+  };
+
   return (
-    <div className="container mx-auto py-10 px-4">
-      <div className="max-w-7xl mx-auto">
-        <Card className="shadow-2xl border-slate-700 bg-slate-900 rounded-[20px] overflow-hidden">
-          <CardHeader className="text-center bg-slate-800/50 p-8 pb-10 relative">
-             <div className="mx-auto w-fit p-5 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg shadow-blue-500/20">
-                <Palette className="w-10 h-10 text-white" />
-             </div>
-            <CardTitle className="font-headline text-3xl sm:text-4xl font-bold text-slate-100 mb-2">
-              Color Picker & Palette Generator
-            </CardTitle>
-            <CardDescription className="text-slate-400 text-lg max-w-xl mx-auto">
-              Explore colors, extract codes, and build stunning palettes for your next creative project.
-            </CardDescription>
-            <div className="absolute bottom-0 left-0 w-full h-[2px] bg-slate-700/50">
-              <div className="h-full w-1/3 bg-gradient-to-r from-transparent via-blue-500 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-6 md:p-10 bg-slate-900">
-            <ColorPickerForm />
-          </CardContent>
-        </Card>
+    <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <div className="max-w-[1200px] mx-auto space-y-6 md:space-y-8">
+        <ToolHeader 
+          title="Color Picker & Palette Generator"
+          description="Explore colors, extract codes, and build stunning palettes for your next creative project."
+          icon={<Palette className="w-6 h-6 md:w-8 md:h-8" />}
+          category="Design"
+        />
+
+        <ColorPickerForm />
+
+        <RelatedTools currentToolHref={tool.url} />
       </div>
     </div>
   );

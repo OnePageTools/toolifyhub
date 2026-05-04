@@ -1,31 +1,38 @@
-'use client';
-
 import { StopwatchTimerForm } from '@/components/tools/stopwatch-timer-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { Timer } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/tool-header';
+import { RelatedTools } from '@/components/tools/related-tools';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Free Stopwatch & Timer Online — Count Up & Countdown | ToolifyHub",
+  description: "Online stopwatch with lap times and countdown timer free. No signup needed.",
+};
 
 export default function StopwatchTimerPage() {
-  return (
-    <div className="container mx-auto py-12 px-4 page-transition">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <header className="flex flex-col items-center text-center space-y-4 mb-8">
-          <div className="w-[60px] h-[60px] rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-xl text-white">
-            <Timer className="w-8 h-8" />
-          </div>
-          <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-black text-foreground">Stopwatch & Timer</h1>
-            <div className="w-[60px] h-[3px] bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto" />
-          </div>
-          <p className="text-muted-foreground text-lg max-w-xl">
-            Track your time accurately with our high-precision stopwatch or set a countdown for your tasks.
-          </p>
-        </header>
+  const tool = {
+    name: 'Stopwatch & Timer',
+    url: '/tools/stopwatch-timer',
+  };
 
-        <Card className="border-border/50">
-          <CardContent className="p-8 md:p-12">
+  return (
+    <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
+        <ToolHeader 
+          title="Stopwatch & Timer"
+          description="Track your time accurately with our high-precision stopwatch or set a countdown for your tasks."
+          icon={<Timer className="w-6 h-6 md:w-8 md:h-8" />}
+          category="Productivity"
+        />
+
+        <Card className="border-white/[0.08] bg-white/[0.02] md:bg-white/[0.03] rounded-none md:rounded-[24px] border-x-0 md:border-x">
+          <CardContent className="p-5 md:p-12">
             <StopwatchTimerForm />
           </CardContent>
         </Card>
+
+        <RelatedTools currentToolHref={tool.url} />
       </div>
     </div>
   );

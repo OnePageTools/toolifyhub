@@ -8,11 +8,11 @@ import { motion } from 'framer-motion';
 interface ToolHeaderProps {
   title: string;
   description: string;
-  icon: React.ElementType;
+  icon: React.ReactNode; // Changed from ElementType to ReactNode to allow server-side passing
   category: string;
 }
 
-export function ToolHeader({ title, description, icon: Icon, category }: ToolHeaderProps) {
+export function ToolHeader({ title, description, icon, category }: ToolHeaderProps) {
   return (
     <header className="flex flex-col items-center text-center space-y-4 mb-8 md:mb-12">
       {/* Breadcrumb */}
@@ -22,9 +22,9 @@ export function ToolHeader({ title, description, icon: Icon, category }: ToolHea
         <span className="text-slate-400">{title}</span>
       </nav>
 
-      {/* Icon */}
+      {/* Icon Container */}
       <div className="w-[48px] h-[48px] md:w-[64px] md:h-[64px] rounded-xl md:rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-xl text-white">
-        <Icon className="w-6 h-6 md:w-8 md:h-8" />
+        {icon}
       </div>
 
       {/* Title Area */}

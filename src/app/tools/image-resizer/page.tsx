@@ -1,10 +1,14 @@
-'use client';
-
 import { ImageResizerForm } from '@/components/tools/image-resizer-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { Expand } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Free Image Resizer Online — Resize Images to Any Size | ToolifyHub",
+  description: "Resize images to custom dimensions or social media presets free online. No signup needed.",
+};
 
 export default function ImageResizerPage() {
   const tool = {
@@ -18,7 +22,7 @@ export default function ImageResizerPage() {
         <ToolHeader 
           title="Image Resizer"
           description="Quickly resize your images for social media or custom requirements without quality loss."
-          icon={Expand}
+          icon={<Expand className="w-6 h-6 md:w-8 md:h-8" />}
           category="Image"
         />
 

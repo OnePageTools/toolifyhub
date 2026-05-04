@@ -1,31 +1,38 @@
-'use client';
-
+import { WordToPdfForm } from '@/components/tools/word-to-pdf-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { FileDown } from 'lucide-react';
-import { WordToPdfForm } from '@/components/tools/word-to-pdf-form';
+import { ToolHeader } from '@/components/tools/tool-header';
+import { RelatedTools } from '@/components/tools/related-tools';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Free Word to PDF Converter Online — Convert DOCX to PDF | ToolifyHub",
+  description: "Convert Word documents to PDF free online. No signup needed. High quality conversion.",
+};
 
 export default function WordToPdfPage() {
-  return (
-    <div className="container mx-auto py-12 px-4 page-transition">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <header className="flex flex-col items-center text-center space-y-4 mb-8">
-          <div className="w-[60px] h-[60px] rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-xl text-white">
-            <FileDown className="w-8 h-8" />
-          </div>
-          <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-black text-foreground">Word to PDF Converter</h1>
-            <div className="w-[60px] h-[3px] bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto" />
-          </div>
-          <p className="text-muted-foreground text-lg max-w-xl">
-            Instantly convert your .docx files to PDF format, right in your browser.
-          </p>
-        </header>
+  const tool = {
+    name: 'Word to PDF',
+    url: '/tools/word-to-pdf',
+  };
 
-        <Card className="border-border/50">
-          <CardContent className="p-8 md:p-12">
+  return (
+    <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
+        <ToolHeader 
+          title="Word to PDF Converter"
+          description="Instantly convert your .docx files to PDF format, right in your browser."
+          icon={<FileDown className="w-6 h-6 md:w-8 md:h-8" />}
+          category="PDF"
+        />
+
+        <Card className="border-white/[0.08] bg-white/[0.02] md:bg-white/[0.03] rounded-none md:rounded-[24px] border-x-0 md:border-x">
+          <CardContent className="p-5 md:p-12">
             <WordToPdfForm />
           </CardContent>
         </Card>
+
+        <RelatedTools currentToolHref={tool.url} />
       </div>
     </div>
   );

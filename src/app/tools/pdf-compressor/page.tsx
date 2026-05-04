@@ -1,31 +1,38 @@
-'use client';
-
 import { PdfCompressorForm } from '@/components/tools/pdf-compressor-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { FileArchive } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/tool-header';
+import { RelatedTools } from '@/components/tools/related-tools';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Free PDF Compressor Online — Reduce PDF File Size | ToolifyHub",
+  description: "Reduce the size of your PDF files free online. No signup needed. Fast and secure.",
+};
 
 export default function PdfCompressorPage() {
-  return (
-    <div className="container mx-auto py-12 px-4 page-transition">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <header className="flex flex-col items-center text-center space-y-4 mb-8">
-          <div className="w-[60px] h-[60px] rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-xl text-white">
-            <FileArchive className="w-8 h-8" />
-          </div>
-          <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-black text-foreground">PDF Compressor</h1>
-            <div className="w-[60px] h-[3px] bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto" />
-          </div>
-          <p className="text-muted-foreground text-lg max-w-xl">
-            Reduce the file size of your PDF documents while maintaining the best possible quality.
-          </p>
-        </header>
+  const tool = {
+    name: 'PDF Compressor',
+    url: '/tools/pdf-compressor',
+  };
 
-        <Card className="border-border/50">
-          <CardContent className="p-8 md:p-12">
+  return (
+    <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
+        <ToolHeader 
+          title="PDF Compressor"
+          description="Reduce the file size of your PDF documents while maintaining the best possible quality."
+          icon={<FileArchive className="w-6 h-6 md:w-8 md:h-8" />}
+          category="PDF"
+        />
+
+        <Card className="border-white/[0.08] bg-white/[0.02] md:bg-white/[0.03] rounded-none md:rounded-[24px] border-x-0 md:border-x">
+          <CardContent className="p-5 md:p-12">
             <PdfCompressorForm />
           </CardContent>
         </Card>
+
+        <RelatedTools currentToolHref={tool.url} />
       </div>
     </div>
   );

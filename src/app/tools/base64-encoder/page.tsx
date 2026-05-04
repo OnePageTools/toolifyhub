@@ -1,31 +1,38 @@
-'use client';
-
 import { Base64EncoderForm } from '@/components/tools/base64-encoder-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { SquareCode } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/tool-header';
+import { RelatedTools } from '@/components/tools/related-tools';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Free Base64 Encoder Decoder Online — Encode & Decode | ToolifyHub",
+  description: "Encode and decode text and files to Base64 free online. No signup needed.",
+};
 
 export default function Base64EncoderPage() {
-  return (
-    <div className="container mx-auto py-12 px-4 page-transition">
-      <div className="max-w-5xl mx-auto space-y-8">
-        <header className="flex flex-col items-center text-center space-y-4 mb-8">
-          <div className="w-[60px] h-[60px] rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-xl text-white">
-            <SquareCode className="w-8 h-8" />
-          </div>
-          <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-black text-foreground">Base64 Encoder & Decoder</h1>
-            <div className="w-[60px] h-[3px] bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto" />
-          </div>
-          <p className="text-muted-foreground text-lg max-w-xl">
-            Securely encode and decode text, files, and images to Base64 format directly in your browser.
-          </p>
-        </header>
+  const tool = {
+    name: 'Base64 Encoder',
+    url: '/tools/base64-encoder',
+  };
 
-        <Card className="border-border/50">
-          <CardContent className="p-8 md:p-12">
+  return (
+    <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
+        <ToolHeader 
+          title="Base64 Encoder & Decoder"
+          description="Securely encode and decode text, files, and images to Base64 format directly in your browser."
+          icon={<SquareCode className="w-6 h-6 md:w-8 md:h-8" />}
+          category="Dev"
+        />
+
+        <Card className="border-white/[0.08] bg-white/[0.02] md:bg-white/[0.03] rounded-none md:rounded-[24px] border-x-0 md:border-x">
+          <CardContent className="p-5 md:p-12">
             <Base64EncoderForm />
           </CardContent>
         </Card>
+
+        <RelatedTools currentToolHref={tool.url} />
       </div>
     </div>
   );

@@ -1,75 +1,39 @@
-
-"use client";
-
-import type { Metadata } from 'next';
 import { BackgroundRemoverForm } from '@/components/tools/background-remover-form';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
-import AIHelper from '@/components/ai-assistant';
-import { Wand2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Scissors } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/tool-header';
+import { RelatedTools } from '@/components/tools/related-tools';
+import type { Metadata } from 'next';
 
-const tool = {
-  name: 'AI Background Remover',
-  url: '/tools/background-remover',
-  title: 'Free AI Background Remover - Erase Background from Image Online',
-  description: 'Instantly remove the background from any image with a single click using our free AI-powered tool. Get a clean, transparent background for your photos.',
-  keywords: 'background remover, remove background, erase background, transparent background, image background remover, free background remover'
+export const metadata: Metadata = {
+  title: "Free Background Remover Online — Remove Image Background Instantly | ToolifyHub",
+  description: "Remove image background free online in seconds. No Photoshop needed. No signup required.",
 };
 
-// Metadata can't be dynamically generated in a client component in this way,
-// but we can set static metadata for the page.
-
-const WebAppSchema = () => (
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{ __html: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": tool.name,
-      "description": tool.description,
-      "applicationCategory": "MultimediaApplication",
-      "operatingSystem": "All",
-      "url": `https://toolifyhub.com${tool.url}`,
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      }
-    })}}
-  />
-);
-
 export default function BackgroundRemoverPage() {
+  const tool = {
+    name: 'Background Remover',
+    url: '/tools/background-remover',
+  };
+
   return (
-    <>
-      <WebAppSchema />
-      <div className="container mx-auto py-10 px-4">
-        <div className="max-w-3xl mx-auto">
-          <Card className="shadow-lg border-primary/20">
-            <CardHeader className="text-center">
-               <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
-                  <Wand2 className="w-10 h-10 text-primary" />
-               </div>
-              <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
-                AI Background Remover
-              </CardTitle>
-              <CardDescription className="text-lg mt-2">
-                Instantly remove the background from any image with a single
-                click.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <BackgroundRemoverForm />
-            </CardContent>
-          </Card>
-        </div>
-        <AIHelper toolName="Background Remover" />
+    <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
+        <ToolHeader 
+          title="Background Remover"
+          description="Instantly remove the background from any image with a single click using AI."
+          icon={<Scissors className="w-6 h-6 md:w-8 md:h-8" />}
+          category="Image"
+        />
+
+        <Card className="border-white/[0.08] bg-white/[0.02] md:bg-white/[0.03] rounded-none md:rounded-[24px] border-x-0 md:border-x">
+          <CardContent className="p-5 md:p-12">
+            <BackgroundRemoverForm />
+          </CardContent>
+        </Card>
+
+        <RelatedTools currentToolHref={tool.url} />
       </div>
-    </>
+    </div>
   );
 }

@@ -1,35 +1,38 @@
-'use client';
-
 import { JsonFormatterForm } from '@/components/tools/json-formatter-form';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Braces } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/tool-header';
+import { RelatedTools } from '@/components/tools/related-tools';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Free JSON Formatter Online — Format & Validate JSON Instantly | ToolifyHub",
+  description: "Format validate and beautify JSON free online. Instant results. No signup needed.",
+};
 
 export default function JsonFormatterPage() {
+  const tool = {
+    name: 'JSON Formatter',
+    url: '/tools/json-formatter',
+  };
+
   return (
-    <div className="container mx-auto py-10 px-4">
-      <div className="max-w-7xl mx-auto">
-        <Card className="shadow-lg border-primary/20 overflow-hidden">
-          <CardHeader className="text-center bg-secondary/50 p-6">
-             <div className="mx-auto w-fit p-4 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
-                <Braces className="w-10 h-10 text-primary" />
-             </div>
-            <CardTitle className="font-headline text-3xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary/80">
-              JSON Formatter & Validator
-            </CardTitle>
-            <CardDescription className="text-lg mt-2 max-w-2xl mx-auto">
-              A professional tool to format, validate, and beautify your JSON data with real-time feedback.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
+    <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
+        <ToolHeader 
+          title="JSON Formatter & Validator"
+          description="A professional tool to format, validate, and beautify your JSON data with real-time feedback."
+          icon={<Braces className="w-6 h-6 md:w-8 md:h-8" />}
+          category="Dev"
+        />
+
+        <Card className="border-white/[0.08] bg-white/[0.02] md:bg-white/[0.03] rounded-none md:rounded-[24px] border-x-0 md:border-x">
+          <CardContent className="p-5 md:p-12">
             <JsonFormatterForm />
           </CardContent>
         </Card>
+
+        <RelatedTools currentToolHref={tool.url} />
       </div>
     </div>
   );

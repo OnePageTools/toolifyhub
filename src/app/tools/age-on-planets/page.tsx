@@ -1,10 +1,13 @@
-'use client';
-
 import { AgeOnPlanetsForm } from '@/components/tools/age-on-planets-form';
-import { Card, CardContent } from '@/components/ui/card';
 import { Rocket } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Age on Other Planets Calculator — How Old Are You on Mars? | ToolifyHub",
+  description: "Calculate your age on Mercury Venus Mars Jupiter and all planets free online.",
+};
 
 export default function AgeOnPlanetsPage() {
   const tool = {
@@ -18,15 +21,11 @@ export default function AgeOnPlanetsPage() {
         <ToolHeader 
           title="Age on Other Planets"
           description="Calculate your precise age across the entire solar system and discover fascinating planetary facts."
-          icon={Rocket}
+          icon={<Rocket className="w-6 h-6 md:w-8 md:h-8" />}
           category="Fun"
         />
 
-        <Card className="border-white/[0.08] bg-[#1E293B] rounded-none md:rounded-[24px] border-x-0 md:border-x">
-          <CardContent className="p-5 md:p-12">
-            <AgeOnPlanetsForm />
-          </CardContent>
-        </Card>
+        <AgeOnPlanetsForm />
 
         <RelatedTools currentToolHref={tool.url} />
       </div>
