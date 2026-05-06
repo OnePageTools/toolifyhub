@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { Poppins, Inter, Playfair_Display, Noto_Nastaliq_Urdu } from 'next/font/google';
 import Footer from '@/components/common/footer';
+import Script from 'next/script';
 
 const siteConfig = {
   name: 'ToolifyHub',
@@ -99,7 +100,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${poppins.variable} ${inter.variable} ${playfair.variable} ${notoUrdu.variable}`}>
-      <head />
+      <head>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-EY46Z7XSVT"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-EY46Z7XSVT');
+          `}
+        </Script>
+      </head>
       <body className="font-body antialiased">
         <ThemeProvider
           attribute="class"
