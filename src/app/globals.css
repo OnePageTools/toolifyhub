@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    --background: 210 100% 98%;
     --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
@@ -19,7 +19,7 @@
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 210 40% 96.1%;
+    --muted: 214.3 32% 91%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
     --accent: 210 40% 96.1%;
@@ -29,28 +29,28 @@
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 78%;
+    --input: 213.8 27.3% 85%;
     --ring: 216 100% 52%;
     --radius: 0.75rem;
   }
 
   .dark {
-    --background: 222 47% 8%;
+    --background: 222 47% 6%;
     --foreground: 210 40% 98%;
 
-    --card: 222 47% 12%;
+    --card: 222 47% 10%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222 47% 8%;
+    --popover: 222 47% 6%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 216 100% 52%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 215 28% 17%;
+    --secondary: 215 28% 15%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 215 28% 17%;
+    --muted: 215 28% 15%;
     --muted-foreground: 215 20% 65%;
 
     --accent: 216 100% 52%;
@@ -59,8 +59,8 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 215 28% 25%;
-    --input: 215 28% 25%;
+    --border: 215 28% 22%;
+    --input: 215 28% 22%;
     --ring: 216 100% 52%;
   }
 }
@@ -71,6 +71,12 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-attachment: fixed;
+  }
+  
+  /* Light Mode Specific Gradient */
+  :root:not(.dark) body {
+    background: linear-gradient(135deg, #F0F4FF 0%, #FAF5FF 50%, #F0F9FF 100%);
   }
 }
 
