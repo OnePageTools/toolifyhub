@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
@@ -9,6 +8,7 @@ import { Loader2, Search, Sun, Cloud, CloudRain, CloudSnow, Wind, Droplets, Ther
 import { Card, CardContent } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 type GeocodingResult = {
     name: string;
@@ -73,37 +73,37 @@ const getWeatherProperties = (description: string) => {
     if (desc.includes('sunny') || desc.includes('clear')) {
         return { 
             Icon: () => <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 10, ease: 'linear' }}><Sun className="w-20 h-20 md:w-24 md:h-24 text-yellow-400 drop-shadow-lg" /></motion.div>, 
-            gradient: "from-yellow-300 via-orange-400 to-pink-500" 
+            gradient: "from-blue-500/10 to-purple-500/10" 
         };
     }
     if (desc.includes('rain') || desc.includes('drizzle') || desc.includes('shower')) {
         return { 
             Icon: () => <motion.div animate={{ x: [0, -5, 5, 0] }} transition={{ repeat: Infinity, duration: 2 }}><CloudRain className="w-20 h-20 md:w-24 md:h-24 text-blue-300 drop-shadow-lg" /></motion.div>, 
-            gradient: "from-slate-400 via-gray-500 to-blue-600"
+            gradient: "from-blue-600/10 to-slate-900/10"
         };
     }
      if (desc.includes('snow') || desc.includes('sleet') || desc.includes('blizzard') || desc.includes('ice')) {
         return { 
             Icon: () => <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 2 }}><CloudSnow className="w-20 h-20 md:w-24 md:h-24 text-white drop-shadow-lg" /></motion.div>, 
-            gradient: "from-sky-300 via-slate-300 to-white" 
+            gradient: "from-sky-500/10 to-slate-900/10" 
         };
     }
     if (desc.includes('thunder')) {
         return { 
             Icon: () => <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 1.5 }}><CloudLightning className="w-20 h-20 md:w-24 md:h-24 text-yellow-300 drop-shadow-lg" /></motion.div>, 
-            gradient: "from-slate-800 via-purple-900 to-slate-700" 
+            gradient: "from-purple-500/10 to-slate-900/10" 
         };
     }
     if (desc.includes('fog') || desc.includes('mist')) {
          return { 
             Icon: () => <motion.div animate={{ opacity: [0.7, 1, 0.7] }} transition={{ repeat: Infinity, duration: 3 }}><CloudFog className="w-20 h-20 md:w-24 md:h-24 text-gray-400 drop-shadow-lg" /></motion.div>, 
-            gradient: "from-slate-400 via-gray-500 to-slate-600" 
+            gradient: "from-slate-500/10 to-slate-900/10" 
         };
     }
     // Default to cloudy
     return { 
         Icon: () => <motion.div animate={{ x: [0, 5, -5, 0] }} transition={{ repeat: Infinity, duration: 5 }}><Cloud className="w-20 h-20 md:w-24 md:h-24 text-gray-300 drop-shadow-lg" /></motion.div>, 
-        gradient: "from-sky-400 via-gray-400 to-slate-500" 
+        gradient: "from-blue-500/10 to-slate-900/10" 
     };
 };
 
@@ -189,7 +189,7 @@ export function WeatherCheckerForm() {
     }, [weather]);
 
     return (
-        <div className="relative min-h-screen w-full p-4 md:p-8 flex flex-col items-center overflow-hidden">
+        <div className="relative min-h-screen w-full flex flex-col items-center">
             <motion.div 
                 key={gradient}
                 initial={{ opacity: 0 }}
@@ -204,7 +204,7 @@ export function WeatherCheckerForm() {
                     <Input
                         id="city-input"
                         placeholder="e.g., London, New York..."
-                        className="w-full bg-white/20 dark:bg-black/20 border-white/30 placeholder:text-gray-200 text-white focus-visible:ring-white h-12 text-base"
+                        className="w-full bg-white/5 border-slate-700 placeholder:text-slate-500 text-white focus-visible:ring-blue-500/50 h-12 text-base"
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -215,29 +215,35 @@ export function WeatherCheckerForm() {
                         <span className="sm:hidden ml-2">Search</span>
                     </Button>
                 </div>
-                 <p className="text-xs text-white/80 text-center mt-2 px-4">Enter any city name for a live weather forecast.</p>
+                 <p className="text-xs text-slate-500 text-center mt-2 px-4 uppercase tracking-widest font-bold">Search live weather globally</p>
             </div>
             
-            <AnimatePresence>
+            <AnimatePresence mode="wait">
             {isLoading && !weather ? (
                 <div className="flex justify-center items-center h-96">
-                    <Loader2 className="w-16 h-16 animate-spin text-white" />
+                    <Loader2 className="w-12 h-12 animate-spin text-blue-500" />
                 </div>
             ) : weather ? (
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    className="w-full max-w-4xl space-y-8"
+                    className="w-full max-w-4xl space-y-6"
                 >
                     {/* Main Weather Card */}
-                    <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-lg border-white/30 text-white shadow-2xl overflow-hidden">
-                        <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-8">
-                            <div className="text-center md:text-left">
-                                <h1 className="text-3xl md:text-4xl font-bold">{weather.name}</h1>
-                                <p className="text-muted-foreground text-white/80">{weather.country}</p>
-                                <p className="text-7xl md:text-8xl font-bold my-4 drop-shadow-xl">{weather.current.temp}°C</p>
-                                <p className="capitalize text-xl font-semibold">{weather.current.description}</p>
+                    <Card className="bg-[#1E293B] border-white/10 rounded-[20px] p-0 shadow-2xl overflow-hidden">
+                        <CardContent className="p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
+                            <div className="text-center md:text-left space-y-2">
+                                <div className="space-y-0.5">
+                                    <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">{weather.name}</h1>
+                                    <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">{weather.country}</p>
+                                </div>
+                                <p className="text-7xl md:text-8xl font-black text-white my-4 tabular-nums">{weather.current.temp}°C</p>
+                                <div className="pt-2">
+                                    <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-500/10 text-blue-400 text-sm font-bold uppercase tracking-wider border border-blue-500/20">
+                                        {weather.current.description}
+                                    </span>
+                                </div>
                             </div>
                             <div className="flex flex-col items-center">
                                 <Icon />
@@ -247,41 +253,39 @@ export function WeatherCheckerForm() {
 
                     {/* Stats Row */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-md border-white/30 text-white p-4 flex items-center gap-4">
-                            <Thermometer className="w-8 h-8 text-white/80" />
-                            <div>
-                                <p className="text-sm opacity-80">Feels Like</p>
-                                <p className="font-bold text-lg">{weather.current.feelsLike}°C</p>
-                            </div>
-                        </Card>
-                        <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-md border-white/30 text-white p-4 flex items-center gap-4">
-                            <Droplets className="w-8 h-8 text-white/80" />
-                            <div>
-                                <p className="text-sm opacity-80">Humidity</p>
-                                <p className="font-bold text-lg">{weather.current.humidity}%</p>
-                            </div>
-                        </Card>
-                        <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-md border-white/30 text-white p-4 flex items-center gap-4">
-                            <Wind className="w-8 h-8 text-white/80" />
-                            <div>
-                                <p className="text-sm opacity-80">Wind Speed</p>
-                                <p className="font-bold text-lg">{weather.current.windSpeed} km/h</p>
-                            </div>
-                        </Card>
+                        {[
+                            { label: 'Feels Like', value: `${weather.current.feelsLike}°C`, icon: Thermometer, color: 'text-orange-400' },
+                            { label: 'Humidity', value: `${weather.current.humidity}%`, icon: Droplets, color: 'text-blue-400' },
+                            { label: 'Wind Speed', value: `${weather.current.windSpeed} km/h`, icon: Wind, color: 'text-emerald-400' },
+                        ].map((stat) => (
+                            <Card key={stat.label} className="bg-white/5 border-white/5 backdrop-blur-md rounded-2xl p-6 transition-all hover:bg-white/10">
+                                <div className="flex items-center gap-4">
+                                    <div className={cn("p-2 rounded-lg bg-white/5", stat.color)}>
+                                        <stat.icon className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{stat.label}</p>
+                                        <p className="text-xl font-bold text-white tabular-nums">{stat.value}</p>
+                                    </div>
+                                </div>
+                            </Card>
+                        ))}
                     </div>
                     
                     {/* 3-Day Forecast */}
-                    <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-lg border-white/30 text-white shadow-xl">
-                        <CardContent className="p-6">
-                            <h2 className="text-lg font-semibold mb-4 text-center md:text-left">3-Day Forecast</h2>
+                    <Card className="bg-[#1E293B] border-white/5 rounded-[20px] overflow-hidden">
+                        <CardContent className="p-8">
+                            <h2 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-6 text-center md:text-left">3-Day Forecast</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {weather.forecast.map((day, index) => (
-                                    <div key={day.date} className="bg-white/10 p-4 rounded-lg flex flex-row items-center justify-between gap-4 text-center">
-                                        <div className="text-left">
-                                            <p className="font-bold">{index === 0 ? 'Today' : format(new Date(day.date), 'EEE')}</p>
-                                            <p className="text-xl md:text-2xl font-bold">{day.avgTemp}°C</p>
+                                    <div key={day.date} className="bg-white/5 p-5 rounded-2xl border border-white/5 flex items-center justify-between gap-4">
+                                        <div className="space-y-1">
+                                            <p className="text-xs font-black text-slate-400 uppercase tracking-wider">{index === 0 ? 'Today' : format(new Date(day.date), 'EEEE')}</p>
+                                            <p className="text-2xl font-black text-white tabular-nums">{day.avgTemp}°C</p>
                                         </div>
-                                        <ForecastIcon description={day.description} />
+                                        <div className="p-2 bg-white/5 rounded-xl">
+                                            <ForecastIcon description={day.description} />
+                                        </div>
                                     </div>
                                 ))}
                             </div>
