@@ -6,8 +6,13 @@ import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Free Password Generator Online — Create Strong Passwords Instantly | ToolifyHub",
-  description: "Generate strong secure passwords free online. Custom length and characters. No signup needed.",
+  title: "Free Password Generator — Create Strong Passwords | ToolifyHub",
+  description: "Generate strong secure passwords instantly free. No signup needed.",
+  openGraph: {
+    title: "Free Password Generator — Create Strong Passwords | ToolifyHub",
+    description: "Generate strong secure passwords instantly free. No signup needed.",
+    url: "https://onepagetools.vercel.app/tools/password-generator",
+  }
 };
 
 export default function PasswordGeneratorPage() {

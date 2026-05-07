@@ -1,4 +1,3 @@
-# See https://www.robotstxt.org/robotstxt.html for syntax and directives
 User-agent: *
 Allow: /
-Sitemap: https://ToolifyHub.com/sitemap.xml
+Sitemap: https://onepagetools.vercel.app/sitemap.xml

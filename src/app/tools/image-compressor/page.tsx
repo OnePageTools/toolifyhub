@@ -6,8 +6,13 @@ import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Free Image Compressor Online — Compress Images Without Quality Loss | ToolifyHub",
-  description: "Compress JPG PNG WEBP images free online. Reduce file size instantly. No signup needed.",
+  title: "Free Image Compressor Online — Compress Images Instantly | ToolifyHub",
+  description: "Compress JPG PNG WEBP free online without quality loss. No signup needed.",
+  openGraph: {
+    title: "Free Image Compressor Online — Compress Images Instantly | ToolifyHub",
+    description: "Compress JPG PNG WEBP free online without quality loss. No signup needed.",
+    url: "https://onepagetools.vercel.app/tools/image-compressor",
+  }
 };
 
 export default function ImageCompressorPage() {

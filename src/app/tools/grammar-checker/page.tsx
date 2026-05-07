@@ -6,8 +6,13 @@ import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Free Grammar Checker Online — Fix Grammar & Spelling Instantly | ToolifyHub",
-  description: "Check grammar, spelling and punctuation free online. No signup needed. Instant results.",
+  title: "Free Grammar Checker Online — Fix Errors Instantly | ToolifyHub",
+  description: "Check grammar spelling and punctuation free. No signup needed.",
+  openGraph: {
+    title: "Free Grammar Checker Online — Fix Errors Instantly | ToolifyHub",
+    description: "Check grammar spelling and punctuation free. No signup needed.",
+    url: "https://onepagetools.vercel.app/tools/grammar-checker",
+  }
 };
 
 export default function GrammarCheckerPage() {

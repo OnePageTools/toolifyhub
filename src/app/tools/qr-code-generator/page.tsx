@@ -6,8 +6,13 @@ import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Free QR Code Generator Online — Create QR Codes Instantly | ToolifyHub",
-  description: "Generate QR codes free online. Custom colors and sizes. Download instantly. No signup needed.",
+  title: "Free QR Code Generator Online — Create QR Codes | ToolifyHub",
+  description: "Generate QR codes free online instantly. No signup needed.",
+  openGraph: {
+    title: "Free QR Code Generator Online — Create QR Codes | ToolifyHub",
+    description: "Generate QR codes free online instantly. No signup needed.",
+    url: "https://onepagetools.vercel.app/tools/qr-code-generator",
+  }
 };
 
 export default function QrCodeGeneratorPage() {

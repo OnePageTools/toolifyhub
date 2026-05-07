@@ -28,7 +28,7 @@ const articles = [
 ];
  
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://toolifyhub.com';
+  const baseUrl = 'https://onepagetools.vercel.app';
 
   const staticPages: MetadataRoute.Sitemap = [
     {

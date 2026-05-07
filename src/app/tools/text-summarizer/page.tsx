@@ -6,8 +6,13 @@ import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Free Text Summarizer Online — Summarize Any Text Instantly | ToolifyHub",
-  description: "Summarize long articles and documents free online. AI powered. No signup needed.",
+  title: "Free Text Summarizer Online — Summarize Any Text | ToolifyHub",
+  description: "Summarize long articles free online instantly. No signup needed.",
+  openGraph: {
+    title: "Free Text Summarizer Online — Summarize Any Text | ToolifyHub",
+    description: "Summarize long articles free online instantly. No signup needed.",
+    url: "https://onepagetools.vercel.app/tools/text-summarizer",
+  }
 };
 
 export default function TextSummarizerPage() {

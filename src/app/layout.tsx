@@ -9,8 +9,8 @@ import Script from 'next/script';
 
 const siteConfig = {
   name: 'ToolifyHub',
-  url: 'https://toolifyhub.com',
-  ogImage: 'https://toolifyhub.com/og.png',
+  url: 'https://onepagetools.vercel.app',
+  ogImage: 'https://onepagetools.vercel.app/og.png',
   description: 'Your ultimate suite of 20+ free, professional online tools. Featuring AI-powered utilities like PDF converters, image compressors, text summarizers, and a resume builder. No sign-up required, 100% free.',
   title: 'ToolifyHub - Free All-in-One Tools for Productivity',
 };

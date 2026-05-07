@@ -1,20 +1,16 @@
-
 import type { Metadata } from 'next';
 import { ResumeBuilderForm } from '@/components/tools/resume-builder/form';
-import AIHelper from '@/components/ai-assistant';
 
 const tool = {
   name: 'Free Resume Builder',
-  url: '/tools/resume-builder',
-  title: 'Free Resume Builder - Create a Professional Resume in Minutes',
-  description: 'Build a professional, job-winning resume in minutes with our free and easy-to-use resume builder. Choose from multiple templates and themes. No sign-up required.',
-  keywords: 'resume builder, free resume builder, create resume, resume maker, resume template, cv builder',
+  url: 'https://onepagetools.vercel.app/tools/resume-builder',
+  title: 'Free Resume Builder Online — Create Professional CV | ToolifyHub',
+  description: 'Build professional resume free online. Download as PDF. No signup needed.',
 };
 
 export const metadata: Metadata = {
   title: tool.title,
   description: tool.description,
-  keywords: tool.keywords.split(','),
   alternates: {
     canonical: tool.url,
   },
@@ -39,7 +35,7 @@ const WebAppSchema = () => (
       "description": tool.description,
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "All",
-      "url": `https://toolifyhub.com${tool.url}`,
+      "url": tool.url,
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -55,7 +51,6 @@ export default function ResumeBuilderPage() {
       <WebAppSchema />
       <div className="w-full mx-auto py-10 px-4">
         <ResumeBuilderForm />
-        <AIHelper toolName="Resume Builder" />
       </div>
     </>
   );

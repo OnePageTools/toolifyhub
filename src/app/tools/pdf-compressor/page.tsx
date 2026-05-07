@@ -6,8 +6,13 @@ import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Free PDF Compressor Online — Reduce PDF File Size | ToolifyHub",
-  description: "Reduce the size of your PDF files free online. No signup needed. Fast and secure.",
+  title: "Free PDF Compressor Online — Reduce PDF Size Instantly | ToolifyHub",
+  description: "Compress PDF files free online. No quality loss. No signup needed.",
+  openGraph: {
+    title: "Free PDF Compressor Online — Reduce PDF Size Instantly | ToolifyHub",
+    description: "Compress PDF files free online. No quality loss. No signup needed.",
+    url: "https://onepagetools.vercel.app/tools/pdf-compressor",
+  }
 };
 
 export default function PdfCompressorPage() {
