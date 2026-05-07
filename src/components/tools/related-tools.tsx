@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { tools } from '@/lib/tools';
+import { tools, type Tool } from '@/lib/tools';
 import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
 
@@ -10,11 +11,22 @@ interface RelatedToolsProps {
 }
 
 export function RelatedTools({ currentToolHref }: RelatedToolsProps) {
-  // Get 4 random tools excluding the current one
-  const related = tools
-    .filter(t => t.href !== currentToolHref && t.implemented)
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 4);
+  const [related, setRelated] = useState<Tool[]>([]);
+
+  useEffect(() => {
+    // Perform random selection only on the client after hydration
+    // to avoid server/client mismatch errors.
+    const selected = tools
+      .filter(t => t.href !== currentToolHref && t.implemented)
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 4);
+    setRelated(selected);
+  }, [currentToolHref]);
+
+  // Return null or a skeleton if not yet populated to keep initial render consistent
+  if (related.length === 0) {
+    return <div className="mt-20 pt-12 border-t border-white/5 w-full min-h-[200px]" />;
+  }
 
   return (
     <section className="mt-20 pt-12 border-t border-white/5 w-full">
