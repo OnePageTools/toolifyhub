@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -33,6 +34,16 @@ import { cn } from "@/lib/utils";
 
 const categories: (ToolCategory | "All")[] = ["All", "PDF", "Image", "Text", "Dev", "Utilities", "Finance", "Productivity", "Web", "Fun", "Security", "Health"];
 
+// Static star positions to avoid re-calculation and hydration issues
+const STATIC_STARS = Array.from({ length: 30 }).map((_, i) => ({
+  id: i,
+  top: `${(i * 3.33) % 100}%`,
+  left: `${(i * 7.13) % 100}%`,
+  size: `${(i % 2 === 0 ? 1 : 2)}px`,
+  duration: `${3 + (i % 3)}s`,
+  delay: `${i * 0.1}s`,
+}));
+
 export default function Home() {
   const { resolvedTheme, setTheme } = useTheme();
   const [query, setQuery] = useState("");
@@ -55,25 +66,6 @@ export default function Home() {
           tool.description.toLowerCase().includes(query.toLowerCase())
       );
   }, [query, selectedCategory]);
-
-  const stars = useMemo(() => {
-    if (!mounted) return [];
-    return Array.from({ length: 50 }).map((_, i) => ({
-      id: i,
-      top: `${Math.random() * 100}%`,
-      left: `${Math.random() * 100}%`,
-      size: `${Math.random() * 1.5 + 1}px`,
-      duration: `${Math.random() * 3 + 2}s`,
-      delay: `${Math.random() * 3}s`,
-    }));
-  }, [mounted]);
-
-  const shootingStars = Array.from({ length: 5 }).map((_, i) => ({
-    id: i,
-    top: `${Math.random() * 50}%`,
-    left: `${Math.random() * 50}%`,
-    delay: `${Math.random() * 10}s`,
-  }));
 
   const getIconGradient = (category: string) => {
     switch (category) {
@@ -101,19 +93,17 @@ export default function Home() {
     visible: { opacity: 1, y: 0 }
   };
 
-  if (!mounted) return null;
-
   return (
     <div className="min-h-screen relative overflow-hidden bg-background text-foreground transition-colors duration-300">
       {/* Optimized Background Animation (Dark Mode Only) */}
-      <div className="fixed inset-0 pointer-events-none z-0">
+      <div className="fixed inset-0 pointer-events-none z-0" aria-hidden="true">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-500/[0.02] to-purple-500/[0.02] dark:from-blue-500/[0.05] dark:to-purple-500/[0.05]" />
-        {resolvedTheme === 'dark' && (
+        {mounted && resolvedTheme === 'dark' && (
           <>
-            {stars.map((star) => (
+            {STATIC_STARS.map((star) => (
               <div
                 key={star.id}
-                className="absolute bg-white rounded-full animate-twinkle"
+                className="absolute bg-white rounded-full animate-twinkle will-change-opacity"
                 style={{
                   top: star.top,
                   left: star.left,
@@ -122,18 +112,6 @@ export default function Home() {
                   '--duration': star.duration,
                   '--delay': star.delay,
                 } as any}
-              />
-            ))}
-            {shootingStars.map((s) => (
-              <div
-                key={s.id}
-                className="shooting-star"
-                style={{
-                  top: s.top,
-                  left: s.left,
-                  animation: `shooting-star 1.2s ease-in infinite`,
-                  animationDelay: s.delay,
-                }}
               />
             ))}
           </>
@@ -160,7 +138,7 @@ export default function Home() {
               className="p-2.5 rounded-xl bg-slate-100 dark:bg-secondary hover:bg-slate-200 dark:hover:bg-secondary/80 transition-all border border-border"
               aria-label="Toggle visual theme"
             >
-                {resolvedTheme === 'dark' ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-blue-600" />}
+                {mounted && resolvedTheme === 'dark' ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-blue-600" />}
             </button>
             <Sheet>
               <SheetTrigger asChild>
@@ -193,40 +171,22 @@ export default function Home() {
 
         {/* Hero Section */}
         <div className="container mx-auto px-6 py-20 text-center relative">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-secondary border border-border text-sm font-semibold text-blue-500 mb-8 shadow-sm"
-          >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-secondary border border-border text-sm font-semibold text-blue-500 mb-8 shadow-sm">
             <Sparkles className="w-4 h-4" /> 35+ Free Tools — No Signup Required
-          </motion.div>
+          </div>
           
-          <motion.h1 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-6 text-[#0F172A] dark:text-foreground"
-          >
+          <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-6 text-[#0F172A] dark:text-foreground">
             Your Ultimate Free<br/>
             <span className="bg-gradient-to-r from-[#3B82F6] via-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">
               Productivity Hub
             </span>
-          </motion.h1>
+          </h1>
           
-          <motion.p 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-slate-600 dark:text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
-          >
+          <p className="text-slate-600 dark:text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
             35+ powerful free tools at your fingertips. No registration. No limits. Just results.
-          </motion.p>
+          </p>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
-          >
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
             <Button size="lg" className="rounded-full px-10 h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-[0_4px_30px_rgba(59,130,246,0.3)] transition-all">
                 Explore All Tools <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
@@ -238,20 +198,15 @@ export default function Home() {
             >
                 How It Works
             </Button>
-          </motion.div>
+          </div>
 
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-wrap items-center justify-center gap-6"
-          >
+          <div className="flex flex-wrap items-center justify-center gap-6">
             {["35+ Tools", "100% Free", "No Signup"].map((stat) => (
                 <div key={stat} className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.05] border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-widest shadow-sm">
                     <Check className="w-3.5 h-3.5" /> {stat}
                 </div>
             ))}
-          </motion.div>
+          </div>
         </div>
 
         {/* Stats Section */}
@@ -363,15 +318,10 @@ export default function Home() {
 
         {/* How It Works Section */}
         <section id="how-it-works" className="container mx-auto px-6 py-32 border-t border-border bg-slate-50/50 dark:bg-secondary/10">
-            <motion.div 
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-center mb-20"
-            >
+            <div className="text-center mb-20">
                 <h2 className="text-4xl md:text-5xl font-black text-[#0F172A] dark:text-foreground mb-4 tracking-tight">How It Works</h2>
                 <p className="text-slate-600 dark:text-muted-foreground text-lg max-w-xl mx-auto">Get started in seconds — no signup, no download required</p>
-            </motion.div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
                 {[
@@ -397,14 +347,7 @@ export default function Home() {
                         color: "from-emerald-600 to-teal-500" 
                     },
                 ].map((step, i) => (
-                    <motion.div 
-                        key={i}
-                        initial={{ opacity: 0, y: 15 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: i * 0.1 }}
-                        className="relative group"
-                    >
+                    <div key={i} className="relative group">
                         <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-[32px] p-8 h-full hover:bg-slate-50 dark:hover:bg-secondary/50 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-sm">
                             <span className="text-5xl font-black text-slate-100 dark:text-foreground/5 absolute top-6 right-8 select-none">{step.num}</span>
                             <div className={cn(
@@ -421,7 +364,7 @@ export default function Home() {
                                 <ArrowRight className="w-8 h-8" />
                             </div>
                         )}
-                    </motion.div>
+                    </div>
                 ))}
             </div>
         </section>

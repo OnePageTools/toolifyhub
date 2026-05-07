@@ -1,6 +1,7 @@
-import { TypingSpeedTestForm } from '@/components/tools/typing-speed-test-form';
+
+import dynamic from 'next/dynamic';
 import { Card, CardContent } from '@/components/ui/card';
-import { Keyboard } from 'lucide-react';
+import { Keyboard, Loader2 } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
@@ -9,6 +10,11 @@ export const metadata: Metadata = {
   title: "Free Typing Speed Test Online — Check Your WPM Score | ToolifyHub",
   description: "Test your typing speed and accuracy in WPM free online. No signup needed.",
 };
+
+const TypingSpeedTestForm = dynamic(
+  () => import('@/components/tools/typing-speed-test-form').then(mod => mod.TypingSpeedTestForm),
+  { ssr: false, loading: () => <div className="h-96 flex items-center justify-center"><Loader2 className="animate-spin" /></div> }
+);
 
 export default function TypingSpeedTestPage() {
   const tool = {

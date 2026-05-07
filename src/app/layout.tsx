@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
@@ -101,6 +102,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${poppins.variable} ${inter.variable} ${playfair.variable} ${notoUrdu.variable}`}>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-EY46Z7XSVT"
           strategy="afterInteractive"

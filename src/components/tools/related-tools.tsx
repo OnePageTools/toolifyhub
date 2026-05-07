@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -11,8 +12,10 @@ interface RelatedToolsProps {
 
 export function RelatedTools({ currentToolHref }: RelatedToolsProps) {
   const [related, setRelated] = useState<Tool[]>([]);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const selected = [...tools]
       .filter(t => t.href !== currentToolHref && t.implemented)
       .sort(() => 0.5 - Math.random())
@@ -20,10 +23,12 @@ export function RelatedTools({ currentToolHref }: RelatedToolsProps) {
     setRelated(selected);
   }, [currentToolHref]);
 
+  if (!mounted) return <div className="mt-20 h-40" />; // Reservation for CLS
+
   if (related.length === 0) return null;
 
   return (
-    <section className="mt-20 pt-16 border-t border-border bg-slate-50/50 dark:bg-transparent -mx-4 md:-mx-0 px-4 md:px-0">
+    <section className="mt-20 pt-16 border-t border-border bg-slate-50/50 dark:bg-transparent -mx-4 md:-mx-0 px-4 md:px-0 min-h-[300px]">
       <h3 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground mb-8 text-center md:text-left">Discover More Tools</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {related.map((tool) => (

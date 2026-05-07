@@ -1,6 +1,6 @@
-import { ColorPickerForm } from '@/components/tools/color-picker-form';
-import { Card, CardContent } from '@/components/ui/card';
-import { Palette } from 'lucide-react';
+
+import dynamic from 'next/dynamic';
+import { Palette, Loader2 } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
@@ -9,6 +9,11 @@ export const metadata: Metadata = {
   title: "Free Color Picker Online — Pick Colors & Generate Palettes | ToolifyHub",
   description: "Pick colors get HEX RGB HSL codes and generate palettes free online. No signup needed.",
 };
+
+const ColorPickerForm = dynamic(
+  () => import('@/components/tools/color-picker-form').then(mod => mod.ColorPickerForm),
+  { ssr: false, loading: () => <div className="h-[400px] flex items-center justify-center"><Loader2 className="animate-spin" /></div> }
+);
 
 export default function ColorPickerPage() {
   const tool = {

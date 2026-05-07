@@ -1,6 +1,7 @@
-import { PdfCompressorForm } from '@/components/tools/pdf-compressor-form';
+
+import dynamic from 'next/dynamic';
 import { Card, CardContent } from '@/components/ui/card';
-import { FileArchive } from 'lucide-react';
+import { FileArchive, Loader2 } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
@@ -14,6 +15,11 @@ export const metadata: Metadata = {
     url: "https://onepagetools.vercel.app/tools/pdf-compressor",
   }
 };
+
+const PdfCompressorForm = dynamic(
+  () => import('@/components/tools/pdf-compressor-form').then(mod => mod.PdfCompressorForm),
+  { ssr: false, loading: () => <div className="h-64 flex items-center justify-center"><Loader2 className="animate-spin" /></div> }
+);
 
 export default function PdfCompressorPage() {
   const tool = {

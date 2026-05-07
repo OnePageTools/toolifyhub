@@ -1,6 +1,7 @@
-import { BackgroundRemoverForm } from '@/components/tools/background-remover-form';
+
+import dynamic from 'next/dynamic';
 import { Card, CardContent } from '@/components/ui/card';
-import { Scissors } from 'lucide-react';
+import { Scissors, Loader2 } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
@@ -14,6 +15,11 @@ export const metadata: Metadata = {
     url: "https://onepagetools.vercel.app/tools/background-remover",
   }
 };
+
+const BackgroundRemoverForm = dynamic(
+  () => import('@/components/tools/background-remover-form').then(mod => mod.BackgroundRemoverForm),
+  { ssr: false, loading: () => <div className="h-80 flex items-center justify-center"><Loader2 className="animate-spin" /></div> }
+);
 
 export default function BackgroundRemoverPage() {
   const tool = {
