@@ -1,22 +1,14 @@
+'use client';
 
 import dynamic from 'next/dynamic';
-import { Card, CardContent } from '@/components/ui/card';
-import { SquarePen } from 'lucide-react';
+import { SquarePen, Loader2 } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: "Free Markdown Editor Online — Write & Preview Markdown | ToolifyHub",
-  description: "Write markdown with live preview and download as MD or HTML free online. No signup needed.",
-};
 
 const MarkdownEditorForm = dynamic(
   () => import('@/components/tools/markdown-editor-form').then(mod => mod.MarkdownEditorForm),
   { ssr: false, loading: () => <div className="h-[70vh] flex items-center justify-center"><Loader2 className="animate-spin" /></div> }
 );
-
-import { Loader2 } from 'lucide-react';
 
 export default function MarkdownEditorPage() {
   const tool = {
@@ -30,7 +22,7 @@ export default function MarkdownEditorPage() {
         <ToolHeader 
           title="Markdown Editor"
           description="The ultimate distraction-free writing environment. Format your text with Markdown and preview it live."
-          icon={<SquarePen className="w-6 h-6 md:w-8 md:h-8" />}
+          icon={<SquarePen />}
           category="Dev"
         />
 

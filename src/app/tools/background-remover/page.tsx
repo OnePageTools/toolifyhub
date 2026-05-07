@@ -1,20 +1,10 @@
+'use client';
 
 import dynamic from 'next/dynamic';
 import { Card, CardContent } from '@/components/ui/card';
 import { Scissors, Loader2 } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: "Free Background Remover — Remove Image Background Instantly | ToolifyHub",
-  description: "Remove image background free online in seconds. No signup needed.",
-  openGraph: {
-    title: "Free Background Remover — Remove Image Background Instantly | ToolifyHub",
-    description: "Remove image background free online in seconds. No signup needed.",
-    url: "https://onepagetools.vercel.app/tools/background-remover",
-  }
-};
 
 const BackgroundRemoverForm = dynamic(
   () => import('@/components/tools/background-remover-form').then(mod => mod.BackgroundRemoverForm),
@@ -33,7 +23,7 @@ export default function BackgroundRemoverPage() {
         <ToolHeader 
           title="Background Remover"
           description="Instantly remove the background from any image with a single click using AI."
-          icon={<Scissors className="w-6 h-6 md:w-8 md:h-8" />}
+          icon={<Scissors />}
           category="Image"
         />
 

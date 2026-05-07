@@ -1,14 +1,9 @@
+'use client';
 
 import dynamic from 'next/dynamic';
 import { Palette, Loader2 } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: "Free Color Picker Online — Pick Colors & Generate Palettes | ToolifyHub",
-  description: "Pick colors get HEX RGB HSL codes and generate palettes free online. No signup needed.",
-};
 
 const ColorPickerForm = dynamic(
   () => import('@/components/tools/color-picker-form').then(mod => mod.ColorPickerForm),
@@ -27,7 +22,7 @@ export default function ColorPickerPage() {
         <ToolHeader 
           title="Color Picker & Palette Generator"
           description="Explore colors, extract codes, and build stunning palettes for your next creative project."
-          icon={<Palette className="w-6 h-6 md:w-8 md:h-8" />}
+          icon={<Palette />}
           category="Design"
         />
 

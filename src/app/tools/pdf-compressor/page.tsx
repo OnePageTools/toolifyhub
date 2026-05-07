@@ -1,20 +1,10 @@
+'use client';
 
 import dynamic from 'next/dynamic';
 import { Card, CardContent } from '@/components/ui/card';
 import { FileArchive, Loader2 } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: "Free PDF Compressor Online — Reduce PDF Size Instantly | ToolifyHub",
-  description: "Compress PDF files free online. No quality loss. No signup needed.",
-  openGraph: {
-    title: "Free PDF Compressor Online — Reduce PDF Size Instantly | ToolifyHub",
-    description: "Compress PDF files free online. No quality loss. No signup needed.",
-    url: "https://onepagetools.vercel.app/tools/pdf-compressor",
-  }
-};
 
 const PdfCompressorForm = dynamic(
   () => import('@/components/tools/pdf-compressor-form').then(mod => mod.PdfCompressorForm),
@@ -33,7 +23,7 @@ export default function PdfCompressorPage() {
         <ToolHeader 
           title="PDF Compressor"
           description="Reduce the file size of your PDF documents while maintaining the best possible quality."
-          icon={<FileArchive className="w-6 h-6 md:w-8 md:h-8" />}
+          icon={<FileArchive />}
           category="PDF"
         />
 
