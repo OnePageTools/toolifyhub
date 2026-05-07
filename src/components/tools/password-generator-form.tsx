@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Lock, 
@@ -16,13 +15,11 @@ import {
   Eye, 
   EyeOff, 
   ShieldCheck, 
-  CheckCircle2, 
   ClipboardCheck,
   AlertTriangle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 type Strength = {
   score: number; // 0 to 100
@@ -88,16 +85,11 @@ export function PasswordGeneratorForm() {
   const calculateStrength = (pass: string): Strength => {
     let score = 0;
     if (!pass) return { score: 0, label: 'None', color: 'bg-slate-700' };
-
-    // Length contribution (max 40)
     score += Math.min(pass.length * 2, 40);
-
-    // Variety contribution
     if (/[A-Z]/.test(pass)) score += 15;
     if (/[a-z]/.test(pass)) score += 15;
     if (/[0-9]/.test(pass)) score += 15;
     if (/[^A-Za-z0-9]/.test(pass)) score += 15;
-
     if (score < 30) return { score, label: 'Weak', color: 'bg-red-500' };
     if (score < 50) return { score, label: 'Medium', color: 'bg-orange-500' };
     if (score < 75) return { score, label: 'Strong', color: 'bg-blue-500' };
@@ -115,110 +107,88 @@ export function PasswordGeneratorForm() {
   };
 
   return (
-    <div className="space-y-8 max-w-2xl mx-auto">
+    <div className="space-y-8">
       {/* Result Section */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
         <div className="relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-          <div className="relative flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-2xl p-4 md:p-6 shadow-2xl">
+          <div className="absolute -inset-1 bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-2xl blur-sm" />
+          <div className="relative flex items-center gap-2 bg-secondary/30 dark:bg-slate-900 border rounded-2xl p-4 shadow-sm group-focus-within:border-primary/50 transition-all">
             <Input
               readOnly
               type={showPassword ? 'text' : 'password'}
               value={password}
-              className="bg-transparent border-0 text-xl md:text-3xl font-mono font-bold focus-visible:ring-0 h-auto text-slate-100 placeholder:text-slate-600 select-all"
+              className="bg-transparent border-0 text-xl md:text-2xl font-mono font-bold focus-visible:ring-0 h-auto text-foreground placeholder:text-muted-foreground select-all px-2"
               placeholder="Generating..."
             />
-            <div className="flex gap-1 md:gap-2">
-              <Button variant="ghost" size="icon" onClick={() => setShowPassword(!showPassword)} className="text-slate-400 hover:text-slate-100 rounded-xl">
+            <div className="flex gap-1">
+              <Button variant="ghost" size="icon" onClick={() => setShowPassword(!showPassword)} className="text-muted-foreground hover:text-foreground">
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </Button>
-              <Button variant="ghost" size="icon" onClick={handleGenerate} className="text-slate-400 hover:text-blue-400 rounded-xl">
+              <Button variant="ghost" size="icon" onClick={handleGenerate} className="text-muted-foreground hover:text-primary">
                 <RefreshCw className="h-5 w-5" />
               </Button>
-              <Button onClick={() => handleCopy(password)} className="bg-blue-600 hover:bg-blue-500 rounded-xl px-4 md:px-6">
+              <Button onClick={() => handleCopy(password)} className="h-11 px-4">
                 {isCopied ? <ClipboardCheck className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Strength Indicator */}
         <div className="space-y-2 px-1">
-          <div className="flex justify-between items-center text-sm font-bold uppercase tracking-wider">
-            <span className="text-slate-400">Security Strength</span>
+          <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+            <span className="text-muted-foreground">Security Strength</span>
             <span className={strength.color.replace('bg-', 'text-')}>{strength.label}</span>
           </div>
-          <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-            <motion.div 
-              initial={{ width: 0 }}
-              animate={{ width: `${strength.score}%` }}
-              className={cn("h-full transition-colors duration-500", strength.color)}
-            />
+          <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden border border-border/50">
+            <motion.div animate={{ width: `${strength.score}%` }} className={cn("h-full transition-all duration-500", strength.color)} />
           </div>
         </div>
       </motion.div>
 
       {/* Configuration Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Length & Quantity */}
-        <Card className="bg-slate-800/50 border-slate-700 rounded-2xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="bg-card">
           <CardContent className="p-6 space-y-6">
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <Label className="text-slate-200 font-bold">Password Length</Label>
-                <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-lg font-mono font-bold border border-blue-500/20">
+                <Label className="font-bold text-foreground">Length</Label>
+                <span className="text-sm font-black text-primary bg-primary/10 px-3 py-1 rounded-lg border border-primary/20 font-mono">
                   {length}
                 </span>
               </div>
-              <Slider
-                value={[length]}
-                onValueChange={(v) => setLength(v[0])}
-                min={8}
-                max={64}
-                step={1}
-                className="py-4"
-              />
+              <Slider value={[length]} onValueChange={(v) => setLength(v[0])} min={8} max={64} step={1} />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-slate-200 font-bold">Generate Multiple</Label>
-              <div className="flex items-center gap-4">
-                <Input
-                  type="number"
-                  min={1}
-                  max={10}
-                  value={generateCount}
-                  onChange={(e) => setGenerateCount(Math.min(10, Math.max(1, parseInt(e.target.value) || 1)))}
-                  className="bg-slate-900 border-slate-700 text-center font-bold text-lg rounded-xl focus:ring-blue-500/50"
-                />
-                <span className="text-xs text-slate-400 italic">Max 10 per click</span>
-              </div>
+              <Label className="font-bold text-foreground">Generate Count</Label>
+              <Input
+                type="number"
+                min={1} max={10}
+                value={generateCount}
+                onChange={(e) => setGenerateCount(Math.min(10, Math.max(1, parseInt(e.target.value) || 1)))}
+                className="h-10 text-center font-bold"
+              />
             </div>
           </CardContent>
         </Card>
 
-        {/* Character Options */}
-        <Card className="bg-slate-800/50 border-slate-700 rounded-2xl">
+        <Card className="bg-card">
           <CardContent className="p-6 space-y-4">
-            <Label className="text-slate-200 font-bold mb-2 block">Include Characters</Label>
-            <div className="grid grid-cols-1 gap-3">
+            <Label className="font-bold text-foreground mb-2 block">Characters</Label>
+            <div className="space-y-3">
               {[
-                { key: 'uppercase', label: 'Uppercase (A-Z)' },
-                { key: 'lowercase', label: 'Lowercase (a-z)' },
-                { key: 'numbers', label: 'Numbers (0-9)' },
-                { key: 'symbols', label: 'Symbols (!@#$%^*)' },
-                { key: 'excludeSimilar', label: 'Exclude Similar (0,O,l,1)', icon: AlertTriangle },
+                { key: 'uppercase', label: 'A-Z' },
+                { key: 'lowercase', label: 'a-z' },
+                { key: 'numbers', label: '0-9' },
+                { key: 'symbols', label: '!@#' },
+                { key: 'excludeSimilar', label: 'No Similar (i,l,1)', icon: AlertTriangle },
               ].map((opt) => (
-                <div key={opt.key} className="flex items-center justify-between group cursor-pointer" onClick={() => setOptions({...options, [opt.key]: !options[opt.key as keyof typeof options]})}>
-                  <div className="flex items-center gap-2">
-                    {opt.icon && <opt.icon className="h-3 w-3 text-amber-400" />}
-                    <span className="text-sm text-slate-300 group-hover:text-slate-100 transition-colors">{opt.label}</span>
-                  </div>
-                  <Switch 
-                    checked={options[opt.key as keyof typeof options]}
-                    onCheckedChange={() => {}} // Controlled by div click
-                    className="data-[state=checked]:bg-blue-600"
-                  />
+                <div key={opt.key} className="flex items-center justify-between cursor-pointer" onClick={() => setOptions({...options, [opt.key]: !options[opt.key as keyof typeof options]})}>
+                  <span className="text-sm text-foreground flex items-center gap-2">
+                    {opt.icon && <opt.icon className="h-3 w-3 text-amber-500" />}
+                    {opt.label}
+                  </span>
+                  <Switch checked={options[opt.key as keyof typeof options]} onCheckedChange={() => {}} />
                 </div>
               ))}
             </div>
@@ -226,24 +196,18 @@ export function PasswordGeneratorForm() {
         </Card>
       </div>
 
-      {/* Extra Passwords Section */}
       <AnimatePresence>
         {extraPasswords.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="space-y-4"
-          >
-            <Label className="text-slate-200 font-bold ml-1 flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-green-400" /> Additional Secure Passwords
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3 pt-6 border-t">
+            <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-emerald-500" /> Additional Passwords
             </Label>
             <div className="grid grid-cols-1 gap-2">
               {extraPasswords.map((pass, idx) => (
-                <div key={idx} className="flex items-center justify-between p-3 bg-slate-800/30 border border-slate-700 rounded-xl hover:bg-slate-800/50 transition-colors">
-                  <span className="font-mono text-slate-300 truncate mr-4">{pass}</span>
-                  <Button variant="ghost" size="sm" onClick={() => handleCopy(pass)} className="h-8 rounded-lg hover:bg-blue-500/20 text-blue-400">
-                    <Copy className="h-4 w-4 mr-2" /> Copy
+                <div key={idx} className="flex items-center justify-between p-3 bg-secondary/30 rounded-xl border border-border group hover:border-primary/40 transition-all">
+                  <span className="font-mono text-sm text-foreground truncate mr-4">{pass}</span>
+                  <Button variant="ghost" size="sm" onClick={() => handleCopy(pass)} className="h-8 text-primary hover:bg-primary/10">
+                    <Copy className="h-4 w-4 mr-1" /> Copy
                   </Button>
                 </div>
               ))}
@@ -252,12 +216,8 @@ export function PasswordGeneratorForm() {
         )}
       </AnimatePresence>
 
-      <Button 
-        onClick={handleGenerate} 
-        size="lg" 
-        className="w-full h-[56px] rounded-xl text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] shadow-xl shadow-blue-600/20"
-      >
-        <Lock className="mr-2 h-5 w-5" /> Generate Secure Password
+      <Button onClick={handleGenerate} className="w-full h-12">
+        <Lock className="mr-2 h-4 w-4" /> Refresh Password
       </Button>
     </div>
   );
