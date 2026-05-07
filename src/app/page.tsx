@@ -316,7 +316,7 @@ export default function Home() {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4"
           >
             {filteredTools.map((tool: Tool) => (
               <motion.div
@@ -327,22 +327,22 @@ export default function Home() {
               >
                 <Link
                   href={tool.href}
-                  className="block h-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl rounded-[20px] p-6 hover:bg-blue-500/[0.04] hover:border-blue-500/40 transition-all duration-300"
+                  className="block h-auto md:h-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl rounded-xl md:rounded-[20px] p-3 md:p-6 hover:bg-blue-500/[0.04] hover:border-blue-500/40 transition-all duration-300"
                 >
-                  <div className="space-y-4 h-full flex flex-col">
+                  <div className="space-y-3 md:space-y-4 h-full flex flex-col">
                     <div className={cn(
-                        "w-12 h-12 rounded-xl bg-gradient-to-br flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500",
+                        "w-9 h-9 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gradient-to-br flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500",
                         getIconGradient(tool.category)
                     )}>
-                      {tool.icon && <tool.icon className="w-6 h-6 text-white" />}
+                      {tool.icon && <tool.icon className="w-5 h-5 md:w-6 md:h-6 text-white" />}
                     </div>
                     <div>
-                      <h3 className="font-bold text-base text-white mb-1.5">{tool.name}</h3>
-                      <p className="text-[13px] text-slate-400 leading-snug line-clamp-2">{tool.description}</p>
+                      <h3 className="font-bold text-sm md:text-base text-white mb-0.5 md:mb-1.5">{tool.name}</h3>
+                      <p className="text-[12px] md:text-[13px] text-slate-400 leading-snug truncate md:line-clamp-2">{tool.description}</p>
                     </div>
-                    <div className="mt-auto pt-4 flex justify-end">
-                        <div className="w-8 h-8 rounded-full bg-white/[0.05] flex items-center justify-center transform translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
-                            <ArrowRight className="w-4 h-4 text-blue-400" />
+                    <div className="md:mt-auto pt-1 md:pt-4 flex justify-end">
+                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/[0.05] flex items-center justify-center transform translate-x-2 opacity-0 md:group-hover:translate-x-0 md:group-hover:opacity-100 transition-all duration-300">
+                            <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-blue-400" />
                         </div>
                     </div>
                   </div>
