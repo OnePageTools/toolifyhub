@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -214,7 +213,7 @@ export default function Home() {
             <div className="container mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
                 {[
                     { label: "Free Tools", value: "35+" },
-                    { label: "Monthly Users", value: "100K+" },
+                    { label: "Tool Uses", value: "10K+" },
                     { label: "Registration Required", value: "0" },
                     { label: "Usage Limit", value: "∞" },
                 ].map((stat, i) => (
