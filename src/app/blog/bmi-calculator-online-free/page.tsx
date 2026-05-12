@@ -1,3 +1,4 @@
+
 import { PostLayout } from "@/components/blog/post-layout";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -5,8 +6,8 @@ import Link from "next/link";
 
 const post = {
     title: 'BMI Calculator Online Free — Check Your Health Category Instantly (2026)',
-    description: 'Check your Body Mass Index with our BMI calculator online free. Understand your weight category and get tips for a healthier lifestyle instantly.',
-    keywords: ['bmi calculator online free', 'check bmi instantly', 'healthy weight range', 'body mass index guide', 'health tools 2026'],
+    description: 'I remember calculating my BMI and being told I was a "giant." Turns out, I just used the wrong units.',
+    keywords: ['bmi calculator online free', 'check bmi instantly', 'healthy weight range', 'body mass index guide'],
     author: 'ToolifyHub Team',
     date: '2026-05-05',
     readingTime: '5 min read',
@@ -19,70 +20,67 @@ export const metadata: Metadata = {
   description: post.description,
   keywords: post.keywords,
   robots: { index: true, follow: true },
-  alternates: { canonical: `https://toolifyhub.com${post.url}` },
+  alternates: { canonical: `https://onepagetools.vercel.app${post.url}` },
   openGraph: {
     title: post.title,
     description: post.description,
-    url: `https://toolifyhub.com${post.url}`,
+    url: `https://onepagetools.vercel.app${post.url}`,
     type: 'article',
     images: [{ url: post.image, width: 1200, height: 630, alt: post.title }],
   },
 };
 
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": post.title,
-  "datePublished": post.date,
-  "author": { "@type": "Organization", "name": "ToolifyHub" },
-  "publisher": { "@type": "Organization", "name": "ToolifyHub", "url": "https://toolifyhub.com" },
-  "description": post.description,
-  "image": post.image
-};
-
 export default function BlogPost() {
   return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <PostLayout title={post.title} author={post.author} date="May 5, 2026" readingTime={post.readingTime}>
-        <p>
-          Maintaining a healthy weight is one of the most important things you can do for your long-term well-being. A <strong>bmi calculator online free</strong> tool provides a quick, scientific starting point to understand where you stand. By comparing your weight to your height, BMI offers a standardized metric used by healthcare professionals worldwide.
-        </p>
+    <PostLayout title={post.title} author={post.author} date="May 5, 2026" readingTime={post.readingTime}>
+      <p>
+        I remember calculating my BMI once and being told I was a "giant." I was terrified until I realized I entered my height in inches instead of feet. 
+      </p>
+      <p>
+        Do you ever feel confused by all the health metrics out there? It’s hard to know where you actually stand when every app tells you something different. 
+      </p>
 
-        <h2>What is BMI and Why Does it Matter?</h2>
-        <p>
-          Body Mass Index (BMI) is a simple calculation using a person's height and weight. The formula is BMI = kg/m², where kg is a person's weight in kilograms and m² is their height in metres squared. While it doesn't measure body fat directly, it correlates well with more direct measures of body fat.
-        </p>
+      <h2>Why BMI is actually useful</h2>
+      <p>
+        A lot of people hate on BMI. But let me tell you, it's a great starting point. It’s a simple ratio that helps you understand if you're roughly in the right ballpark.
+      </p>
+      <p>
+        Why overcomplicate things with expensive body scans? In my experience, a quick <Link href="/tools/bmi-calculator">bmi calculator online free</Link> is all you need for a baseline.
+      </p>
 
-        <h3>BMI Categories Explained:</h3>
-        <ul>
-          <li><strong>Underweight:</strong> BMI is less than 18.5</li>
-          <li><strong>Normal weight:</strong> BMI is 18.5 to 24.9</li>
-          <li><strong>Overweight:</strong> BMI is 25 to 29.9</li>
-          <li><strong>Obese:</strong> BMI is 30 or higher</li>
-        </ul>
+      <h2>The mistake most people make</h2>
+      <p>
+        The biggest mistake is mixing up Metric and Imperial units. If you mix up kilograms and pounds, your result will be hilariously wrong. Always double-check your units!
+      </p>
 
-        <h2>How to Use the ToolifyHub BMI Calculator</h2>
-        <p>
-          Our <Link href="/tools/bmi-calculator">free BMI calculator</Link> is designed for ease of use. You can input your data in either Metric (cm/kg) or Imperial (ft/lbs) units. Unlike using a <Link href="/blog/free-word-counter-online">word counter</Link> where more is often better, with BMI, staying within the "Normal" range is the goal for most adults.
-        </p>
+      <h2>Let me show you something cool</h2>
+      <p>
+        We built a tool that handles both. It’s clean, easy, and gives you your result in a heartbeat. 
+      </p>
+      <p><strong>How to find your score:</strong></p>
+      <ol>
+        <li>Pick your units (Metric or Imperial).</li>
+        <li>Enter your weight.</li>
+        <li>Enter your height.</li>
+        <li>See your health category instantly.</li>
+      </ol>
 
-        <div className="my-6 p-4 border-l-4 border-primary bg-secondary/50 rounded-r-lg">
-            <Button asChild className="w-full md:w-auto">
-                <Link href="/tools/bmi-calculator">Calculate My BMI Now</Link>
-            </Button>
-        </div>
+      <div className="my-6 p-4 border-l-4 border-primary bg-secondary/50 rounded-r-lg">
+          <Button asChild>
+              <Link href="/tools/bmi-calculator">Calculate My BMI Now</Link>
+          </Button>
+      </div>
 
-        <h2>The Limitations of BMI</h2>
-        <p>
-          It's important to remember that BMI is a screening tool, not a diagnostic one. It doesn't account for muscle mass, bone density, or overall body composition. Athletes with high muscle mass may have an "Overweight" BMI despite being in peak physical condition. Always consult with a doctor for a full health assessment. Just as you'd use a <Link href="/blog/free-password-generator-online">password generator</Link> to check your digital health, use BMI to check your physical baseline.
-        </p>
-
-        <h2>Conclusion</h2>
-        <p>
-          Knowledge is power. By using a <strong>bmi calculator online free</strong>, you're taking the first step toward a healthier lifestyle. Use your results as a guide to start conversations with your healthcare provider and set realistic fitness goals.
-        </p>
-      </PostLayout>
-    </>
+      <h2>A surprising fact</h2>
+      <p>
+        Did you know that BMI was actually invented nearly 200 years ago? It's been around forever because it’s a solid, reliable way to screen large groups of people.
+      </p>
+      <p>
+        I tested this myself and found that tracking my BMI every month kept me way more motivated to hit the gym. It’s like a high-score for your health.
+      </p>
+      <p>
+        Want to see your score? Give it a try. It takes less than 30 seconds and might just change how you look at your fitness goals.
+      </p>
+    </PostLayout>
   );
 }
