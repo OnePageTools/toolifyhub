@@ -26,7 +26,7 @@ export default function YoutubeThumbnailDownloaderPage() {
           category="Social Media"
         />
 
-        <Card className="border-white/[0.08] bg-white/[0.02] md:bg-white/[0.03] rounded-none md:rounded-[24px] border-x-0 md:border-x">
+        <Card className="bg-white dark:bg-card border-border rounded-none md:rounded-[24px] border-x-0 md:border-x shadow-sm dark:shadow-none overflow-hidden">
           <CardContent className="p-5 md:p-12">
             <YoutubeThumbnailDownloaderForm />
           </CardContent>

@@ -137,12 +137,12 @@ export function YoutubeThumbnailDownloaderForm() {
   return (
     <div className="space-y-10">
       <div className="space-y-4">
-        <Label className="text-slate-300 font-bold uppercase tracking-wider text-xs ml-1">YouTube URL or ID</Label>
+        <Label className="text-muted-foreground font-bold uppercase tracking-wider text-xs ml-1">YouTube URL or ID</Label>
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1 group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-pink-600 rounded-2xl blur opacity-10 group-focus-within:opacity-30 transition duration-500"></div>
-            <div className="relative flex items-center bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden h-14">
-               <div className="pl-4 text-slate-500">
+            <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-pink-600 rounded-2xl blur opacity-5 group-focus-within:opacity-20 transition duration-500"></div>
+            <div className="relative flex items-center bg-white dark:bg-slate-900 border border-border rounded-2xl overflow-hidden h-14 shadow-sm">
+               <div className="pl-4 text-muted-foreground">
                   <Video className="w-6 h-6" />
                </div>
                <Input
@@ -150,14 +150,14 @@ export function YoutubeThumbnailDownloaderForm() {
                   onChange={(e) => setUrl(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleGetThumbnails()}
                   placeholder="Paste URL (e.g. https://youtube.com/watch?v=...)"
-                  className="bg-transparent border-0 h-full text-lg text-white focus-visible:ring-0 placeholder:text-slate-700 px-4"
+                  className="bg-transparent border-0 h-full text-lg text-foreground focus-visible:ring-0 placeholder:text-muted-foreground/50 px-4"
                />
                <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={handlePaste}
                 aria-label="Paste from clipboard"
-                className="mr-2 h-10 w-10 text-slate-500 hover:text-white"
+                className="mr-2 h-10 w-10 text-muted-foreground hover:text-foreground"
                >
                  <ClipboardPaste className="w-5 h-5" />
                </Button>
@@ -166,7 +166,7 @@ export function YoutubeThumbnailDownloaderForm() {
           <Button 
             onClick={handleGetThumbnails}
             disabled={!url.trim()}
-            className="h-14 px-8 bg-red-600 hover:bg-red-500 font-bold text-lg rounded-2xl shadow-xl"
+            className="h-14 px-8 bg-red-600 hover:bg-red-500 font-bold text-lg rounded-2xl shadow-xl shadow-red-600/20"
           >
             Get Thumbnails
           </Button>
@@ -182,8 +182,8 @@ export function YoutubeThumbnailDownloaderForm() {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {SIZES.map((size) => (
-                <Card key={size.id} className="bg-[#1E293B] border-slate-700 overflow-hidden group hover:border-red-500/40 transition-all duration-300">
-                  <div className="relative aspect-video bg-slate-950 flex items-center justify-center">
+                <Card key={size.id} className="bg-white dark:bg-card border-border overflow-hidden group hover:border-red-500/40 transition-all duration-300 shadow-sm dark:shadow-none">
+                  <div className="relative aspect-video bg-slate-100 dark:bg-slate-950 flex items-center justify-center">
                     <Image 
                       src={`https://img.youtube.com/vi/${videoId}/${size.suffix}`} 
                       alt={`YouTube thumbnail ${size.label}`}
@@ -191,7 +191,7 @@ export function YoutubeThumbnailDownloaderForm() {
                       height={size.height}
                       loading="lazy"
                       className="w-full h-full object-cover"
-                      unoptimized // YouTube images don't need additional optimization
+                      unoptimized 
                     />
                     <div className="absolute top-3 left-3">
                       <Badge className="bg-black/60 backdrop-blur-md border-white/10 text-white font-bold uppercase tracking-widest text-[10px]">
@@ -201,7 +201,7 @@ export function YoutubeThumbnailDownloaderForm() {
                   </div>
                   <CardContent className="p-5 space-y-4">
                     <div className="flex justify-between items-center">
-                      <div className="text-slate-400 font-mono text-xs">
+                      <div className="text-muted-foreground font-mono text-xs">
                         {size.width} × {size.height} px
                       </div>
                       <div className="flex gap-2">
@@ -210,14 +210,15 @@ export function YoutubeThumbnailDownloaderForm() {
                           size="icon" 
                           aria-label={`Copy ${size.label} image URL`}
                           onClick={() => handleCopy(`https://img.youtube.com/vi/${videoId}/${size.suffix}`, `${videoId}-${size.id}`)}
-                          className="h-9 w-9 rounded-xl hover:bg-slate-800 text-slate-500"
+                          className="h-9 w-9 rounded-xl hover:bg-secondary text-muted-foreground"
                         >
-                          {isCopied === `${videoId}-${size.id}` ? <ClipboardCheck className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                          {isCopied === `${videoId}-${size.id}` ? <ClipboardCheck className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
                         </Button>
                         <Button 
                           onClick={() => downloadImage(`https://img.youtube.com/vi/${videoId}/${size.suffix}`, `thumbnail-${videoId}-${size.id}.jpg`)}
                           size="sm"
-                          className="bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold px-4"
+                          variant="secondary"
+                          className="font-bold px-4 h-9"
                         >
                           <Download className="w-4 h-4 mr-2" /> Download
                         </Button>
@@ -238,20 +239,20 @@ export function YoutubeThumbnailDownloaderForm() {
                 {isZipping ? <><Loader2 className="mr-2 animate-spin" /> Preparing ZIP...</> : <><Package className="mr-2" /> Download All as ZIP</>}
               </Button>
 
-              <Card className="bg-slate-900/50 border-slate-800 p-6 rounded-2xl">
+              <Card className="bg-secondary/30 border-border p-6 rounded-2xl shadow-none">
                 <div className="flex flex-col md:flex-row justify-between gap-6">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
-                      <Search className="w-3 h-3 text-red-400" /> Video Detected
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+                      <Search className="w-3 h-3 text-red-500" /> Video Detected
                     </Label>
                     <div className="flex items-center gap-3">
-                      <span className="font-mono text-xl font-black text-white">{videoId}</span>
+                      <span className="font-mono text-xl font-black text-foreground">{videoId}</span>
                       <a 
                         href={`https://youtube.com/watch?v=${videoId}`} 
                         target="_blank" 
                         rel="noreferrer"
                         aria-label="Watch video on YouTube"
-                        className="p-1.5 bg-slate-800 rounded-lg text-slate-400 hover:text-red-400 transition-colors"
+                        className="p-1.5 bg-white dark:bg-slate-800 rounded-lg text-muted-foreground hover:text-red-500 transition-colors shadow-sm"
                       >
                         <ExternalLink className="w-4 h-4" />
                       </a>
@@ -259,13 +260,13 @@ export function YoutubeThumbnailDownloaderForm() {
                   </div>
 
                   <div className="space-y-2 md:text-right">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Resource Links</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Resource Links</Label>
                     <div className="flex flex-wrap gap-2 md:justify-end">
                       {SIZES.map(s => (
                         <button 
                           key={s.id}
                           onClick={() => handleCopy(`https://img.youtube.com/vi/${videoId}/${s.suffix}`, `link-${s.id}`)}
-                          className="px-3 py-1 bg-slate-800/50 border border-slate-700 rounded-lg text-[10px] font-bold text-slate-400 hover:text-white transition-all"
+                          className="px-3 py-1 bg-white dark:bg-slate-800/50 border border-border rounded-lg text-[10px] font-bold text-muted-foreground hover:text-foreground transition-all shadow-xs"
                         >
                           {s.id.toUpperCase()} URL
                         </button>
@@ -280,9 +281,9 @@ export function YoutubeThumbnailDownloaderForm() {
       </AnimatePresence>
 
       {!videoId && (
-        <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-slate-800 rounded-[24px]">
-           <FileImage className="w-16 h-16 text-slate-800 mb-4" />
-           <p className="text-slate-500 font-medium">Thumbnails will appear here after search.</p>
+        <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-border rounded-[24px] opacity-60">
+           <FileImage className="w-16 h-16 text-muted-foreground mb-4" />
+           <p className="text-muted-foreground font-medium">Thumbnails will appear here after search.</p>
         </div>
       )}
     </div>
