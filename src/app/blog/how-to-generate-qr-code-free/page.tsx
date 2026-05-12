@@ -1,4 +1,3 @@
-
 import { PostLayout } from "@/components/blog/post-layout";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -34,7 +33,7 @@ export default function BlogPost() {
   return (
     <PostLayout title={post.title} author={post.author} date="April 12, 2026" readingTime={post.readingTime}>
       <p>
-        I wanted to share my Wi-Fi with a friend last week. We spent ten painful minutes typing a 30-character password. He still couldn't connect. 
+        I wanted to share my Wi-Fi with a friend last week. We spent ten painful minutes typing a 30-character <Link href="/tools/password-generator">password</Link>. He still couldn't connect. 
       </p>
       <p>
         Are you tired of spelling out long URLs or Wi-Fi keys? It’s a total waste of time. "Is that a zero or a capital O?"—we've all been there. 
@@ -50,7 +49,7 @@ export default function BlogPost() {
 
       <h2>The mistake most people make</h2>
       <p>
-        The biggest mistake is making the QR code too small. If your camera can't focus on it, the code is useless. Aim for at least 2cm for print!
+        The biggest mistake is making the <Link href="/tools/qr-code-generator">QR code</Link> too small. If your camera can't focus on it, the code is useless. Aim for at least 2cm for print!
       </p>
 
       <h2>Let me show you something cool</h2>

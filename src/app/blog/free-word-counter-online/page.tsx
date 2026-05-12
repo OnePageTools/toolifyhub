@@ -1,4 +1,3 @@
-
 import { PostLayout } from "@/components/blog/post-layout";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -37,7 +36,7 @@ export default function BlogPost() {
         I once wrote an article that was 1,999 words. My editor was super strict and wanted exactly 2,000. I spent twenty minutes looking for one extra word to add. 
       </p>
       <p>
-        Do you ever find yourself struggling with character limits? Whether it's an essay or a social media bio, hitting that number is surprisingly stressful. 
+        Do you ever find yourself struggling with character limits? Whether it's an essay or a social media bio, hitting that <Link href="/tools/word-counter">word count</Link> is surprisingly stressful. 
       </p>
 
       <h2>The Counting Problem</h2>
@@ -55,7 +54,7 @@ export default function BlogPost() {
 
       <h2>Let me show you something cool</h2>
       <p>
-        Our tool doesn't just count words. it shows you which words you're using too much. It helps you keep your writing fresh and engaging.
+        Our tool doesn't just count words. it shows you which words you're using too much. It helps you keep your writing fresh and engaging using <Link href="/tools/word-counter">word counter</Link> technology.
       </p>
       <p><strong>How to audit your text:</strong></p>
       <ol>
@@ -79,7 +78,7 @@ export default function BlogPost() {
         I tested this myself and found that cutting 10% of my filler words made my writing much more punchy. 
       </p>
       <p>
-        Ready to see how your writing stacks up? Paste your draft into our tool and see the stats for yourself. It’s fast, free, and very eye-opening.
+        Ready to see how your writing stacks up? Paste your draft into our <Link href="/tools/text-summarizer">summarize</Link> tool if it's too long, or use the counter for stats. It’s fast, free, and very eye-opening.
       </p>
     </PostLayout>
   );

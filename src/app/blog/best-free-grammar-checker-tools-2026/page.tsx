@@ -1,4 +1,3 @@
-
 import { PostLayout } from "@/components/blog/post-layout";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -60,7 +59,7 @@ export default function BlogPost() {
       <p><strong>How to use it:</strong></p>
       <ol>
         <li>Copy your messy text.</li>
-        <li>Paste it into our tool.</li>
+        <li>Paste it into our <Link href="/tools/grammar-checker">grammar checker</Link>.</li>
         <li>Click "Check Grammar."</li>
         <li>Review the suggestions and fix them.</li>
       </ol>
@@ -74,7 +73,7 @@ export default function BlogPost() {
 
       <h2>A surprising fact</h2>
       <p>
-        Did you know that nearly 40% of recruiters reject resumes because of bad grammar? It sounds harsh, but it’s true. One tiny slip can cost you a big opportunity.
+        Did you know that nearly 40% of recruiters reject <Link href="/tools/resume-builder">resumes</Link> because of bad grammar? It sounds harsh, but it’s true. One tiny slip can cost you a big opportunity.
       </p>
       <p>
         I tested this myself and found that using a context-aware checker caught 3x more errors than my browser's built-in tool. Don't leave your reputation to chance. 

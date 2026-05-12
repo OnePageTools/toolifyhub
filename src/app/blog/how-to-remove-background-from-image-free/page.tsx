@@ -1,4 +1,3 @@
-
 import { PostLayout } from "@/components/blog/post-layout";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -34,7 +33,7 @@ export default function BlogPost() {
   return (
     <PostLayout title={post.title} author={post.author} date="April 18, 2026" readingTime={post.readingTime}>
       <p>
-        I had a perfect professional photo for my LinkedIn last month. But there was one problem: my messy, unmade bed was right in the background. 
+        I had a perfect professional photo for my LinkedIn last month. But there was one problem: my messy, unmade bed was right in the <Link href="/tools/background-remover">background</Link>. 
       </p>
       <p>
         Have you ever had a great picture ruined by a distracting background? It’s the worst. You want to look like a pro, not like you're working from a laundry pile. 
@@ -73,7 +72,7 @@ export default function BlogPost() {
 
       <h2>A surprising fact</h2>
       <p>
-        Did you know that AI models for background removal are trained on millions of images? They literally "know" what a human looks like vs. a wall. 
+        Did you know that AI models for <Link href="/tools/background-remover">background removal</Link> are trained on millions of images? They literally "know" what a human looks like vs. a wall. 
       </p>
       <p>
         I tested this myself with a photo of my dog. It managed to cutout his fuzzy ears perfectly without losing a single hair. I was shocked! 

@@ -1,4 +1,3 @@
-
 import { PostLayout } from "@/components/blog/post-layout";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -34,7 +33,7 @@ export default function BlogPost() {
   return (
     <PostLayout title={post.title} author={post.author} date="April 22, 2026" readingTime={post.readingTime}>
       <p>
-        I once tried to send a high-res PDF to a professional printer. The file was 100MB. My email client literally froze and died. 
+        I once tried to send a high-res <Link href="/tools/pdf-compressor">PDF</Link> to a professional printer. The file was 100MB. My email client literally froze and died. 
       </p>
       <p>
         Have you ever been blocked by those tiny email attachment limits? It’s so frustrating when you just want to get your work out there. 
@@ -50,7 +49,7 @@ export default function BlogPost() {
 
       <h2>The mistake most people make</h2>
       <p>
-        The mistake most people make is ignoring DPI settings. If you compress too much, your beautiful images will look like Minecraft blocks. Balance is key!
+        The mistake most people make is ignoring DPI settings. If you compress too much, your beautiful <Link href="/tools/image-compressor">images</Link> will look like Minecraft blocks. Balance is key!
       </p>
 
       <h2>Let me show you something cool</h2>

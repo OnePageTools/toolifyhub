@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 210 100% 98%; /* #F8FAFC */
+    --background: 210 40% 98%; /* #F8FAFC */
     --foreground: 222 47% 11%; /* #0F172A */
 
     --card: 0 0% 100%; /* #FFFFFF */
@@ -29,7 +29,7 @@
     --destructive-foreground: 210 40% 98%;
 
     --border: 214 32% 91%; /* #E2E8F0 */
-    --input: 214 32% 85%; /* #CBD5E1 */
+    --input: 210 40% 96.1%; /* #F1F5F9 */
     --ring: 216 100% 52%;
     --radius: 0.75rem;
   }
@@ -115,19 +115,6 @@
   will-change: opacity, transform;
 }
 
-@keyframes shooting-star {
-  0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 1; }
-  100% { transform: translateX(800px) translateY(800px) rotate(45deg); opacity: 0; }
-}
-
-.shooting-star {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background: linear-gradient(to right, white, transparent);
-  will-change: transform, opacity;
-}
-
 /* Hide scrollbar for category list */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
@@ -135,4 +122,9 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Blog Link Styling */
+.blog-content a {
+  @apply text-blue-600 dark:text-blue-400 font-semibold hover:underline;
 }

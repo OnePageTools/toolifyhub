@@ -1,4 +1,3 @@
-
 import { PostLayout } from "@/components/blog/post-layout";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -34,7 +33,7 @@ export default function BlogPost() {
   return (
     <PostLayout title={post.title} author={post.author} date="April 1, 2026" readingTime={post.readingTime}>
       <p>
-        I once tried to email a huge project to a client and it bounced. The PDF was 50MB. I was panicking because the deadline was in ten minutes.
+        I once tried to email a huge project to a client and it bounced. The <Link href="/tools/pdf-compressor">PDF</Link> was 50MB. I was panicking because the deadline was in ten minutes.
       </p>
       <p>
         Do you ever get that "File too large" error? It’s so annoying. You just want to share your work, but your email provider is acting like a bouncer at a club. 
@@ -50,7 +49,7 @@ export default function BlogPost() {
 
       <h2>The mistake most people make</h2>
       <p>
-        The mistake most people make is using "High" compression for text-heavy files. It makes the text look blurry and unprofessional. Only use high compression for images!
+        The mistake most people make is using "High" compression for text-heavy files. It makes the text look blurry and unprofessional. Only use high compression for <Link href="/tools/image-compressor">images</Link>!
       </p>
 
       <h2>Let me show you something cool</h2>

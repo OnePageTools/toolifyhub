@@ -1,4 +1,3 @@
-
 import { PostLayout } from "@/components/blog/post-layout";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -37,12 +36,12 @@ export default function BlogPost() {
         I used to send invoices made in Microsoft Word. They looked like a total mess, and let's be real—I got paid late almost every time. 
       </p>
       <p>
-        Are you tired of chasing clients for money? It’s awkward. If your invoice looks unprofessional, they might think your work is unprofessional too. 
+        Are you tired of chasing clients for money? It’s awkward. If your <Link href="/tools/invoice-generator">invoice</Link> looks unprofessional, they might think your work is unprofessional too. 
       </p>
 
       <h2>The Branding Problem</h2>
       <p>
-        You're a pro, so why are you sending a plain text email for your payment? Most people fail because they don't realize that an invoice is part of their brand.
+        You're a pro, so why are you sending a plain text email for your payment? Most people fail because they don't realize that an <Link href="/tools/invoice-generator">invoice</Link> is part of their brand.
       </p>
       <p>
         Why use complicated accounting software that costs $30 a month? In my experience, a simple <Link href="/tools/invoice-generator">free invoice generator online</Link> is way better for small gigs.

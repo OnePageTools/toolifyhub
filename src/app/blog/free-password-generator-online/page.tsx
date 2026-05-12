@@ -1,4 +1,3 @@
-
 import { PostLayout } from "@/components/blog/post-layout";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -37,7 +36,7 @@ export default function BlogPost() {
         My first password was "password123." It lasted about three minutes before my account got hacked. It was a wake-up call I didn't see coming.
       </p>
       <p>
-        Are you using the same password for everything? Be honest. If one site gets hacked, all your accounts are basically open doors for thieves. 
+        Are you using the same <Link href="/tools/password-generator">password</Link> for everything? Be honest. If one site gets hacked, all your accounts are basically open doors for thieves. 
       </p>
 
       <h2>The Brute Force Problem</h2>
