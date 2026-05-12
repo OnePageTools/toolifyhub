@@ -8,9 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { 
-  User, 
   Copy, 
-  RefreshCw, 
   Trash2, 
   Download, 
   ClipboardCheck, 
@@ -35,7 +33,6 @@ import {
 } from '@/components/ui/select';
 
 // --- Name Data ---
-
 const DATA = {
   pakistani: {
     male: ["Muhammad", "Ali", "Ahmed", "Abdullah", "Bilal", "Hamza", "Hassan", "Hussain", "Umar", "Usman", "Zaid", "Zubair", "Ibrahim", "Tariq", "Kamran", "Faisal", "Adnan", "Shahid", "Raza", "Saad"],
@@ -134,8 +131,6 @@ export function RandomNameGeneratorForm() {
         identity.age = Math.floor(Math.random() * 62) + 18;
         identity.city = natData.cities[Math.floor(Math.random() * natData.cities.length)];
         identity.email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${Math.floor(Math.random() * 99)}@example.com`;
-        
-        // Randomize phone digits for specific format
         identity.phone = natData.phone.replace(/X/g, () => Math.floor(Math.random() * 10).toString());
       }
 
@@ -147,7 +142,7 @@ export function RandomNameGeneratorForm() {
 
   useEffect(() => {
     generateNames();
-  }, []); // Initial load
+  }, []);
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -174,24 +169,22 @@ export function RandomNameGeneratorForm() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `random-names-${Date.now()}.txt`;
+    link.download = `random-names.txt`;
     link.click();
     URL.revokeObjectURL(url);
   };
 
   return (
     <div className="space-y-8">
-      {/* 1. CONFIGURATION CARD */}
-      <Card className="bg-slate-800/40 border-slate-700">
+      <Card className="bg-white dark:bg-card border-border shadow-md">
         <CardContent className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Nationality */}
             <div className="space-y-2">
-              <Label className="text-slate-300 flex items-center gap-2">
-                <Globe className="w-3 h-3 text-blue-400" /> Nationality
+              <Label className="text-muted-foreground flex items-center gap-2">
+                <Globe className="w-3 h-3 text-primary" /> Nationality
               </Label>
               <Select value={nationality} onValueChange={(v: Nationality) => setNationality(v)}>
-                <SelectTrigger className="bg-slate-900 border-slate-700">
+                <SelectTrigger className="bg-secondary/20 border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -199,105 +192,88 @@ export function RandomNameGeneratorForm() {
                   <SelectItem value="pakistani">Pakistani</SelectItem>
                   <SelectItem value="indian">Indian</SelectItem>
                   <SelectItem value="arabic">Arabic</SelectItem>
-                  <SelectItem value="american_british">Western (US/UK)</SelectItem>
+                  <SelectItem value="american_british">Western</SelectItem>
                   <SelectItem value="turkish">Turkish</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Gender */}
             <div className="space-y-2">
-              <Label className="text-slate-300 flex items-center gap-2">
-                <Users className="w-3 h-3 text-purple-400" /> Gender
+              <Label className="text-muted-foreground flex items-center gap-2">
+                <Users className="w-3 h-3 text-primary" /> Gender
               </Label>
               <Select value={gender} onValueChange={(v: Gender) => setGender(v)}>
-                <SelectTrigger className="bg-slate-900 border-slate-700">
+                <SelectTrigger className="bg-secondary/20 border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="any">Any</SelectItem>
-                  <SelectItem value="male">Male Only</SelectItem>
-                  <SelectItem value="female">Female Only</SelectItem>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Name Type */}
             <div className="space-y-2">
-              <Label className="text-slate-300 flex items-center gap-2">
-                <Type className="w-3 h-3 text-emerald-400" /> Name Style
+              <Label className="text-muted-foreground flex items-center gap-2">
+                <Type className="w-3 h-3 text-primary" /> Name Style
               </Label>
               <Select value={nameType} onValueChange={(v: NameType) => setNameType(v)}>
-                <SelectTrigger className="bg-slate-900 border-slate-700">
+                <SelectTrigger className="bg-secondary/20 border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="full">Full Name</SelectItem>
-                  <SelectItem value="first">First Name Only</SelectItem>
-                  <SelectItem value="last">Last Name Only</SelectItem>
+                  <SelectItem value="first">First Name</SelectItem>
+                  <SelectItem value="last">Last Name</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Count */}
             <div className="space-y-2">
-              <Label className="text-slate-300 flex items-center gap-2">
-                <Users className="w-3 h-3 text-orange-400" /> Quantity (1-50)
+              <Label className="text-muted-foreground flex items-center gap-2">
+                <Users className="w-3 h-3 text-primary" /> Quantity (1-50)
               </Label>
               <Input 
                 type="number" 
-                min="1" 
-                max="50" 
                 value={count} 
                 onChange={(e) => setCount(Math.min(50, Math.max(1, parseInt(e.target.value) || 1)))}
-                className="bg-slate-900 border-slate-700"
+                className="bg-secondary/20 border-border"
               />
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-700">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3 bg-slate-900/50 p-3 rounded-xl border border-slate-700">
-                <div className="space-y-0.5">
-                  <Label className="text-slate-200 font-bold text-sm">Full Identity Mode</Label>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-widest">Age, City, Contact Info</p>
-                </div>
-                <Switch 
-                  checked={fullIdentity} 
-                  onCheckedChange={setFullIdentity}
-                  className="data-[state=checked]:bg-blue-600"
-                />
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-border">
+            <div className="flex items-center gap-3 bg-secondary/30 p-3 rounded-xl border border-border">
+              <div className="space-y-0.5">
+                <Label className="text-foreground font-bold text-sm">Full Identity</Label>
+                <p className="text-[10px] text-muted-foreground uppercase font-black">Age, City, Contact</p>
               </div>
+              <Switch checked={fullIdentity} onCheckedChange={setFullIdentity} />
             </div>
 
-            <div className="flex gap-2 w-full sm:w-auto">
-              <Button 
-                onClick={generateNames} 
-                size="lg" 
-                className="flex-1 sm:flex-none h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 font-bold text-lg rounded-xl shadow-xl shadow-blue-600/20"
-              >
-                <Shuffle className="mr-2 h-5 w-5" /> Generate Names
-              </Button>
-            </div>
+            <Button 
+              onClick={generateNames} 
+              size="lg" 
+              className="h-14 bg-gradient-to-r from-blue-600 to-purple-600 font-bold text-lg rounded-xl shadow-xl"
+            >
+              <Shuffle className="mr-2 h-5 w-5" /> Generate
+            </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* 2. RESULTS GRID */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
-          <h3 className="text-slate-400 font-bold uppercase tracking-widest text-xs ml-1 flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Results Found: {results.length}
+          <h3 className="text-muted-foreground font-bold uppercase tracking-widest text-xs ml-1 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Results: {results.length}
           </h3>
           <div className="flex gap-2">
-            <Button variant="ghost" size="sm" onClick={handleCopyAll} className="text-slate-400 hover:text-white">
-              {isCopied === 'all' ? <ClipboardCheck className="w-4 h-4 mr-2 text-emerald-400" /> : <Copy className="w-4 h-4 mr-2" />}
+            <Button variant="ghost" size="sm" onClick={handleCopyAll} className="text-muted-foreground hover:text-foreground">
+              {isCopied === 'all' ? <ClipboardCheck className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
               Copy All
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleDownload} className="text-slate-400 hover:text-white">
-              <Download className="w-4 h-4 mr-2" /> Download .txt
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => setResults([])} className="text-slate-500 hover:text-red-400">
+            <Button variant="ghost" size="sm" onClick={() => setResults([])} className="text-muted-foreground hover:text-destructive">
               <Trash2 className="w-4 h-4 mr-2" /> Clear
             </Button>
           </div>
@@ -315,119 +291,68 @@ export function RandomNameGeneratorForm() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.2 }}
               >
                 <Card 
-                  className="bg-[#1E293B] border-slate-700 group hover:border-blue-500/50 transition-all cursor-pointer relative overflow-hidden"
+                  className="bg-white dark:bg-card border-border group hover:border-primary/50 transition-all cursor-pointer relative overflow-hidden"
                   onClick={() => handleCopy(item.name, item.id)}
                 >
                   <CardContent className="p-5">
-                    {/* Basic Name Card */}
                     {!fullIdentity ? (
                       <div className="flex items-center justify-between gap-4">
                         <div className="space-y-1">
-                          <p className="text-lg font-bold text-slate-100 group-hover:text-blue-400 transition-colors">
-                            {item.name}
-                          </p>
-                          <p className="text-[10px] text-slate-500 uppercase tracking-widest font-black">
-                            {item.nationality} • {item.gender}
-                          </p>
+                          <p className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">{item.name}</p>
+                          <p className="text-[10px] text-muted-foreground uppercase font-black">{item.nationality} • {item.gender}</p>
                         </div>
-                        <div className="shrink-0 text-slate-700 group-hover:text-blue-400 transition-colors">
+                        <div className="shrink-0 text-muted-foreground group-hover:text-primary transition-colors">
                           {isCopied === item.id ? <ClipboardCheck className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                         </div>
                       </div>
                     ) : (
-                      /* Full Identity Card */
                       <div className="space-y-4">
-                        <div className="flex justify-between items-start border-b border-slate-800 pb-3">
+                        <div className="flex justify-between items-start border-b border-border pb-3">
                            <div className="space-y-0.5">
-                              <h4 className="text-xl font-black text-slate-100 group-hover:text-blue-400 transition-colors">{item.name}</h4>
-                              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">{item.nationality} • {item.gender}</p>
+                              <h4 className="text-xl font-black text-foreground group-hover:text-primary transition-colors">{item.name}</h4>
+                              <p className="text-[10px] text-muted-foreground uppercase font-bold">{item.nationality} • {item.gender}</p>
                            </div>
-                           <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleCopy(item.name, item.id); }} className="h-8 w-8 text-slate-500">
-                             {isCopied === item.id ? <ClipboardCheck className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                           <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleCopy(item.name, item.id); }} className="h-8 w-8">
+                             {isCopied === item.id ? <ClipboardCheck className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
                            </Button>
                         </div>
 
                         <div className="grid grid-cols-2 gap-y-3 gap-x-2">
-                           <div className="space-y-1 group/field">
-                              <Label className="text-[10px] text-slate-500 uppercase flex items-center gap-1">
+                           <div className="space-y-1">
+                              <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
                                 <Calendar className="w-3 h-3" /> Age
                               </Label>
-                              <div className="flex items-center justify-between bg-slate-900/50 p-1.5 px-3 rounded-lg border border-slate-800">
-                                <span className="text-xs text-slate-300 font-bold">{item.age}</span>
-                                <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleCopy(item.age?.toString() || '', `${item.id}-age`); }} className="h-4 w-4 opacity-0 group-hover/field:opacity-100 transition-opacity">
-                                  <Copy className="w-2.5 h-2.5" />
-                                </Button>
+                              <div className="flex items-center justify-between bg-secondary/20 p-1.5 px-3 rounded-lg border border-border">
+                                <span className="text-xs text-foreground font-bold">{item.age}</span>
                               </div>
                            </div>
-
-                           <div className="space-y-1 group/field">
-                              <Label className="text-[10px] text-slate-500 uppercase flex items-center gap-1">
+                           <div className="space-y-1">
+                              <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
                                 <MapPin className="w-3 h-3" /> City
                               </Label>
-                              <div className="flex items-center justify-between bg-slate-900/50 p-1.5 px-3 rounded-lg border border-slate-800">
-                                <span className="text-xs text-slate-300 font-bold truncate">{item.city}</span>
-                                <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleCopy(item.city || '', `${item.id}-city`); }} className="h-4 w-4 opacity-0 group-hover/field:opacity-100 transition-opacity">
-                                  <Copy className="w-2.5 h-2.5" />
-                                </Button>
+                              <div className="flex items-center justify-between bg-secondary/20 p-1.5 px-3 rounded-lg border border-border">
+                                <span className="text-xs text-foreground font-bold truncate">{item.city}</span>
                               </div>
                            </div>
-
-                           <div className="space-y-1 group/field col-span-2">
-                              <Label className="text-[10px] text-slate-500 uppercase flex items-center gap-1">
+                           <div className="space-y-1 col-span-2">
+                              <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
                                 <Mail className="w-3 h-3" /> Email
                               </Label>
-                              <div className="flex items-center justify-between bg-slate-900/50 p-1.5 px-3 rounded-lg border border-slate-800">
-                                <span className="text-xs text-slate-300 font-mono truncate">{item.email}</span>
-                                <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleCopy(item.email || '', `${item.id}-email`); }} className="h-4 w-4 opacity-0 group-hover/field:opacity-100 transition-opacity">
-                                  <Copy className="w-2.5 h-2.5" />
-                                </Button>
-                              </div>
-                           </div>
-
-                           <div className="space-y-1 group/field col-span-2">
-                              <Label className="text-[10px] text-slate-500 uppercase flex items-center gap-1">
-                                <Phone className="w-3 h-3" /> Phone
-                              </Label>
-                              <div className="flex items-center justify-between bg-slate-900/50 p-1.5 px-3 rounded-lg border border-slate-800">
-                                <span className="text-xs text-slate-300 font-mono">{item.phone}</span>
-                                <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleCopy(item.phone || '', `${item.id}-phone`); }} className="h-4 w-4 opacity-0 group-hover/field:opacity-100 transition-opacity">
-                                  <Copy className="w-2.5 h-2.5" />
-                                </Button>
+                              <div className="flex items-center justify-between bg-secondary/20 p-1.5 px-3 rounded-lg border border-border">
+                                <span className="text-xs text-foreground font-mono truncate">{item.email}</span>
                               </div>
                            </div>
                         </div>
                       </div>
                     )}
-                    
-                    {/* Copy Overlay Indicator */}
-                    <AnimatePresence>
-                      {isCopied === item.id && (
-                        <motion.div 
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="absolute inset-0 bg-blue-600/10 flex items-center justify-center pointer-events-none"
-                        >
-                           <Badge className="bg-emerald-500 text-white animate-bounce">COPIED!</Badge>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
                   </CardContent>
                 </Card>
               </motion.div>
             ))}
           </AnimatePresence>
         </div>
-
-        {results.length === 0 && (
-           <div className="text-center py-12 border-2 border-dashed border-slate-800 rounded-2xl">
-              <Users className="w-12 h-12 text-slate-700 mx-auto mb-4" />
-              <p className="text-slate-500">Your generated names will appear here.</p>
-           </div>
-        )}
       </div>
     </div>
   );

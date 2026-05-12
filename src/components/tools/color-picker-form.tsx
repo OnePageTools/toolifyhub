@@ -161,7 +161,7 @@ export function ColorPickerForm() {
           handleCopy(color, `swatch-${color}`);
         }}
         className={cn(
-          "rounded-xl border-2 border-slate-700 shadow-lg cursor-pointer relative overflow-hidden",
+          "rounded-xl border-2 border-border shadow-lg cursor-pointer relative overflow-hidden",
           size === "sm" ? "w-8 h-8 rounded-full" : size === "md" ? "w-14 h-14" : "w-20 h-20"
         )}
         style={{ backgroundColor: color }}
@@ -170,8 +170,8 @@ export function ColorPickerForm() {
           {isCopied === `swatch-${color}` ? <ClipboardCheck className="w-5 h-5 text-white" /> : <Copy className="w-5 h-5 text-white" />}
         </div>
       </motion.button>
-      {label && <span className="font-mono text-[10px] text-slate-500 font-bold">{color}</span>}
-      {isCopied === `swatch-${color}` && <span className="text-[10px] text-emerald-400 font-bold animate-in fade-in zoom-in">Copied!</span>}
+      {label && <span className="font-mono text-[10px] text-muted-foreground font-bold">{color}</span>}
+      {isCopied === `swatch-${color}` && <span className="text-[10px] text-emerald-500 font-bold animate-in fade-in zoom-in">Copied!</span>}
     </div>
   );
 
@@ -181,16 +181,16 @@ export function ColorPickerForm() {
         
         {/* SECTION 1: COLOR PICKER */}
         <div className="space-y-6">
-          <Card className="bg-[#1E293B] border-slate-700 shadow-xl overflow-hidden">
-            <CardHeader className="border-b border-slate-800/50">
+          <Card className="bg-white dark:bg-card border-border shadow-xl overflow-hidden">
+            <CardHeader className="border-b border-border/50">
               <CardTitle className="text-lg flex items-center gap-2">
-                <Pipette className="w-5 h-5 text-blue-400" /> Color Selection
+                <Pipette className="w-5 h-5 text-primary" /> Color Selection
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
               <div className="flex flex-col items-center gap-6">
                 <div 
-                  className="w-full h-48 rounded-2xl shadow-2xl border-4 border-slate-800 relative group"
+                  className="w-full h-48 rounded-2xl shadow-2xl border-4 border-border/50 relative group"
                   style={{ backgroundColor: hex }}
                 >
                   <input 
@@ -210,16 +210,16 @@ export function ColorPickerForm() {
                     { label: 'RGB', value: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` },
                     { label: 'HSL', value: `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)` },
                   ].map((item) => (
-                    <div key={item.label} className="flex items-center justify-between p-3 bg-slate-900/50 border border-slate-800 rounded-xl">
+                    <div key={item.label} className="flex items-center justify-between p-3 bg-secondary/50 border border-border rounded-xl">
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.label}</span>
-                        <span className="font-mono text-sm text-slate-200 font-semibold">{item.value}</span>
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{item.label}</span>
+                        <span className="font-mono text-sm text-foreground font-semibold">{item.value}</span>
                       </div>
                       <Button 
                         variant="ghost" 
                         size="sm" 
                         onClick={() => handleCopy(item.value, item.label)}
-                        className="h-8 text-slate-400 hover:text-blue-400"
+                        className="h-8 text-muted-foreground hover:text-primary"
                       >
                         {isCopied === item.label ? <><ClipboardCheck className="w-4 h-4 mr-2" /> Copied!</> : <><Copy className="w-4 h-4 mr-2" /> Copy</>}
                       </Button>
@@ -231,9 +231,9 @@ export function ColorPickerForm() {
           </Card>
 
           {/* SECTION 5: COLOR HISTORY */}
-          <Card className="bg-[#1E293B] border-slate-700">
+          <Card className="bg-white dark:bg-card border-border">
             <CardHeader className="py-3">
-              <CardTitle className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+              <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                 <History className="w-4 h-4" /> Recent Colors
               </CardTitle>
             </CardHeader>
@@ -242,7 +242,7 @@ export function ColorPickerForm() {
                 {history.length > 0 ? history.map((h, i) => (
                   <Swatch key={`${h}-${i}`} color={h} size="sm" />
                 )) : (
-                  <p className="text-xs text-slate-500 italic">No history yet.</p>
+                  <p className="text-xs text-muted-foreground italic">No history yet.</p>
                 )}
               </div>
             </CardContent>
@@ -251,10 +251,10 @@ export function ColorPickerForm() {
 
         {/* SECTION 2: PALETTE GENERATOR */}
         <div className="space-y-6">
-          <Card className="bg-[#1E293B] border-slate-700 shadow-xl h-full">
-            <CardHeader className="border-b border-slate-800/50">
+          <Card className="bg-white dark:bg-card border-border shadow-xl h-full">
+            <CardHeader className="border-b border-border/50">
               <CardTitle className="text-lg flex items-center gap-2">
-                <Palette className="w-5 h-5 text-purple-400" /> Color Harmonies
+                <Palette className="w-5 h-5 text-purple-600 dark:text-purple-400" /> Color Harmonies
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-8">
@@ -265,7 +265,7 @@ export function ColorPickerForm() {
                 { title: 'Monochromatic', colors: palettes.monochromatic },
               ].map((group) => (
                 <div key={group.title} className="space-y-3">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{group.title}</p>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{group.title}</p>
                   <div className="flex flex-wrap gap-4">
                     {group.colors.map((c, i) => (
                       <Swatch key={`${group.title}-${i}`} color={c} label />
@@ -280,37 +280,37 @@ export function ColorPickerForm() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* SECTION 4: GRADIENT GENERATOR */}
-        <Card className="bg-[#1E293B] border-slate-700 shadow-xl overflow-hidden">
-          <CardHeader className="border-b border-slate-800/50">
+        <Card className="bg-white dark:bg-card border-border shadow-xl overflow-hidden">
+          <CardHeader className="border-b border-border/50">
             <CardTitle className="text-lg flex items-center gap-2">
-              <Layers className="w-5 h-5 text-emerald-400" /> Gradient Builder
+              <Layers className="w-5 h-5 text-emerald-600 dark:text-emerald-400" /> Gradient Builder
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6 space-y-6">
             <div 
-              className="w-full h-32 rounded-xl shadow-inner border border-white/5"
+              className="w-full h-32 rounded-xl shadow-inner border border-border"
               style={{ background: `linear-gradient(${gradDir}, ${gradColor1}, ${gradColor2})` }}
             />
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="text-xs font-bold text-slate-500 uppercase">Start Color</Label>
+                <Label className="text-xs font-bold text-muted-foreground uppercase">Start Color</Label>
                 <div className="flex gap-2">
                   <input type="color" value={gradColor1} onChange={(e) => setGradColor1(e.target.value)} className="w-10 h-10 p-0 border-0 bg-transparent cursor-pointer rounded-lg overflow-hidden" />
-                  <Input value={gradColor1} onChange={(e) => setGradColor1(e.target.value)} className="bg-slate-900 border-slate-800 font-mono text-xs uppercase h-10" />
+                  <Input value={gradColor1} onChange={(e) => setGradColor1(e.target.value)} className="bg-secondary/50 border-border font-mono text-xs uppercase h-10" />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-xs font-bold text-slate-500 uppercase">End Color</Label>
+                <Label className="text-xs font-bold text-muted-foreground uppercase">End Color</Label>
                 <div className="flex gap-2">
                   <input type="color" value={gradColor2} onChange={(e) => setGradColor2(e.target.value)} className="w-10 h-10 p-0 border-0 bg-transparent cursor-pointer rounded-lg overflow-hidden" />
-                  <Input value={gradColor2} onChange={(e) => setGradColor2(e.target.value)} className="bg-slate-900 border-slate-800 font-mono text-xs uppercase h-10" />
+                  <Input value={gradColor2} onChange={(e) => setGradColor2(e.target.value)} className="bg-secondary/50 border-border font-mono text-xs uppercase h-10" />
                 </div>
               </div>
             </div>
 
             <div className="space-y-3">
-              <Label className="text-xs font-bold text-slate-500 uppercase">Direction</Label>
+              <Label className="text-xs font-bold text-muted-foreground uppercase">Direction</Label>
               <div className="flex flex-wrap gap-2">
                 {[
                   { label: 'Horizontal', value: 'to right' },
@@ -330,9 +330,9 @@ export function ColorPickerForm() {
               </div>
             </div>
 
-            <div className="p-3 bg-slate-900/50 border border-slate-800 rounded-xl space-y-2">
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">CSS Code</p>
-              <code className="block font-mono text-xs text-emerald-400 break-all">{gradientCss}</code>
+            <div className="p-3 bg-secondary/50 border border-border rounded-xl space-y-2">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">CSS Code</p>
+              <code className="block font-mono text-xs text-primary break-all">{gradientCss}</code>
             </div>
 
             <Button 
@@ -347,12 +347,12 @@ export function ColorPickerForm() {
         </Card>
 
         {/* SECTION 3: RANDOM PALETTE */}
-        <Card className="bg-[#1E293B] border-slate-700 shadow-xl">
-          <CardHeader className="border-b border-slate-800/50 flex flex-row items-center justify-between">
+        <Card className="bg-white dark:bg-card border-border shadow-xl">
+          <CardHeader className="border-b border-border/50 flex flex-row items-center justify-between">
             <CardTitle className="text-lg flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-400" /> Random Palette
+              <Sparkles className="w-5 h-5 text-amber-500" /> Random Palette
             </CardTitle>
-            <Button onClick={generateRandomPalette} size="sm" variant="ghost" className="text-slate-400 hover:text-white">
+            <Button onClick={generateRandomPalette} size="sm" variant="ghost" className="text-muted-foreground hover:text-foreground">
               <RefreshCw className="w-4 h-4 mr-2" /> Shuffle
             </Button>
           </CardHeader>
@@ -361,17 +361,17 @@ export function ColorPickerForm() {
               {randomPalette.map((c, i) => (
                 <div key={i} className="space-y-2 flex flex-col items-center">
                   <div 
-                    className="w-full aspect-square rounded-xl border border-white/5 shadow-lg"
+                    className="w-full aspect-square rounded-xl border border-border shadow-lg"
                     style={{ backgroundColor: c }}
                   />
-                  <span className="font-mono text-[10px] text-slate-500 font-bold">{c}</span>
+                  <span className="font-mono text-[10px] text-muted-foreground font-bold">{c}</span>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-8 w-8 hover:bg-slate-800" 
+                    className="h-8 w-8 hover:bg-secondary" 
                     onClick={() => handleCopy(c, `rand-${i}`)}
                   >
-                    {isCopied === `rand-${i}` ? <ClipboardCheck className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    {isCopied === `rand-${i}` ? <ClipboardCheck className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
                   </Button>
                 </div>
               ))}

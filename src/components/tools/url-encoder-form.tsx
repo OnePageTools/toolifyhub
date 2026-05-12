@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -101,14 +101,13 @@ export function UrlEncoderForm() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `url-${mode === 'encode' ? 'encoded' : 'decoded'}.txt`;
+    link.download = `url-result.txt`;
     link.click();
     URL.revokeObjectURL(url);
   };
 
   return (
     <div className="space-y-10">
-      {/* 1. Mode Toggle */}
       <div className="flex justify-center">
         <div className="flex items-center gap-3 bg-secondary/50 p-1.5 rounded-full border border-border">
           <button 
@@ -133,7 +132,6 @@ export function UrlEncoderForm() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* 2. Input Section */}
         <div className="space-y-4">
           <div className="flex justify-between items-center px-1">
             <Label className="text-foreground font-bold uppercase tracking-wider text-xs">Input</Label>
@@ -144,20 +142,19 @@ export function UrlEncoderForm() {
           <Textarea 
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={mode === 'encode' ? "Enter URL or text to encode..." : "Enter encoded URL to decode..."}
-            className="bg-white dark:bg-card border-border min-h-[180px] text-foreground rounded-2xl p-6 text-base resize-none focus:ring-primary/10"
+            placeholder={mode === 'encode' ? "Enter URL or text..." : "Enter encoded string..."}
+            className="bg-secondary/20 border-border min-h-[180px] text-foreground rounded-2xl p-6 text-base resize-none"
           />
         </div>
 
-        {/* 3. Output Section */}
         <div className="space-y-4">
           <Label className="text-foreground font-bold uppercase tracking-wider text-xs px-1">Result</Label>
           <div className="relative">
             <Textarea 
               readOnly
               value={output}
-              placeholder="Processed output will appear here..."
-              className="bg-secondary/20 dark:bg-slate-900/50 border-border min-h-[180px] text-foreground rounded-2xl p-6 text-base resize-none font-mono"
+              placeholder="Output will appear here..."
+              className="bg-secondary/50 border-border min-h-[180px] text-foreground rounded-2xl p-6 text-base resize-none font-mono"
             />
             <AnimatePresence>
               {isSuccess && (
@@ -177,7 +174,6 @@ export function UrlEncoderForm() {
         </div>
       </div>
 
-      {/* 4. Action Buttons */}
       <div className="space-y-4">
         <AnimatePresence>
           {error && (
@@ -197,9 +193,9 @@ export function UrlEncoderForm() {
           <Button 
             onClick={handleProcess}
             disabled={!input.trim()}
-            className="sm:col-span-2 h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 font-bold text-lg rounded-xl shadow-xl shadow-blue-600/20"
+            className="sm:col-span-2 h-14 bg-gradient-to-r from-blue-600 to-purple-600 font-bold text-lg rounded-xl shadow-xl"
           >
-            {mode === 'encode' ? 'Encode String' : 'Decode String'}
+            {mode === 'encode' ? 'Encode' : 'Decode'}
           </Button>
           <Button 
             variant="outline" 
@@ -213,7 +209,6 @@ export function UrlEncoderForm() {
             variant="ghost" 
             onClick={handleClear}
             className="h-14 text-muted-foreground hover:text-destructive rounded-xl"
-            aria-label="Clear input"
           >
             <Trash2 className="w-5 h-5 mr-2" /> Clear
           </Button>
@@ -222,7 +217,7 @@ export function UrlEncoderForm() {
         {output && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col sm:flex-row gap-3 pt-2">
             <Button onClick={() => handleCopy(output)} className="flex-1 h-12 bg-secondary text-foreground hover:bg-secondary/80 border border-border rounded-xl font-bold">
-              {isCopied ? <ClipboardCheck className="w-5 h-5 mr-2 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-5 h-5 mr-2" />}
+              {isCopied ? <ClipboardCheck className="w-5 h-5 mr-2 text-emerald-600" /> : <Copy className="w-5 h-5 mr-2" />}
               Copy Output
             </Button>
             <Button variant="outline" onClick={handleDownload} className="flex-1 h-12 border-border hover:bg-secondary rounded-xl font-bold">
@@ -232,36 +227,11 @@ export function UrlEncoderForm() {
         )}
       </div>
 
-      {/* 5. Live Example Section */}
       <div className="space-y-4 pt-10 border-t border-border">
         <div className="flex items-center gap-2 text-foreground font-bold text-sm uppercase tracking-widest ml-1">
-          <Info className="w-4 h-4 text-primary" /> Visual Example
+          <Info className="w-4 h-4 text-primary" /> Common Encodings
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-7 items-center gap-4 p-6 bg-secondary/30 rounded-2xl border border-border">
-           <div className="md:col-span-3 space-y-2">
-              <p className="text-[10px] font-black text-muted-foreground uppercase">Original</p>
-              <div className="p-3 bg-white dark:bg-slate-900 rounded-lg border border-border font-mono text-xs text-foreground break-all">
-                https://example.com/search?q=hello world
-              </div>
-           </div>
-           <div className="flex justify-center md:col-span-1">
-              <ArrowRight className="w-6 h-6 text-muted-foreground rotate-90 md:rotate-0" />
-           </div>
-           <div className="md:col-span-3 space-y-2">
-              <p className="text-[10px] font-black text-muted-foreground uppercase">Encoded</p>
-              <div className="p-3 bg-primary/5 rounded-lg border border-primary/20 font-mono text-xs text-primary break-all">
-                https%3A%2F%2Fexample.com%2Fsearch%3Fq%3Dhello%20world
-              </div>
-           </div>
-        </div>
-      </div>
-
-      {/* 6. Reference Table */}
-      <div className="space-y-4 pt-6">
-        <div className="flex items-center gap-2 text-foreground font-bold text-sm uppercase tracking-widest ml-1">
-           Common Encodings
-        </div>
-        <div className="rounded-2xl border border-border overflow-hidden bg-white dark:bg-card shadow-sm dark:shadow-none">
+        <div className="rounded-2xl border border-border overflow-hidden bg-white dark:bg-card shadow-sm">
           <Table>
             <TableHeader className="bg-secondary/50">
               <TableRow className="border-border">

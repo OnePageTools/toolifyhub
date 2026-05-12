@@ -4,12 +4,11 @@ import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Copy, 
-  RefreshCw, 
   Trash2, 
   Download, 
   ClipboardCheck, 
@@ -22,7 +21,6 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 
 type Mode = 'encode' | 'decode';
 
@@ -129,14 +127,14 @@ export function Base64EncoderForm() {
   return (
     <div className="space-y-8">
       <Tabs defaultValue="text" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-slate-800 border border-slate-700 h-12 mb-8">
-          <TabsTrigger value="text" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+        <TabsList className="grid w-full grid-cols-3 bg-secondary border border-border h-12 mb-8">
+          <TabsTrigger value="text" className="data-[state=active]:bg-primary data-[state=active]:text-white">
             <FileCode className="w-4 h-4 mr-2" /> Text
           </TabsTrigger>
-          <TabsTrigger value="file" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white">
+          <TabsTrigger value="file" className="data-[state=active]:bg-primary data-[state=active]:text-white">
             <Upload className="w-4 h-4 mr-2" /> File
           </TabsTrigger>
-          <TabsTrigger value="image" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">
+          <TabsTrigger value="image" className="data-[state=active]:bg-primary data-[state=active]:text-white">
             <ImageIcon className="w-4 h-4 mr-2" /> Image
           </TabsTrigger>
         </TabsList>
@@ -144,12 +142,12 @@ export function Base64EncoderForm() {
         {/* --- TEXT TAB --- */}
         <TabsContent value="text" className="space-y-6">
           <div className="flex justify-center mb-6">
-            <div className="flex items-center gap-3 bg-slate-800/50 p-1.5 rounded-full border border-slate-700">
+            <div className="flex items-center gap-3 bg-secondary/50 p-1.5 rounded-full border border-border">
               <button 
                 onClick={() => setMode('encode')}
                 className={cn(
                   "px-6 py-2 rounded-full text-sm font-bold transition-all",
-                  mode === 'encode' ? "bg-blue-600 text-white shadow-lg" : "text-slate-400 hover:text-slate-200"
+                  mode === 'encode' ? "bg-primary text-white shadow-lg" : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 Encode
@@ -158,7 +156,7 @@ export function Base64EncoderForm() {
                 onClick={() => setMode('decode')}
                 className={cn(
                   "px-6 py-2 rounded-full text-sm font-bold transition-all",
-                  mode === 'decode' ? "bg-blue-600 text-white shadow-lg" : "text-slate-400 hover:text-slate-200"
+                  mode === 'decode' ? "bg-primary text-white shadow-lg" : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 Decode
@@ -169,25 +167,25 @@ export function Base64EncoderForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <Label className="text-slate-300 font-bold uppercase tracking-wider text-xs">Input</Label>
-                <span className="text-[10px] font-mono text-slate-500">{input.length} Characters</span>
+                <Label className="text-muted-foreground font-bold uppercase tracking-wider text-xs">Input</Label>
+                <span className="text-[10px] font-mono text-muted-foreground">{input.length} Characters</span>
               </div>
               <Textarea 
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={mode === 'encode' ? "Enter text to encode..." : "Enter Base64 to decode..."}
-                className="bg-slate-800/50 border-slate-700 h-[200px] text-slate-200 resize-none rounded-xl"
+                className="bg-secondary/20 border-border h-[200px] text-foreground resize-none rounded-xl"
               />
             </div>
 
             <div className="space-y-3">
-              <Label className="text-slate-300 font-bold uppercase tracking-wider text-xs">Output</Label>
+              <Label className="text-muted-foreground font-bold uppercase tracking-wider text-xs">Output</Label>
               <div className="relative h-[200px]">
                 <Textarea 
                   readOnly
                   value={output}
                   placeholder="Output will appear here..."
-                  className="bg-slate-900 border-slate-700 h-full text-slate-200 resize-none rounded-xl font-mono text-sm"
+                  className="bg-secondary/50 border-border h-full text-foreground resize-none rounded-xl font-mono text-sm"
                 />
                 <AnimatePresence>
                   {isSuccess && (
@@ -195,10 +193,10 @@ export function Base64EncoderForm() {
                       initial={{ opacity: 0, scale: 0.5 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0 }}
-                      className="absolute inset-0 flex items-center justify-center bg-slate-900/60 rounded-xl pointer-events-none"
+                      className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-xl pointer-events-none"
                     >
                       <div className="bg-emerald-500/20 p-4 rounded-full border border-emerald-500/50 backdrop-blur-sm">
-                        <CheckCircle2 className="w-12 h-12 text-emerald-400" />
+                        <CheckCircle2 className="w-12 h-12 text-emerald-600 dark:text-emerald-400" />
                       </div>
                     </motion.div>
                   )}
@@ -213,7 +211,7 @@ export function Base64EncoderForm() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl flex items-center gap-3"
+                className="bg-destructive/10 border border-destructive/20 text-destructive p-4 rounded-xl flex items-center gap-3"
               >
                 <AlertCircle className="w-5 h-5 shrink-0" />
                 <span className="text-sm font-semibold">{error}</span>
@@ -225,7 +223,7 @@ export function Base64EncoderForm() {
             <Button 
               onClick={handleProcess}
               disabled={!input.trim()}
-              className="sm:col-span-1 h-14 bg-blue-600 hover:bg-blue-500 font-bold text-lg rounded-xl shadow-xl shadow-blue-600/20"
+              className="sm:col-span-1 h-14 bg-primary hover:brightness-110 font-bold text-lg rounded-xl shadow-xl"
             >
               {mode === 'encode' ? 'Encode Text' : 'Decode Base64'}
             </Button>
@@ -234,14 +232,14 @@ export function Base64EncoderForm() {
                 variant="outline" 
                 onClick={handleSwap}
                 disabled={!output}
-                className="flex-1 h-14 border-slate-700 hover:bg-slate-800 rounded-xl"
+                className="flex-1 h-14 border-border hover:bg-secondary rounded-xl"
               >
                 <ArrowRightLeft className="w-5 h-5 mr-2" /> Swap
               </Button>
               <Button 
                 variant="ghost" 
                 onClick={handleClear}
-                className="flex-1 h-14 text-slate-500 hover:text-red-400 rounded-xl"
+                className="flex-1 h-14 text-muted-foreground hover:text-destructive rounded-xl"
               >
                 <Trash2 className="w-5 h-5 mr-2" /> Clear
               </Button>
@@ -249,12 +247,12 @@ export function Base64EncoderForm() {
           </div>
 
           {output && (
-            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-800">
-              <Button onClick={() => handleCopy(output)} className="flex-1 h-12 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl">
-                {isCopied ? <ClipboardCheck className="w-5 h-5 mr-2 text-emerald-400" /> : <Copy className="w-5 h-5 mr-2" />}
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
+              <Button onClick={() => handleCopy(output)} className="flex-1 h-12 bg-secondary text-foreground hover:bg-secondary/80 border border-border rounded-xl">
+                {isCopied ? <ClipboardCheck className="w-5 h-5 mr-2 text-emerald-600" /> : <Copy className="w-5 h-5 mr-2" />}
                 Copy Output
               </Button>
-              <Button variant="outline" onClick={handleDownload} className="flex-1 h-12 border-slate-700 hover:bg-slate-800 rounded-xl">
+              <Button variant="outline" onClick={handleDownload} className="flex-1 h-12 border-border hover:bg-secondary rounded-xl">
                 <Download className="w-5 h-5 mr-2" /> Download .txt
               </Button>
             </div>
@@ -263,7 +261,7 @@ export function Base64EncoderForm() {
 
         {/* --- FILE TAB --- */}
         <TabsContent value="file" className="space-y-6">
-          <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-slate-700 rounded-3xl bg-slate-800/30">
+          <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-border rounded-3xl bg-secondary/30">
             <input 
               type="file" 
               id="file-upload" 
@@ -271,12 +269,12 @@ export function Base64EncoderForm() {
               onChange={(e) => handleFileUpload(e)}
             />
             <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center gap-4">
-              <div className="p-5 bg-purple-600/10 rounded-full border border-purple-500/20">
-                <Upload className="w-10 h-10 text-purple-400" />
+              <div className="p-5 bg-primary/10 rounded-full border border-primary/20">
+                <Upload className="w-10 h-10 text-primary" />
               </div>
               <div className="text-center">
-                <p className="text-lg font-bold text-slate-200">Upload Any File</p>
-                <p className="text-sm text-slate-500">Max size: 1MB. Content stays in browser.</p>
+                <p className="text-lg font-bold text-foreground">Upload Any File</p>
+                <p className="text-sm text-muted-foreground">Max size: 1MB. Content stays in browser.</p>
               </div>
             </label>
           </div>
@@ -284,19 +282,19 @@ export function Base64EncoderForm() {
           {fileBase64 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
               <div className="flex justify-between items-center px-1">
-                <Label className="text-slate-300 font-bold uppercase tracking-wider text-xs">Base64 Output: {fileName}</Label>
-                <span className="text-[10px] font-mono text-slate-500">{fileBase64.length} Characters</span>
+                <Label className="text-muted-foreground font-bold uppercase tracking-wider text-xs">Base64 Output: {fileName}</Label>
+                <span className="text-[10px] font-mono text-muted-foreground">{fileBase64.length} Characters</span>
               </div>
               <Textarea 
                 readOnly
                 value={fileBase64}
-                className="bg-slate-900 border-slate-700 h-[200px] text-slate-200 resize-none rounded-xl font-mono text-xs"
+                className="bg-secondary/50 border-border h-[200px] text-foreground resize-none rounded-xl font-mono text-xs"
               />
               <div className="flex gap-3">
-                <Button onClick={() => handleCopy(fileBase64)} className="flex-1 h-12 bg-purple-600 hover:bg-purple-500 rounded-xl">
+                <Button onClick={() => handleCopy(fileBase64)} className="flex-1 h-12 bg-primary hover:brightness-110 rounded-xl">
                   <Copy className="w-5 h-5 mr-2" /> Copy Base64 String
                 </Button>
-                <Button variant="ghost" onClick={handleClear} className="text-slate-500 h-12">
+                <Button variant="ghost" onClick={handleClear} className="text-muted-foreground h-12">
                    <Trash2 className="w-4 h-4 mr-2" /> Clear
                 </Button>
               </div>
@@ -306,7 +304,7 @@ export function Base64EncoderForm() {
 
         {/* --- IMAGE TAB --- */}
         <TabsContent value="image" className="space-y-6">
-          <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-slate-700 rounded-3xl bg-slate-800/30">
+          <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-border rounded-3xl bg-secondary/30">
             <input 
               type="file" 
               id="image-upload" 
@@ -315,12 +313,12 @@ export function Base64EncoderForm() {
               onChange={(e) => handleFileUpload(e, true)}
             />
             <label htmlFor="image-upload" className="cursor-pointer flex flex-col items-center gap-4">
-              <div className="p-5 bg-emerald-600/10 rounded-full border border-emerald-500/20">
-                <ImageIcon className="w-10 h-10 text-emerald-400" />
+              <div className="p-5 bg-primary/10 rounded-full border border-primary/20">
+                <ImageIcon className="w-10 h-10 text-primary" />
               </div>
               <div className="text-center">
-                <p className="text-lg font-bold text-slate-200">Upload Image</p>
-                <p className="text-sm text-slate-500">Preview and Base64 string will be generated.</p>
+                <p className="text-lg font-bold text-foreground">Upload Image</p>
+                <p className="text-sm text-muted-foreground">Preview and Base64 string will be generated.</p>
               </div>
             </label>
           </div>
@@ -329,8 +327,8 @@ export function Base64EncoderForm() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
               <div className="flex justify-center">
                 <div className="relative group">
-                  <div className="absolute -inset-1 bg-emerald-500 rounded-2xl blur opacity-25"></div>
-                  <div className="relative bg-slate-900 p-2 rounded-2xl border border-slate-700">
+                  <div className="absolute -inset-1 bg-primary rounded-2xl blur opacity-25"></div>
+                  <div className="relative bg-white dark:bg-card p-2 rounded-2xl border border-border">
                     <img 
                       src={imagePreview} 
                       alt="Preview" 
@@ -341,21 +339,21 @@ export function Base64EncoderForm() {
               </div>
 
               <div className="space-y-4">
-                <Label className="text-slate-300 font-bold uppercase tracking-wider text-xs">Data URL / Base64</Label>
+                <Label className="text-muted-foreground font-bold uppercase tracking-wider text-xs">Data URL / Base64</Label>
                 <Textarea 
                   readOnly
                   value={imagePreview}
-                  className="bg-slate-900 border-slate-700 h-[150px] text-slate-200 resize-none rounded-xl font-mono text-xs"
+                  className="bg-secondary/50 border-border h-[150px] text-foreground resize-none rounded-xl font-mono text-xs"
                 />
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Button onClick={() => handleCopy(imagePreview)} className="flex-1 h-12 bg-emerald-600 hover:bg-emerald-500 rounded-xl">
+                  <Button onClick={() => handleCopy(imagePreview)} className="flex-1 h-12 bg-primary hover:brightness-110 rounded-xl">
                     <Copy className="w-5 h-5 mr-2" /> Copy Data URL
                   </Button>
-                  <Button variant="outline" onClick={() => handleCopy(imagePreview.split(',')[1])} className="flex-1 h-12 border-slate-700 hover:bg-slate-800 rounded-xl">
+                  <Button variant="outline" onClick={() => handleCopy(imagePreview.split(',')[1])} className="flex-1 h-12 border-border hover:bg-secondary rounded-xl">
                      Only Base64 String
                   </Button>
                 </div>
-                <p className="text-[10px] text-slate-500 text-center uppercase tracking-widest font-bold">Use as src in &lt;img&gt; tags</p>
+                <p className="text-[10px] text-muted-foreground text-center uppercase tracking-widest font-bold">Use as src in &lt;img&gt; tags</p>
               </div>
             </motion.div>
           )}

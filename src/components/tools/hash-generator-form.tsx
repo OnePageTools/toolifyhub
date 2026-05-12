@@ -10,7 +10,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Copy, 
-  RefreshCw, 
   Trash2, 
   ClipboardCheck, 
   Upload, 
@@ -25,7 +24,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 // --- Cryptographic Helper ---
-// MD5 implementation (Standard algorithm)
 const md5 = (string: string) => {
     function k(n: number, s: number) {
         return (n << s) | (n >>> (32 - s));
@@ -107,7 +105,6 @@ export function HashGeneratorForm() {
     const [fileStats, setFileStats] = useState<{ name: string; size: string } | null>(null);
     const [isHashing, setIsHashing] = useState(false);
 
-    // Compare State
     const [comp1, setComp1] = useState('');
     const [comp2, setComp2] = useState('');
 
@@ -117,7 +114,7 @@ export function HashGeneratorForm() {
         setIsHashing(true);
         try {
             const results: HashResults = {
-                md5: typeof val === 'string' ? md5(val) : 'N/A (Text Only)', // MD5 manual is string-only here
+                md5: typeof val === 'string' ? md5(val) : 'N/A (Text Only)',
                 sha1: await digestMessage(val, 'SHA-1'),
                 sha256: await digestMessage(val, 'SHA-256'),
                 sha512: await digestMessage(val, 'SHA-512'),
@@ -144,7 +141,7 @@ export function HashGeneratorForm() {
         navigator.clipboard.writeText(text).then(() => {
             setIsCopied(id);
             setTimeout(() => setIsCopied(null), 2000);
-            toast({ title: 'Copied!', description: 'Hash copied to clipboard.' });
+            toast({ title: 'Copied!', description: 'Hash saved to clipboard.' });
         });
     };
 
@@ -153,7 +150,7 @@ export function HashGeneratorForm() {
         if (!file) return;
 
         if (file.size > 10 * 1024 * 1024) {
-            toast({ variant: 'destructive', title: 'File too large', description: 'Please upload a file smaller than 10MB for browser-side hashing.' });
+            toast({ variant: 'destructive', title: 'File too large', description: 'Maximum size is 10MB.' });
             return;
         }
 
@@ -173,39 +170,37 @@ export function HashGeneratorForm() {
     return (
         <div className="space-y-8">
             <Tabs defaultValue="text" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 bg-slate-800 border border-slate-700 h-12 mb-8">
-                    <TabsTrigger value="text" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+                <TabsList className="grid w-full grid-cols-3 bg-secondary border border-border h-12 mb-8">
+                    <TabsTrigger value="text" className="data-[state=active]:bg-primary data-[state=active]:text-white">
                         <FileCode className="w-4 h-4 mr-2" /> Text
                     </TabsTrigger>
-                    <TabsTrigger value="file" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white">
+                    <TabsTrigger value="file" className="data-[state=active]:bg-primary data-[state=active]:text-white">
                         <Upload className="w-4 h-4 mr-2" /> File
                     </TabsTrigger>
-                    <TabsTrigger value="compare" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">
+                    <TabsTrigger value="compare" className="data-[state=active]:bg-primary data-[state=active]:text-white">
                         <ArrowRightLeft className="w-4 h-4 mr-2" /> Compare
                     </TabsTrigger>
                 </TabsList>
 
-                {/* --- TEXT TAB --- */}
                 <TabsContent value="text" className="space-y-6">
                     <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                            <Label className="text-slate-300 font-bold uppercase tracking-wider text-xs">Input Text</Label>
-                            <Button variant="ghost" size="sm" onClick={handleClear} className="text-slate-500 hover:text-red-400 h-7 text-[10px]">
+                            <Label className="text-muted-foreground font-bold uppercase tracking-wider text-xs">Input Text</Label>
+                            <Button variant="ghost" size="sm" onClick={handleClear} className="text-muted-foreground hover:text-destructive h-7 text-[10px]">
                                 <Trash2 className="w-3 h-3 mr-1" /> Clear
                             </Button>
                         </div>
                         <Textarea 
                             value={inputText}
                             onChange={(e) => setInputText(e.target.value)}
-                            placeholder="Enter text to generate hashes instantly..."
-                            className="bg-slate-800/50 border-slate-700 min-h-[120px] text-slate-200 resize-none rounded-xl text-lg"
+                            placeholder="Enter text to generate hashes..."
+                            className="bg-secondary/20 border-border min-h-[120px] text-foreground resize-none rounded-xl text-lg"
                         />
                     </div>
                 </TabsContent>
 
-                {/* --- FILE TAB --- */}
                 <TabsContent value="file" className="space-y-6">
-                    <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-slate-700 rounded-3xl bg-slate-800/30 group hover:border-purple-500/50 transition-colors">
+                    <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-border rounded-3xl bg-secondary/30 group hover:border-primary/50 transition-colors">
                         <input 
                             type="file" 
                             id="file-hash-upload" 
@@ -213,36 +208,35 @@ export function HashGeneratorForm() {
                             onChange={handleFileUpload}
                         />
                         <label htmlFor="file-hash-upload" className="cursor-pointer flex flex-col items-center gap-4">
-                            <div className="p-5 bg-purple-600/10 rounded-full border border-purple-500/20 group-hover:scale-110 transition-transform">
-                                <Upload className="w-10 h-10 text-purple-400" />
+                            <div className="p-5 bg-primary/10 rounded-full border border-primary/20 group-hover:scale-110 transition-transform">
+                                <Upload className="w-10 h-10 text-primary" />
                             </div>
                             <div className="text-center">
-                                <p className="text-lg font-bold text-slate-200">{fileStats ? fileStats.name : 'Upload File to Hash'}</p>
-                                <p className="text-sm text-slate-500">{fileStats ? fileStats.size : 'Max size: 10MB. Content stays in your browser.'}</p>
+                                <p className="text-lg font-bold text-foreground">{fileStats ? fileStats.name : 'Upload File'}</p>
+                                <p className="text-sm text-muted-foreground">{fileStats ? fileStats.size : 'Max size: 10MB.'}</p>
                             </div>
                         </label>
                     </div>
                 </TabsContent>
 
-                {/* --- COMPARE TAB --- */}
                 <TabsContent value="compare" className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold text-slate-400 uppercase">Hash 1</Label>
+                            <Label className="text-xs font-bold text-muted-foreground uppercase">Hash 1</Label>
                             <Input 
                                 value={comp1}
                                 onChange={(e) => setComp1(e.target.value)}
-                                className="bg-slate-800/50 border-slate-700 font-mono text-xs"
-                                placeholder="Paste first hash..."
+                                className="bg-secondary/20 border-border font-mono text-xs"
+                                placeholder="Paste hash..."
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold text-slate-400 uppercase">Hash 2</Label>
+                            <Label className="text-xs font-bold text-muted-foreground uppercase">Hash 2</Label>
                             <Input 
                                 value={comp2}
                                 onChange={(e) => setComp2(e.target.value)}
-                                className="bg-slate-800/50 border-slate-700 font-mono text-xs"
-                                placeholder="Paste second hash..."
+                                className="bg-secondary/20 border-border font-mono text-xs"
+                                placeholder="Paste hash..."
                             />
                         </div>
                     </div>
@@ -254,7 +248,7 @@ export function HashGeneratorForm() {
                                 animate={{ opacity: 1, scale: 1 }}
                                 className={cn(
                                     "p-6 rounded-2xl border flex flex-col items-center gap-4 text-center",
-                                    compareMatch ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" : "bg-red-500/10 border-red-500/30 text-red-400"
+                                    compareMatch ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400" : "bg-destructive/10 border-destructive/30 text-destructive"
                                 )}
                             >
                                 {compareMatch ? (
@@ -280,25 +274,24 @@ export function HashGeneratorForm() {
                 </TabsContent>
             </Tabs>
 
-            {/* --- HASH OUTPUT CARDS --- */}
             {(hashes.sha256 || isHashing) && (
                 <div className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-bottom-2">
-                    <div className="flex items-center gap-2 mb-2 text-slate-400 font-bold text-xs uppercase tracking-widest ml-1">
-                        <Fingerprint className="w-4 h-4 text-blue-400" /> 
-                        {isHashing ? 'Calculating...' : 'Generated Hashes'}
+                    <div className="flex items-center gap-2 mb-2 text-muted-foreground font-bold text-xs uppercase tracking-widest ml-1">
+                        <Fingerprint className="w-4 h-4 text-primary" /> 
+                        {isHashing ? 'Hashing...' : 'Calculated Hashes'}
                     </div>
 
                     {[
-                        { label: 'MD5', value: hashes.md5, id: 'md5', color: 'text-orange-400' },
-                        { label: 'SHA-1', value: hashes.sha1, id: 'sha1', color: 'text-blue-400' },
-                        { label: 'SHA-256', value: hashes.sha256, id: 'sha256', color: 'text-purple-400' },
-                        { label: 'SHA-512', value: hashes.sha512, id: 'sha512', color: 'text-pink-400' },
+                        { label: 'MD5', value: hashes.md5, id: 'md5', color: 'text-orange-600 dark:text-orange-400' },
+                        { label: 'SHA-1', value: hashes.sha1, id: 'sha1', color: 'text-blue-600 dark:text-blue-400' },
+                        { label: 'SHA-256', value: hashes.sha256, id: 'sha256', color: 'text-purple-600 dark:text-purple-400' },
+                        { label: 'SHA-512', value: hashes.sha512, id: 'sha512', color: 'text-pink-600 dark:text-pink-400' },
                     ].map((hash) => (
-                        <Card key={hash.id} className="bg-[#1E293B] border-slate-800 group hover:border-slate-700 transition-colors">
+                        <Card key={hash.id} className="bg-white dark:bg-card border-border group">
                             <CardContent className="p-4 flex items-center justify-between gap-4">
                                 <div className="flex-1 min-w-0">
                                     <Label className={cn("text-[10px] font-black uppercase tracking-[0.2em]", hash.color)}>{hash.label}</Label>
-                                    <p className="font-mono text-sm text-slate-300 break-all mt-1 bg-slate-900/50 p-2 rounded-lg border border-slate-800/50">
+                                    <p className="font-mono text-sm text-foreground break-all mt-1 bg-secondary/30 p-2 rounded-lg border border-border">
                                         {hash.value || '...'}
                                     </p>
                                 </div>
@@ -306,10 +299,10 @@ export function HashGeneratorForm() {
                                     variant="ghost" 
                                     size="icon" 
                                     onClick={() => handleCopy(hash.value, hash.id)}
-                                    className="shrink-0 h-10 w-10 text-slate-500 hover:text-blue-400 rounded-xl"
+                                    className="shrink-0 h-10 w-10 text-muted-foreground hover:text-primary rounded-xl"
                                     disabled={!hash.value || hash.value === 'N/A (Text Only)'}
                                 >
-                                    {isCopied === hash.id ? <ClipboardCheck className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
+                                    {isCopied === hash.id ? <ClipboardCheck className="w-5 h-5 text-emerald-600" /> : <Copy className="w-5 h-5" />}
                                 </Button>
                             </CardContent>
                         </Card>

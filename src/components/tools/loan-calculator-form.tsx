@@ -101,7 +101,6 @@ export function LoanCalculatorForm() {
     });
   };
 
-  // Initial calculation
   useEffect(() => {
     calculateLoan();
   }, []);
@@ -127,53 +126,52 @@ export function LoanCalculatorForm() {
         >
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-slate-300 font-semibold flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-blue-400" /> Loan Amount
+              <Label className="text-foreground font-semibold flex items-center gap-2">
+                <DollarSign className="w-4 h-4 text-blue-500" /> Loan Amount
               </Label>
               <div className="relative">
                 <Input
                   type="number"
                   value={loanAmount}
                   onChange={(e) => setLoanAmount(Math.max(0, parseFloat(e.target.value) || 0))}
-                  className="bg-slate-800/50 border-slate-700 h-12 pl-10 text-lg font-bold text-slate-100"
+                  className="bg-secondary/20 border-border h-12 pl-10 text-lg font-bold text-foreground"
                 />
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">$</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">$</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-slate-300 font-semibold flex items-center gap-2">
-                  <Percent className="w-4 h-4 text-orange-400" /> Interest Rate (%)
+                <Label className="text-foreground font-semibold flex items-center gap-2">
+                  <Percent className="w-4 h-4 text-orange-500" /> Interest Rate (%)
                 </Label>
                 <Input
                   type="number"
                   step="0.1"
                   value={interestRate}
                   onChange={(e) => setInterestRate(Math.max(0, parseFloat(e.target.value) || 0))}
-                  className="bg-slate-800/50 border-slate-700 h-12 text-lg font-bold text-slate-100"
+                  className="bg-secondary/20 border-border h-12 text-lg font-bold text-foreground"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-slate-300 font-semibold flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-purple-400" /> Loan Term
+                <Label className="text-foreground font-semibold flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-purple-500" /> Loan Term
                 </Label>
                 <div className="flex gap-2">
                   <Input
                     type="number"
                     value={loanTerm}
                     onChange={(e) => setLoanTerm(Math.max(1, parseInt(e.target.value) || 0))}
-                    className="bg-slate-800/50 border-slate-700 h-12 text-lg font-bold text-slate-100 flex-1"
+                    className="bg-secondary/20 border-border h-12 text-lg font-bold text-foreground flex-1"
                   />
-                  <div className="flex items-center gap-2 bg-slate-800/50 px-3 rounded-md border border-slate-700">
-                    <span className={cn("text-xs font-bold", !isYearlyTerm ? "text-blue-400" : "text-slate-500")}>Mo</span>
+                  <div className="flex items-center gap-2 bg-secondary/50 px-3 rounded-md border border-border">
+                    <span className={cn("text-xs font-bold", !isYearlyTerm ? "text-primary" : "text-muted-foreground")}>Mo</span>
                     <Switch
                       checked={isYearlyTerm}
                       onCheckedChange={setIsYearlyTerm}
-                      className="data-[state=checked]:bg-blue-600"
                     />
-                    <span className={cn("text-xs font-bold", isYearlyTerm ? "text-blue-400" : "text-slate-500")}>Yr</span>
+                    <span className={cn("text-xs font-bold", isYearlyTerm ? "text-primary" : "text-muted-foreground")}>Yr</span>
                   </div>
                 </div>
               </div>
@@ -182,9 +180,10 @@ export function LoanCalculatorForm() {
 
           <Button 
             onClick={calculateLoan}
-            className="w-full h-[52px] rounded-xl text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 shadow-lg shadow-blue-500/20"
+            size="lg"
+            className="w-full h-[52px] rounded-xl text-lg font-bold shadow-lg"
           >
-            Calculate Loan Payments
+            Calculate Payments
           </Button>
         </motion.div>
 
@@ -198,43 +197,43 @@ export function LoanCalculatorForm() {
               className="space-y-6"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Card className="bg-[#1E293B] border-blue-500/30 overflow-hidden group">
+                <Card className="bg-white dark:bg-card border-border overflow-hidden">
                   <CardContent className="p-6">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 bg-blue-500/20 rounded-lg">
-                        <Wallet className="w-5 h-5 text-blue-400" />
+                      <div className="p-2 bg-blue-500/10 rounded-lg">
+                        <Wallet className="w-5 h-5 text-blue-500" />
                       </div>
-                      <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Monthly EMI</span>
+                      <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Monthly EMI</span>
                     </div>
-                    <p className="text-3xl font-black text-blue-400 tabular-nums">
+                    <p className="text-3xl font-black text-blue-600 dark:text-blue-400 tabular-nums">
                       ${results.monthlyPayment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-[#1E293B] border-orange-500/30 overflow-hidden">
+                <Card className="bg-white dark:bg-card border-border overflow-hidden">
                   <CardContent className="p-6">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 bg-orange-500/20 rounded-lg">
-                        <TrendingUp className="w-5 h-5 text-orange-400" />
+                      <div className="p-2 bg-orange-500/10 rounded-lg">
+                        <TrendingUp className="w-5 h-5 text-orange-500" />
                       </div>
-                      <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Total Interest</span>
+                      <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Total Interest</span>
                     </div>
-                    <p className="text-3xl font-black text-orange-400 tabular-nums">
+                    <p className="text-3xl font-black text-orange-600 dark:text-orange-400 tabular-nums">
                       ${results.totalInterest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-[#1E293B] border-emerald-500/30 sm:col-span-2 overflow-hidden">
+                <Card className="bg-white dark:bg-card border-border sm:col-span-2 overflow-hidden">
                   <CardContent className="p-6">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 bg-emerald-500/20 rounded-lg">
-                        <Receipt className="w-5 h-5 text-emerald-400" />
+                      <div className="p-2 bg-emerald-500/10 rounded-lg">
+                        <Receipt className="w-5 h-5 text-emerald-500" />
                       </div>
-                      <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Total Payment</span>
+                      <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Total Payment</span>
                     </div>
-                    <p className="text-4xl font-black text-emerald-400 tabular-nums">
+                    <p className="text-4xl font-black text-emerald-600 dark:text-emerald-400 tabular-nums">
                       ${results.totalPayment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                   </CardContent>
@@ -242,10 +241,10 @@ export function LoanCalculatorForm() {
               </div>
 
               {/* Chart */}
-              <Card className="bg-[#1E293B] border-slate-700">
+              <Card className="bg-white dark:bg-card border-border">
                 <CardHeader className="pb-0">
-                  <CardTitle className="text-slate-100 flex items-center gap-2 text-lg">
-                    <PieChartIcon className="w-5 h-5 text-purple-400" /> Breakdown
+                  <CardTitle className="text-foreground flex items-center gap-2 text-lg">
+                    <PieChartIcon className="w-5 h-5 text-purple-500" /> Payment Breakdown
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -266,8 +265,7 @@ export function LoanCalculatorForm() {
                           ))}
                         </Pie>
                         <RechartsTooltip 
-                          contentStyle={{ backgroundColor: '#1E293B', border: '1px solid #334155', borderRadius: '8px' }}
-                          itemStyle={{ color: '#F1F5F9' }}
+                          contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px' }}
                         />
                         <Legend verticalAlign="bottom" height={36}/>
                       </PieChart>
@@ -280,7 +278,6 @@ export function LoanCalculatorForm() {
         </AnimatePresence>
       </div>
 
-      {/* Amortization Table Section */}
       {results && (
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -288,44 +285,36 @@ export function LoanCalculatorForm() {
           className="space-y-6"
         >
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <h3 className="text-2xl font-bold text-slate-100">Amortization Schedule</h3>
+            <h3 className="text-2xl font-bold text-foreground">Schedule</h3>
             <Button 
               variant="outline" 
               onClick={() => setShowAllTable(!showFullTable)}
-              className="border-slate-700 hover:bg-slate-800"
+              className="border-border hover:bg-secondary"
             >
-              {showFullTable ? <><ChevronUp className="mr-2" /> Show Less</> : <><ChevronDown className="mr-2" /> Show All {results.amortization.length} Months</>}
+              {showFullTable ? <><ChevronUp className="mr-2" /> Less</> : <><ChevronDown className="mr-2" /> Full Schedule</>}
             </Button>
           </div>
 
-          <div className="rounded-xl border border-slate-700 overflow-hidden bg-[#1E293B]/50">
+          <div className="rounded-xl border border-border overflow-hidden bg-white dark:bg-card/50 shadow-sm">
             <ScrollArea className="h-[400px] sm:h-auto">
               <Table>
-                <TableHeader className="bg-slate-800/50">
+                <TableHeader className="bg-secondary/50">
                   <TableRow>
-                    <TableHead className="w-[100px] text-slate-300 font-bold">Month</TableHead>
-                    <TableHead className="text-right text-slate-300 font-bold">Payment</TableHead>
-                    <TableHead className="text-right text-slate-300 font-bold">Principal</TableHead>
-                    <TableHead className="text-right text-slate-300 font-bold">Interest</TableHead>
-                    <TableHead className="text-right text-slate-300 font-bold">Balance</TableHead>
+                    <TableHead className="w-[100px] text-foreground font-bold">Mo.</TableHead>
+                    <TableHead className="text-right text-foreground font-bold">Payment</TableHead>
+                    <TableHead className="text-right text-foreground font-bold">Principal</TableHead>
+                    <TableHead className="text-right text-foreground font-bold">Interest</TableHead>
+                    <TableHead className="text-right text-foreground font-bold">Balance</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {displayedAmortization?.map((row) => (
-                    <TableRow key={row.month} className="border-slate-800/50 hover:bg-slate-800/30">
-                      <TableCell className="font-mono font-medium text-slate-400">#{row.month}</TableCell>
-                      <TableCell className="text-right font-mono text-slate-200">
-                        ${row.payment.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-right font-mono text-blue-400">
-                        ${row.principal.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-right font-mono text-orange-400">
-                        ${row.interest.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-right font-mono font-bold text-emerald-400">
-                        ${row.balance.toFixed(2)}
-                      </TableCell>
+                    <TableRow key={row.month} className="border-border hover:bg-secondary/30">
+                      <TableCell className="font-mono font-medium text-muted-foreground">#{row.month}</TableCell>
+                      <TableCell className="text-right font-mono text-foreground">${row.payment.toFixed(2)}</TableCell>
+                      <TableCell className="text-right font-mono text-blue-600 dark:text-blue-400">${row.principal.toFixed(2)}</TableCell>
+                      <TableCell className="text-right font-mono text-orange-600 dark:text-orange-400">${row.interest.toFixed(2)}</TableCell>
+                      <TableCell className="text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">${row.balance.toFixed(2)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

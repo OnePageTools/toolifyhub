@@ -4,7 +4,6 @@ import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
   Table, 
@@ -42,10 +41,10 @@ type BmiResult = {
 };
 
 const CATEGORIES = [
-  { label: 'Underweight', range: '< 18.5', id: 'underweight', color: 'text-blue-400', bg: 'bg-blue-400' },
-  { label: 'Normal', range: '18.5 - 24.9', id: 'normal', color: 'text-green-400', bg: 'bg-green-400' },
-  { label: 'Overweight', range: '25 - 29.9', id: 'overweight', color: 'text-orange-400', bg: 'bg-orange-400' },
-  { label: 'Obese', range: '≥ 30', id: 'obese', color: 'text-red-400', bg: 'bg-red-400' },
+  { label: 'Underweight', range: '< 18.5', id: 'underweight', color: 'text-blue-500 dark:text-blue-400', bg: 'bg-blue-400' },
+  { label: 'Normal', range: '18.5 - 24.9', id: 'normal', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-400' },
+  { label: 'Overweight', range: '25 - 29.9', id: 'overweight', color: 'text-orange-500 dark:text-orange-400', bg: 'bg-orange-400' },
+  { label: 'Obese', range: '≥ 30', id: 'obese', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-400' },
 ];
 
 export function BmiCalculatorForm() {
@@ -83,22 +82,22 @@ export function BmiCalculatorForm() {
     if (bmi < 18.5) {
       category = 'underweight';
       label = 'Underweight';
-      color = 'text-blue-400';
+      color = 'text-blue-500 dark:text-blue-400';
       description = 'Consider eating more nutritious foods and consult a healthcare professional for advice on reaching a healthy weight.';
     } else if (bmi < 25) {
       category = 'normal';
       label = 'Normal Weight';
-      color = 'text-green-400';
+      color = 'text-green-600 dark:text-green-400';
       description = 'Great! You are within a healthy BMI range. Maintain your balanced diet and regular physical activity.';
     } else if (bmi < 30) {
       category = 'overweight';
       label = 'Overweight';
-      color = 'text-orange-400';
+      color = 'text-orange-500 dark:text-orange-400';
       description = 'Consider increasing your physical activity and focusing on a balanced, calorie-controlled diet to reach your ideal range.';
     } else {
       category = 'obese';
       label = 'Obese';
-      color = 'text-red-400';
+      color = 'text-red-600 dark:text-red-400';
       description = 'We recommend consulting a healthcare professional for personalized guidance on managing your weight and health.';
     }
 
@@ -134,14 +133,12 @@ export function BmiCalculatorForm() {
     });
   };
 
-  // Trigger calculation on input change if we already have a result
   useEffect(() => {
     if (result) calculateBmi();
   }, [isMetric]);
 
   const pointerPosition = useMemo(() => {
     if (!result) return 0;
-    // Map BMI range 10-40 to 0-100%
     const min = 15;
     const max = 35;
     const pos = ((result.bmi - min) / (max - min)) * 100;
@@ -152,12 +149,12 @@ export function BmiCalculatorForm() {
     <div className="space-y-10">
       {/* Unit Toggle */}
       <div className="flex justify-center mb-6">
-        <div className="flex items-center gap-3 bg-slate-800/50 p-1.5 rounded-full border border-slate-700">
+        <div className="flex items-center gap-3 bg-secondary/50 p-1.5 rounded-full border border-border">
           <button 
             onClick={() => setIsMetric(true)}
             className={cn(
               "px-6 py-2 rounded-full text-sm font-bold transition-all",
-              isMetric ? "bg-blue-600 text-white shadow-lg" : "text-slate-400 hover:text-slate-200"
+              isMetric ? "bg-primary text-white shadow-lg" : "text-muted-foreground hover:text-foreground"
             )}
           >
             Metric (cm/kg)
@@ -166,7 +163,7 @@ export function BmiCalculatorForm() {
             onClick={() => setIsMetric(false)}
             className={cn(
               "px-6 py-2 rounded-full text-sm font-bold transition-all",
-              !isMetric ? "bg-blue-600 text-white shadow-lg" : "text-slate-400 hover:text-slate-200"
+              !isMetric ? "bg-primary text-white shadow-lg" : "text-muted-foreground hover:text-foreground"
             )}
           >
             Imperial (ft/lbs)
@@ -175,7 +172,6 @@ export function BmiCalculatorForm() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-        {/* Left Side: Inputs */}
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -184,8 +180,8 @@ export function BmiCalculatorForm() {
           <div className="grid grid-cols-1 gap-6">
             {/* Height Input */}
             <div className="space-y-3">
-              <Label className="text-slate-300 font-semibold flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-blue-400" /> Height
+              <Label className="text-foreground font-semibold flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-blue-500" /> Height
               </Label>
               {isMetric ? (
                 <div className="relative">
@@ -193,9 +189,9 @@ export function BmiCalculatorForm() {
                     type="number"
                     value={heightCm}
                     onChange={(e) => setHeightCm(e.target.value)}
-                    className="bg-slate-800/50 border-slate-700 h-12 pr-12 text-lg font-bold text-slate-100"
+                    className="bg-secondary/20 border-border h-12 pr-12 text-lg font-bold text-foreground"
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">cm</span>
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">cm</span>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-4">
@@ -204,18 +200,18 @@ export function BmiCalculatorForm() {
                       type="number"
                       value={heightFt}
                       onChange={(e) => setHeightFt(e.target.value)}
-                      className="bg-slate-800/50 border-slate-700 h-12 pr-10 text-lg font-bold text-slate-100"
+                      className="bg-secondary/20 border-border h-12 pr-10 text-lg font-bold text-foreground"
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">ft</span>
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">ft</span>
                   </div>
                   <div className="relative">
                     <Input
                       type="number"
                       value={heightIn}
                       onChange={(e) => setHeightIn(e.target.value)}
-                      className="bg-slate-800/50 border-slate-700 h-12 pr-10 text-lg font-bold text-slate-100"
+                      className="bg-secondary/20 border-border h-12 pr-10 text-lg font-bold text-foreground"
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">in</span>
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">in</span>
                   </div>
                 </div>
               )}
@@ -223,44 +219,43 @@ export function BmiCalculatorForm() {
 
             {/* Weight Input */}
             <div className="space-y-3">
-              <Label className="text-slate-300 font-semibold flex items-center gap-2">
-                <Scale className="w-4 h-4 text-purple-400" /> Weight
+              <Label className="text-foreground font-semibold flex items-center gap-2">
+                <Scale className="w-4 h-4 text-purple-500" /> Weight
               </Label>
               <div className="relative">
                 <Input
                   type="number"
                   value={isMetric ? weightKg : weightLbs}
                   onChange={(e) => isMetric ? setWeightKg(e.target.value) : setWeightLbs(e.target.value)}
-                  className="bg-slate-800/50 border-slate-700 h-12 pr-12 text-lg font-bold text-slate-100"
+                  className="bg-secondary/20 border-border h-12 pr-12 text-lg font-bold text-foreground"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">
                   {isMetric ? 'kg' : 'lbs'}
                 </span>
               </div>
             </div>
 
-            {/* Optional Age/Gender */}
             <div className="grid grid-cols-2 gap-4 pt-2">
               <div className="space-y-2">
-                <Label className="text-slate-400 text-xs uppercase tracking-widest font-bold">Age (Optional)</Label>
+                <Label className="text-muted-foreground text-xs uppercase tracking-widest font-bold">Age (Optional)</Label>
                 <Input
                   type="number"
                   placeholder="e.g. 25"
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
-                  className="bg-slate-800/50 border-slate-700 h-10 text-slate-100"
+                  className="bg-secondary/20 border-border h-10 text-foreground"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-slate-400 text-xs uppercase tracking-widest font-bold">Gender</Label>
-                <div className="flex gap-2 p-1 bg-slate-800/50 rounded-lg border border-slate-700 h-10">
+                <Label className="text-muted-foreground text-xs uppercase tracking-widest font-bold">Gender</Label>
+                <div className="flex gap-2 p-1 bg-secondary/50 rounded-lg border border-border h-10">
                    <button 
                     onClick={() => setGender('male')}
-                    className={cn("flex-1 text-[10px] font-bold rounded-md transition-all", gender === 'male' ? "bg-slate-700 text-white" : "text-slate-500 hover:text-slate-300")}
+                    className={cn("flex-1 text-[10px] font-bold rounded-md transition-all", gender === 'male' ? "bg-primary text-white" : "text-muted-foreground hover:text-foreground")}
                    >Male</button>
                    <button 
                     onClick={() => setGender('female')}
-                    className={cn("flex-1 text-[10px] font-bold rounded-md transition-all", gender === 'female' ? "bg-slate-700 text-white" : "text-slate-500 hover:text-slate-300")}
+                    className={cn("flex-1 text-[10px] font-bold rounded-md transition-all", gender === 'female' ? "bg-primary text-white" : "text-muted-foreground hover:text-foreground")}
                    >Female</button>
                 </div>
               </div>
@@ -270,13 +265,12 @@ export function BmiCalculatorForm() {
           <Button 
             onClick={calculateBmi}
             size="lg"
-            className="w-full h-[52px] rounded-xl text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 shadow-xl shadow-blue-600/20"
+            className="w-full h-[52px] rounded-xl text-lg font-bold shadow-xl"
           >
-            Calculate Body Mass Index
+            Calculate BMI
           </Button>
         </motion.div>
 
-        {/* Right Side: Results */}
         <AnimatePresence mode="wait">
           {result && (
             <motion.div 
@@ -285,83 +279,67 @@ export function BmiCalculatorForm() {
               animate={{ opacity: 1, scale: 1 }}
               className="space-y-8"
             >
-              {/* BMI Number Card */}
               <div className="text-center space-y-4">
-                <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">Your Body Mass Index</p>
+                <p className="text-muted-foreground text-sm font-bold uppercase tracking-widest">Your Result</p>
                 <div className="relative inline-block">
                   <motion.h2 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={cn("text-8xl font-black tracking-tighter tabular-nums drop-shadow-2xl", result.color)}
+                    className={cn("text-8xl font-black tracking-tighter tabular-nums drop-shadow-lg", result.color)}
                   >
                     {result.bmi.toFixed(1)}
                   </motion.h2>
                 </div>
-                <div className={cn("text-2xl font-bold uppercase tracking-wide px-6 py-2 rounded-full inline-block bg-white/5 border border-white/10", result.color)}>
+                <div className={cn("text-2xl font-bold uppercase tracking-wide px-6 py-2 rounded-full inline-block bg-white dark:bg-card border border-border shadow-sm", result.color)}>
                   {result.label}
                 </div>
               </div>
 
-              {/* BMI Scale Bar */}
               <div className="space-y-6 pt-4">
-                <div className="relative h-4 w-full rounded-full overflow-hidden flex shadow-inner">
+                <div className="relative h-4 w-full rounded-full overflow-hidden flex shadow-inner bg-secondary">
                   {CATEGORIES.map(cat => (
-                    <div key={cat.id} className={cn("h-full flex-1", cat.bg, "opacity-80")} />
+                    <div key={cat.id} className={cn("h-full flex-1", cat.bg, "opacity-60")} />
                   ))}
-                  {/* Indicator Line */}
                   <motion.div 
                     initial={{ left: "0%" }}
                     animate={{ left: `${pointerPosition}%` }}
                     transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                    className="absolute top-0 w-1 h-full bg-white shadow-[0_0_10px_rgba(255,255,255,1)] z-10"
+                    className="absolute top-0 w-1 h-full bg-foreground shadow-lg z-10"
                   />
                 </div>
-                <div className="flex justify-between text-[10px] font-bold text-slate-500 uppercase px-1">
-                  <span>Underweight</span>
+                <div className="flex justify-between text-[10px] font-bold text-muted-foreground uppercase px-1">
+                  <span>Under</span>
                   <span>Normal</span>
-                  <span>Overweight</span>
+                  <span>Over</span>
                   <span>Obese</span>
                 </div>
               </div>
 
-              {/* Health Tips */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Card className="bg-slate-800/40 border-slate-700">
+                <Card className="bg-white dark:bg-card border-border">
                   <CardContent className="p-4 space-y-2">
-                    <div className="flex items-center gap-2 text-slate-300 font-bold text-xs uppercase tracking-wider">
-                      <Heart className="w-3 h-3 text-pink-400" /> Ideal Weight
+                    <div className="flex items-center gap-2 text-muted-foreground font-bold text-xs uppercase tracking-wider">
+                      <Heart className="w-3 h-3 text-pink-500" /> Ideal Weight
                     </div>
-                    <p className="text-lg font-bold text-slate-100">
+                    <p className="text-lg font-bold text-foreground">
                       {result.idealWeightRange.min.toFixed(1)} - {result.idealWeightRange.max.toFixed(1)} {isMetric ? 'kg' : 'lbs'}
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-slate-800/40 border-slate-700">
+                <Card className="bg-white dark:bg-card border-border">
                   <CardContent className="p-4 space-y-2">
-                    <div className="flex items-center gap-2 text-slate-300 font-bold text-xs uppercase tracking-wider">
-                      {result.weightDiff.type === 'lose' ? <TrendingDown className="w-3 h-3 text-red-400" /> : <TrendingUp className="w-3 h-3 text-blue-400" />}
+                    <div className="flex items-center gap-2 text-muted-foreground font-bold text-xs uppercase tracking-wider">
+                      {result.weightDiff.type === 'lose' ? <TrendingDown className="w-3 h-3 text-red-500" /> : <TrendingUp className="w-3 h-3 text-blue-500" />}
                       Goal
                     </div>
-                    <p className="text-lg font-bold text-slate-100">
+                    <p className="text-lg font-bold text-foreground">
                       {result.weightDiff.type === 'none' ? (
-                        <span className="text-green-400">At healthy weight</span>
+                        <span className="text-green-600">At healthy weight</span>
                       ) : (
                         <span>{result.weightDiff.type === 'lose' ? 'Lose' : 'Gain'} {result.weightDiff.amount.toFixed(1)} {isMetric ? 'kg' : 'lbs'}</span>
                       )}
                     </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-slate-800/60 border-slate-700 sm:col-span-2">
-                  <CardContent className="p-4 flex gap-4 items-start">
-                    <div className={cn("p-2 rounded-lg shrink-0", result.color.replace('text-', 'bg-').replace('400', '500/20'))}>
-                      <Info className={cn("w-5 h-5", result.color)} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Health Recommendation</p>
-                      <p className="text-sm text-slate-200 leading-relaxed italic">"{result.description}"</p>
-                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -370,23 +348,22 @@ export function BmiCalculatorForm() {
         </AnimatePresence>
       </div>
 
-      {/* Reference Table */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="space-y-6 pt-10 border-t border-slate-800"
+        className="space-y-6 pt-10 border-t border-border"
       >
         <div className="flex items-center gap-3">
-          <Activity className="w-5 h-5 text-blue-400" />
-          <h3 className="text-xl font-bold text-slate-100">BMI Classification Reference</h3>
+          <Activity className="w-5 h-5 text-primary" />
+          <h3 className="text-xl font-bold text-foreground">BMI Categories Reference</h3>
         </div>
 
-        <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-900/50">
+        <div className="rounded-xl border border-border overflow-hidden bg-white dark:bg-card shadow-sm">
           <Table>
-            <TableHeader className="bg-slate-800/50">
+            <TableHeader className="bg-secondary/50">
               <TableRow>
-                <TableHead className="text-slate-300 font-bold">Category</TableHead>
-                <TableHead className="text-right text-slate-300 font-bold">BMI Range</TableHead>
+                <TableHead className="text-foreground font-bold">Category</TableHead>
+                <TableHead className="text-right text-foreground font-bold">BMI Range</TableHead>
                 <TableHead className="w-[100px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -395,8 +372,8 @@ export function BmiCalculatorForm() {
                 <TableRow 
                   key={cat.id} 
                   className={cn(
-                    "border-slate-800/50 transition-colors",
-                    result?.category === cat.id ? "bg-blue-600/10 text-white" : "text-slate-400 opacity-60"
+                    "border-border transition-colors",
+                    result?.category === cat.id ? "bg-primary/5 text-foreground" : "text-muted-foreground opacity-60"
                   )}
                 >
                   <TableCell className="font-bold">
@@ -408,8 +385,8 @@ export function BmiCalculatorForm() {
                   <TableCell className="text-right font-mono">{cat.range}</TableCell>
                   <TableCell className="text-right">
                     {result?.category === cat.id && (
-                      <div className="flex items-center justify-end text-blue-400 font-bold text-[10px] uppercase tracking-tighter">
-                         Your Range <ChevronRight className="w-3 h-3 ml-0.5" />
+                      <div className="flex items-center justify-end text-primary font-bold text-[10px] uppercase tracking-tighter">
+                         Active <ChevronRight className="w-3 h-3 ml-0.5" />
                       </div>
                     )}
                   </TableCell>

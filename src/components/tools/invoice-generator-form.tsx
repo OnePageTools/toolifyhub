@@ -76,8 +76,8 @@ export function InvoiceGeneratorForm() {
     clientName: '',
     clientEmail: '',
     clientAddress: '',
-    invoiceNumber: '', // Initialized empty to prevent hydration mismatch
-    invoiceDate: '',   // Initialized empty to prevent hydration mismatch
+    invoiceNumber: '',
+    invoiceDate: '',
     dueDate: '',
     currency: '$',
     items: [{ id: '1', description: '', quantity: 1, rate: 0 }],
@@ -91,7 +91,6 @@ export function InvoiceGeneratorForm() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Set dynamic/random values only on the client after mount
     setData(prev => ({
       ...prev,
       invoiceNumber: `INV-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -103,7 +102,7 @@ export function InvoiceGeneratorForm() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        toast({ variant: 'destructive', title: 'File too large', description: 'Please upload an image smaller than 2MB.' });
+        toast({ variant: 'destructive', title: 'File too large', description: 'Maximum size is 2MB.' });
         return;
       }
       const reader = new FileReader();
@@ -143,7 +142,6 @@ export function InvoiceGeneratorForm() {
 
   const handleExport = async (type: 'pdf' | 'print') => {
     if (!previewRef.current) return;
-    
     if (type === 'print') {
       window.print();
       return;
@@ -154,7 +152,6 @@ export function InvoiceGeneratorForm() {
       const canvas = await html2canvas(previewRef.current, {
         scale: 2,
         useCORS: true,
-        logging: false,
         backgroundColor: '#ffffff'
       });
       const imgData = canvas.toDataURL('image/png');
@@ -164,9 +161,9 @@ export function InvoiceGeneratorForm() {
       
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
       pdf.save(`${data.invoiceNumber || 'invoice'}.pdf`);
-      toast({ title: 'Success!', description: 'Invoice PDF has been downloaded.' });
+      toast({ title: 'Success!', description: 'Invoice exported.' });
     } catch (error) {
-      toast({ variant: 'destructive', title: 'Export Failed', description: 'Could not generate PDF.' });
+      toast({ variant: 'destructive', title: 'Export Failed' });
     } finally {
       setIsGenerating(false);
     }
@@ -174,137 +171,75 @@ export function InvoiceGeneratorForm() {
 
   return (
     <div className="grid lg:grid-cols-2 gap-8 items-start">
-      {/* Form Section */}
       <div className="space-y-6 print:hidden">
-        {/* Business Details */}
-        <Card className="bg-[#1E293B] border-[#334155]">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2"><Building2 className="w-5 h-5 text-blue-400" /> Business Details</CardTitle>
+        <Card className="bg-white dark:bg-card border-border">
+          <CardHeader className="pb-3 border-b border-border/50">
+            <CardTitle className="text-lg flex items-center gap-2"><Building2 className="w-5 h-5 text-primary" /> Business Details</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-6 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Business Name</Label>
-                <Input placeholder="Your Business Name" value={data.businessName} onChange={e => setData({...data, businessName: e.target.value})} className="bg-slate-900 border-slate-700" />
+                <Input placeholder="Your Company" value={data.businessName} onChange={e => setData({...data, businessName: e.target.value})} className="bg-secondary/20 border-border" />
               </div>
               <div className="space-y-2">
                 <Label>Logo</Label>
-                <div className="flex items-center gap-3">
-                  <Input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" id="logo-upload" />
-                  <label htmlFor="logo-upload" className="flex items-center justify-center w-full h-10 px-3 border border-dashed border-slate-700 rounded-md cursor-pointer hover:bg-slate-800 transition-colors">
-                    <ImagePlus className="w-4 h-4 mr-2" /> {data.logo ? 'Change Logo' : 'Upload Logo'}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Email</Label>
-                <Input type="email" placeholder="email@example.com" value={data.businessEmail} onChange={e => setData({...data, businessEmail: e.target.value})} className="bg-slate-900 border-slate-700" />
-              </div>
-              <div className="space-y-2">
-                <Label>Phone</Label>
-                <Input placeholder="+1 234 567 890" value={data.businessPhone} onChange={e => setData({...data, businessPhone: e.target.value})} className="bg-slate-900 border-slate-700" />
+                <Input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" id="logo-upload" />
+                <label htmlFor="logo-upload" className="flex items-center justify-center w-full h-11 px-3 border-2 border-dashed border-border rounded-md cursor-pointer hover:bg-secondary/50 transition-colors">
+                  <ImagePlus className="w-4 h-4 mr-2" /> {data.logo ? 'Change' : 'Upload'}
+                </label>
               </div>
             </div>
             <div className="space-y-2">
               <Label>Address</Label>
-              <Textarea placeholder="123 Business St, City, Country" value={data.businessAddress} onChange={e => setData({...data, businessAddress: e.target.value})} className="bg-slate-900 border-slate-700 h-20" />
+              <Textarea placeholder="Business Address" value={data.businessAddress} onChange={e => setData({...data, businessAddress: e.target.value})} className="bg-secondary/20 border-border h-20" />
             </div>
           </CardContent>
         </Card>
 
-        {/* Client Details */}
-        <Card className="bg-[#1E293B] border-[#334155]">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2"><User className="w-5 h-5 text-purple-400" /> Client Details</CardTitle>
+        <Card className="bg-white dark:bg-card border-border">
+          <CardHeader className="pb-3 border-b border-border/50">
+            <CardTitle className="text-lg flex items-center gap-2"><User className="w-5 h-5 text-primary" /> Client Details</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-6 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Client Name</Label>
-                <Input placeholder="Client Name" value={data.clientName} onChange={e => setData({...data, clientName: e.target.value})} className="bg-slate-900 border-slate-700" />
+                <Input placeholder="Client Name" value={data.clientName} onChange={e => setData({...data, clientName: e.target.value})} className="bg-secondary/20 border-border" />
               </div>
               <div className="space-y-2">
-                <Label>Client Email</Label>
-                <Input type="email" placeholder="client@example.com" value={data.clientEmail} onChange={e => setData({...data, clientEmail: e.target.value})} className="bg-slate-900 border-slate-700" />
+                <Label>Invoice #</Label>
+                <Input value={data.invoiceNumber} onChange={e => setData({...data, invoiceNumber: e.target.value})} className="bg-secondary/20 border-border" />
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Address</Label>
-              <Textarea placeholder="Client's billing address" value={data.clientAddress} onChange={e => setData({...data, clientAddress: e.target.value})} className="bg-slate-900 border-slate-700 h-20" />
+              <Label>Billing Address</Label>
+              <Textarea placeholder="Client Address" value={data.clientAddress} onChange={e => setData({...data, clientAddress: e.target.value})} className="bg-secondary/20 border-border h-20" />
             </div>
           </CardContent>
         </Card>
 
-        {/* Invoice Info */}
-        <Card className="bg-[#1E293B] border-[#334155]">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2"><Receipt className="w-5 h-5 text-emerald-400" /> Invoice Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Invoice #</Label>
-                <Input value={data.invoiceNumber} onChange={e => setData({...data, invoiceNumber: e.target.value})} className="bg-slate-900 border-slate-700" />
-              </div>
-              <div className="space-y-2">
-                <Label>Currency</Label>
-                <Select value={data.currency} onValueChange={v => setData({...data, currency: v})}>
-                  <SelectTrigger className="bg-slate-900 border-slate-700"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {currencies.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Date</Label>
-                <Input type="date" value={data.invoiceDate} onChange={e => setData({...data, invoiceDate: e.target.value})} className="bg-slate-900 border-slate-700" />
-              </div>
-              <div className="space-y-2">
-                <Label>Due Date</Label>
-                <Input type="date" value={data.dueDate} onChange={e => setData({...data, dueDate: e.target.value})} className="bg-slate-900 border-slate-700" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Items Table */}
-        <Card className="bg-[#1E293B] border-[#334155]">
-          <CardHeader className="pb-3">
+        <Card className="bg-white dark:bg-card border-border">
+          <CardHeader className="pb-3 border-b border-border/50">
             <CardTitle className="text-lg flex items-center justify-between">
-              <span className="flex items-center gap-2">Items</span>
+              <span>Line Items</span>
               <Button size="sm" variant="outline" onClick={addItem} className="h-8"><Plus className="w-4 h-4 mr-1" /> Add Item</Button>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {data.items.map((item, index) => (
-              <div key={item.id} className="p-4 bg-slate-900 border border-slate-700 rounded-lg space-y-3 relative">
+          <CardContent className="p-6 space-y-4">
+            {data.items.map((item) => (
+              <div key={item.id} className="p-4 bg-secondary/20 border border-border rounded-lg space-y-3 relative">
                 {data.items.length > 1 && (
-                  <Button variant="ghost" size="icon" onClick={() => removeItem(item.id)} className="absolute top-1 right-1 h-7 w-7 text-slate-500 hover:text-red-400">
+                  <Button variant="ghost" size="icon" onClick={() => removeItem(item.id)} className="absolute top-1 right-1 h-7 w-7 text-muted-foreground hover:text-destructive">
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 )}
-                <div className="space-y-2">
-                  <Label>Description</Label>
-                  <Input placeholder="Service or product description" value={item.description} onChange={e => updateItem(item.id, 'description', e.target.value)} className="bg-slate-950 border-slate-800 w-full" />
-                </div>
+                <Input placeholder="Description" value={item.description} onChange={e => updateItem(item.id, 'description', e.target.value)} className="bg-white dark:bg-card border-border" />
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="space-y-1">
-                    <Label className="text-xs">Qty</Label>
-                    <Input type="number" min="1" value={item.quantity} onChange={e => updateItem(item.id, 'quantity', parseFloat(e.target.value) || 0)} className="bg-slate-950 border-slate-800" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Rate</Label>
-                    <Input type="number" min="0" value={item.rate} onChange={e => updateItem(item.id, 'rate', parseFloat(e.target.value) || 0)} className="bg-slate-950 border-slate-800" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Amount</Label>
-                    <div className="h-10 flex items-center font-mono text-sm px-3 bg-slate-950/50 border border-slate-800 rounded-md">
-                      {data.currency}{(item.quantity * item.rate).toFixed(2)}
-                    </div>
+                  <Input type="number" placeholder="Qty" value={item.quantity} onChange={e => updateItem(item.id, 'quantity', parseFloat(e.target.value) || 0)} className="bg-white dark:bg-card border-border" />
+                  <Input type="number" placeholder="Rate" value={item.rate} onChange={e => updateItem(item.id, 'rate', parseFloat(e.target.value) || 0)} className="bg-white dark:bg-card border-border" />
+                  <div className="h-11 flex items-center font-bold px-3 bg-secondary/50 rounded-md">
+                    {data.currency}{(item.quantity * item.rate).toFixed(2)}
                   </div>
                 </div>
               </div>
@@ -312,202 +247,109 @@ export function InvoiceGeneratorForm() {
           </CardContent>
         </Card>
 
-        {/* Totals & Notes */}
-        <Card className="bg-[#1E293B] border-[#334155]">
+        <Card className="bg-white dark:bg-card border-border">
           <CardContent className="p-6 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Tax %</Label>
-                <Input type="number" min="0" value={data.taxPercent} onChange={e => setData({...data, taxPercent: parseFloat(e.target.value) || 0})} className="bg-slate-900 border-slate-700" />
-              </div>
-              <div className="space-y-2">
-                <Label>Discount %</Label>
-                <Input type="number" min="0" value={data.discountPercent} onChange={e => setData({...data, discountPercent: parseFloat(e.target.value) || 0})} className="bg-slate-900 border-slate-700" />
-              </div>
-            </div>
-            <div className="space-y-2 pt-2 border-t border-slate-700">
-               <Label>Notes / Terms</Label>
-               <Textarea placeholder="Thank you for your business!" value={data.notes} onChange={e => setData({...data, notes: e.target.value})} className="bg-slate-900 border-slate-700 h-24" />
-            </div>
-            <div className="pt-4 space-y-3">
-              <div className="flex justify-between text-slate-400">
-                <span>Subtotal</span>
-                <span>{data.currency}{subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-slate-400">
-                <span>Tax ({data.taxPercent}%)</span>
-                <span>{data.currency}{taxAmount.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-slate-400">
-                <span>Discount ({data.discountPercent}%)</span>
-                <span>-{data.currency}{discountAmount.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-xl font-bold text-white pt-2 border-t border-slate-700">
-                <span>Total</span>
-                <span className="text-blue-400">{data.currency}{total.toFixed(2)}</span>
-              </div>
-            </div>
+             <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Tax %</Label>
+                  <Input type="number" value={data.taxPercent} onChange={e => setData({...data, taxPercent: parseFloat(e.target.value) || 0})} className="bg-secondary/20 border-border" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Discount %</Label>
+                  <Input type="number" value={data.discountPercent} onChange={e => setData({...data, discountPercent: parseFloat(e.target.value) || 0})} className="bg-secondary/20 border-border" />
+                </div>
+             </div>
+             <div className="pt-4 border-t border-border space-y-2">
+                <div className="flex justify-between text-muted-foreground text-sm">
+                  <span>Subtotal</span>
+                  <span>{data.currency}{subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-foreground font-black text-xl">
+                  <span>Total</span>
+                  <span className="text-primary">{data.currency}{total.toFixed(2)}</span>
+                </div>
+             </div>
           </CardContent>
         </Card>
-
-        {/* Export Buttons (Mobile) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:hidden">
-            <Button onClick={() => handleExport('pdf')} disabled={isGenerating} size="lg" className="h-12 bg-gradient-to-r from-blue-600 to-purple-600 font-bold">
-               {isGenerating ? <Loader2 className="mr-2 animate-spin" /> : <Download className="mr-2" />} Download PDF
-            </Button>
-            <Button onClick={() => handleExport('print')} variant="outline" size="lg" className="h-12 border-slate-700">
-               <Printer className="mr-2" /> Print
-            </Button>
-        </div>
       </div>
 
-      {/* Preview Section */}
-      <div className="sticky top-10 space-y-6 h-fit">
+      <div className="sticky top-10 space-y-6">
         <div className="flex items-center justify-between print:hidden">
-            <h3 className="font-bold text-slate-300">Invoice Preview</h3>
-            <div className="hidden lg:flex gap-2">
-                <Button onClick={() => handleExport('pdf')} disabled={isGenerating} size="sm" className="bg-blue-600 hover:bg-blue-500">
+            <h3 className="font-bold text-muted-foreground text-sm uppercase tracking-widest">Live Preview</h3>
+            <div className="flex gap-2">
+                <Button onClick={() => handleExport('pdf')} disabled={isGenerating} size="sm">
                     {isGenerating ? <Loader2 className="animate-spin" /> : <Download className="w-4 h-4 mr-1" />} PDF
                 </Button>
-                <Button onClick={() => handleExport('print')} variant="outline" size="sm" className="border-slate-700">
+                <Button onClick={() => handleExport('print')} variant="outline" size="sm">
                     <Printer className="w-4 h-4 mr-1" /> Print
                 </Button>
             </div>
         </div>
 
-        <div className="bg-secondary/30 rounded-xl p-4 lg:p-8 overflow-auto max-h-[85vh] shadow-inner flex justify-center">
-            {/* Real Invoice Render Area */}
-            <div 
-              ref={previewRef}
-              className="bg-white text-slate-900 w-[794px] min-h-[1123px] shadow-2xl p-10 flex flex-col shrink-0 origin-top"
-              style={{ transform: 'scale(var(--invoice-scale, 1))' }}
-            >
-                {/* Header */}
+        <div className="bg-secondary/30 rounded-2xl p-4 overflow-auto max-h-[80vh] shadow-inner flex justify-center">
+            <div ref={previewRef} className="bg-white text-slate-900 w-[794px] min-h-[1123px] shadow-2xl p-12 flex flex-col shrink-0 origin-top scale-[0.5] sm:scale-[0.6] md:scale-[0.8] lg:scale-[1]">
                 <div className="flex justify-between items-start mb-12">
                    <div>
-                        {data.logo && (
-                           <div className="relative w-32 h-16 mb-4">
-                              <Image src={data.logo} alt="Logo" fill className="object-contain object-left" unoptimized />
-                           </div>
-                        )}
-                        <h1 className="text-4xl font-bold tracking-tight text-slate-800 uppercase">Invoice</h1>
-                        <p className="text-slate-500 font-medium mt-1">#{data.invoiceNumber}</p>
+                        {data.logo && <div className="relative w-32 h-16 mb-4"><Image src={data.logo} alt="Logo" fill className="object-contain object-left" unoptimized /></div>}
+                        <h1 className="text-5xl font-black tracking-tighter text-slate-800 uppercase">Invoice</h1>
+                        <p className="text-slate-500 font-bold mt-2">#{data.invoiceNumber}</p>
                    </div>
                    <div className="text-right">
-                        <h2 className="text-xl font-bold text-slate-800">{data.businessName || 'Your Business Name'}</h2>
+                        <h2 className="text-xl font-bold text-slate-800">{data.businessName || 'Your Company'}</h2>
                         <p className="text-sm text-slate-500 whitespace-pre-wrap">{data.businessAddress}</p>
-                        <p className="text-sm text-slate-500 mt-1">{data.businessEmail}</p>
-                        <p className="text-sm text-slate-500">{data.businessPhone}</p>
                    </div>
                 </div>
 
-                {/* Details Bar */}
                 <div className="grid grid-cols-2 gap-10 mb-12 py-8 border-y border-slate-100">
                     <div>
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Bill To</h3>
+                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Bill To</h3>
                         <p className="font-bold text-slate-800 text-lg">{data.clientName || 'Client Name'}</p>
                         <p className="text-sm text-slate-500 whitespace-pre-wrap mt-1">{data.clientAddress}</p>
-                        <p className="text-sm text-slate-500">{data.clientEmail}</p>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 text-right">
-                        <div>
-                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Issue Date</h3>
-                            <p className="text-slate-800 font-medium">{data.invoiceDate}</p>
-                        </div>
-                        <div>
-                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Due Date</h3>
-                            <p className="text-slate-800 font-medium">{data.dueDate || 'N/A'}</p>
-                        </div>
+                    <div className="text-right">
+                         <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Date</h3>
+                         <p className="text-slate-800 font-bold">{data.invoiceDate}</p>
                     </div>
                 </div>
 
-                {/* Items Table */}
                 <div className="flex-grow">
                     <table className="w-full text-left">
                         <thead>
                             <tr className="border-b-2 border-slate-900">
-                                <th className="py-4 font-bold text-sm uppercase tracking-wider">Description</th>
-                                <th className="py-4 font-bold text-sm uppercase tracking-wider text-right w-20">Qty</th>
-                                <th className="py-4 font-bold text-sm uppercase tracking-wider text-right w-28">Rate</th>
-                                <th className="py-4 font-bold text-sm uppercase tracking-wider text-right w-32">Amount</th>
+                                <th className="py-4 font-black text-[10px] uppercase tracking-widest">Description</th>
+                                <th className="py-4 font-black text-[10px] uppercase tracking-widest text-right">Qty</th>
+                                <th className="py-4 font-black text-[10px] uppercase tracking-widest text-right">Rate</th>
+                                <th className="py-4 font-black text-[10px] uppercase tracking-widest text-right">Amount</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {data.items.map((item) => (
                                 <tr key={item.id}>
-                                    <td className="py-5">
-                                        <p className="font-bold text-slate-800">{item.description || 'Description'}</p>
-                                    </td>
+                                    <td className="py-5 font-bold text-slate-800">{item.description || 'Description'}</td>
                                     <td className="py-5 text-right text-slate-600">{item.quantity}</td>
                                     <td className="py-5 text-right text-slate-600">{data.currency}{item.rate.toFixed(2)}</td>
-                                    <td className="py-5 text-right font-bold text-slate-800">{data.currency}{(item.quantity * item.rate).toFixed(2)}</td>
+                                    <td className="py-5 text-right font-black text-slate-800">{data.currency}{(item.quantity * item.rate).toFixed(2)}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
 
-                {/* Totals Section */}
                 <div className="mt-12 flex justify-end">
-                    <div className="w-72 space-y-4">
-                        <div className="flex justify-between text-slate-500">
+                    <div className="w-64 space-y-4">
+                        <div className="flex justify-between text-slate-500 text-sm font-bold">
                             <span>Subtotal</span>
                             <span>{data.currency}{subtotal.toFixed(2)}</span>
                         </div>
-                        {data.taxPercent > 0 && (
-                            <div className="flex justify-between text-slate-500">
-                                <span>Tax ({data.taxPercent}%)</span>
-                                <span>{data.currency}{taxAmount.toFixed(2)}</span>
-                            </div>
-                        )}
-                         {data.discountPercent > 0 && (
-                            <div className="flex justify-between text-slate-500">
-                                <span>Discount ({data.discountPercent}%)</span>
-                                <span>-{data.currency}{discountAmount.toFixed(2)}</span>
-                            </div>
-                        )}
-                        <div className="flex justify-between text-2xl font-black text-slate-900 border-t-4 border-slate-900 pt-4">
+                        <div className="flex justify-between text-3xl font-black text-slate-900 border-t-4 border-slate-900 pt-4">
                             <span>TOTAL</span>
                             <span>{data.currency}{total.toFixed(2)}</span>
                         </div>
                     </div>
                 </div>
-
-                {/* Footer Notes */}
-                <div className="mt-auto pt-20">
-                    <div className="p-6 bg-slate-50 rounded-xl border border-slate-100">
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Notes & Terms</h3>
-                        <p className="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed">{data.notes || 'Thank you for your business!'}</p>
-                    </div>
-                </div>
             </div>
         </div>
       </div>
-      <style jsx global>{`
-        :root {
-          --invoice-scale: 1;
-        }
-        @media (max-width: 1024px) {
-          :root {
-            --invoice-scale: 0.8;
-          }
-        }
-        @media (max-width: 640px) {
-          :root {
-            --invoice-scale: 0.45;
-          }
-        }
-        @media print {
-          .print\:hidden { display: none !important; }
-          body { background: white !important; margin: 0; padding: 0; }
-          main { margin: 0 !important; padding: 0 !important; }
-          .container { max-width: none !important; width: 100% !important; margin: 0 !important; }
-          .lg\:grid-cols-2 { display: block !important; }
-          .sticky { position: static !important; }
-          .bg-secondary\/30 { background: transparent !important; padding: 0 !important; box-shadow: none !important; }
-          #preview-area { box-shadow: none !important; margin: 0 !important; }
-        }
-      `}</style>
     </div>
   );
 }
