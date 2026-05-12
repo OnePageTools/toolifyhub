@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Copy, 
@@ -111,12 +110,12 @@ export function UrlEncoderForm() {
     <div className="space-y-10">
       {/* 1. Mode Toggle */}
       <div className="flex justify-center">
-        <div className="flex items-center gap-3 bg-slate-800/50 p-1.5 rounded-full border border-slate-700">
+        <div className="flex items-center gap-3 bg-secondary/50 p-1.5 rounded-full border border-border">
           <button 
             onClick={() => setMode('encode')}
             className={cn(
               "px-8 py-2.5 rounded-full text-sm font-bold transition-all",
-              mode === 'encode' ? "bg-blue-600 text-white shadow-lg" : "text-slate-400 hover:text-slate-200"
+              mode === 'encode' ? "bg-primary text-white shadow-lg" : "text-muted-foreground hover:text-foreground"
             )}
           >
             Encode
@@ -125,7 +124,7 @@ export function UrlEncoderForm() {
             onClick={() => setMode('decode')}
             className={cn(
               "px-8 py-2.5 rounded-full text-sm font-bold transition-all",
-              mode === 'decode' ? "bg-blue-600 text-white shadow-lg" : "text-slate-400 hover:text-slate-200"
+              mode === 'decode' ? "bg-primary text-white shadow-lg" : "text-muted-foreground hover:text-foreground"
             )}
           >
             Decode
@@ -137,8 +136,8 @@ export function UrlEncoderForm() {
         {/* 2. Input Section */}
         <div className="space-y-4">
           <div className="flex justify-between items-center px-1">
-            <Label className="text-slate-300 font-bold uppercase tracking-wider text-xs">Input</Label>
-            <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono">
+            <Label className="text-foreground font-bold uppercase tracking-wider text-xs">Input</Label>
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
               <Type className="w-3 h-3" /> {input.length} Chars
             </div>
           </div>
@@ -146,19 +145,19 @@ export function UrlEncoderForm() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={mode === 'encode' ? "Enter URL or text to encode..." : "Enter encoded URL to decode..."}
-            className="bg-slate-800/30 border-slate-700 min-h-[180px] text-slate-100 rounded-2xl p-6 text-base resize-none focus:ring-blue-500/50"
+            className="bg-white dark:bg-card border-border min-h-[180px] text-foreground rounded-2xl p-6 text-base resize-none focus:ring-primary/10"
           />
         </div>
 
         {/* 3. Output Section */}
         <div className="space-y-4">
-          <Label className="text-slate-300 font-bold uppercase tracking-wider text-xs px-1">Result</Label>
+          <Label className="text-foreground font-bold uppercase tracking-wider text-xs px-1">Result</Label>
           <div className="relative">
             <Textarea 
               readOnly
               value={output}
               placeholder="Processed output will appear here..."
-              className="bg-slate-900 border-slate-700 min-h-[180px] text-slate-200 rounded-2xl p-6 text-base resize-none font-mono"
+              className="bg-secondary/20 dark:bg-slate-900/50 border-border min-h-[180px] text-foreground rounded-2xl p-6 text-base resize-none font-mono"
             />
             <AnimatePresence>
               {isSuccess && (
@@ -166,10 +165,10 @@ export function UrlEncoderForm() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="absolute inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-[1px] rounded-2xl pointer-events-none"
+                  className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-[1px] rounded-2xl pointer-events-none"
                 >
                   <div className="bg-emerald-500/20 p-4 rounded-full border border-emerald-500/50">
-                    <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+                    <CheckCircle2 className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
                   </div>
                 </motion.div>
               )}
@@ -186,7 +185,7 @@ export function UrlEncoderForm() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl flex items-center gap-3"
+              className="bg-destructive/10 border border-destructive/20 text-destructive p-4 rounded-xl flex items-center gap-3"
             >
               <AlertCircle className="w-5 h-5 shrink-0" />
               <span className="text-sm font-semibold">{error}</span>
@@ -206,14 +205,15 @@ export function UrlEncoderForm() {
             variant="outline" 
             onClick={handleSwap}
             disabled={!output}
-            className="h-14 border-slate-700 bg-slate-800/40 hover:bg-slate-800 rounded-xl"
+            className="h-14 border-border bg-white dark:bg-card hover:bg-secondary rounded-xl"
           >
             <ArrowRightLeft className="w-5 h-5 mr-2" /> Swap
           </Button>
           <Button 
             variant="ghost" 
             onClick={handleClear}
-            className="h-14 text-slate-500 hover:text-red-400 rounded-xl"
+            className="h-14 text-muted-foreground hover:text-destructive rounded-xl"
+            aria-label="Clear input"
           >
             <Trash2 className="w-5 h-5 mr-2" /> Clear
           </Button>
@@ -221,11 +221,11 @@ export function UrlEncoderForm() {
 
         {output && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col sm:flex-row gap-3 pt-2">
-            <Button onClick={() => handleCopy(output)} className="flex-1 h-12 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl font-bold">
-              {isCopied ? <ClipboardCheck className="w-5 h-5 mr-2 text-emerald-400" /> : <Copy className="w-5 h-5 mr-2" />}
+            <Button onClick={() => handleCopy(output)} className="flex-1 h-12 bg-secondary text-foreground hover:bg-secondary/80 border border-border rounded-xl font-bold">
+              {isCopied ? <ClipboardCheck className="w-5 h-5 mr-2 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-5 h-5 mr-2" />}
               Copy Output
             </Button>
-            <Button variant="outline" onClick={handleDownload} className="flex-1 h-12 border-slate-700 hover:bg-slate-800 rounded-xl font-bold">
+            <Button variant="outline" onClick={handleDownload} className="flex-1 h-12 border-border hover:bg-secondary rounded-xl font-bold">
               <Download className="w-5 h-5 mr-2" /> Download .txt
             </Button>
           </motion.div>
@@ -233,23 +233,23 @@ export function UrlEncoderForm() {
       </div>
 
       {/* 5. Live Example Section */}
-      <div className="space-y-4 pt-10 border-t border-slate-800">
-        <div className="flex items-center gap-2 text-slate-200 font-bold text-sm uppercase tracking-widest ml-1">
-          <Info className="w-4 h-4 text-blue-400" /> Visual Example
+      <div className="space-y-4 pt-10 border-t border-border">
+        <div className="flex items-center gap-2 text-foreground font-bold text-sm uppercase tracking-widest ml-1">
+          <Info className="w-4 h-4 text-primary" /> Visual Example
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-7 items-center gap-4 p-6 bg-slate-950/50 rounded-2xl border border-slate-800">
+        <div className="grid grid-cols-1 md:grid-cols-7 items-center gap-4 p-6 bg-secondary/30 rounded-2xl border border-border">
            <div className="md:col-span-3 space-y-2">
-              <p className="text-[10px] font-black text-slate-500 uppercase">Original</p>
-              <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 font-mono text-xs text-slate-300 break-all">
+              <p className="text-[10px] font-black text-muted-foreground uppercase">Original</p>
+              <div className="p-3 bg-white dark:bg-slate-900 rounded-lg border border-border font-mono text-xs text-foreground break-all">
                 https://example.com/search?q=hello world
               </div>
            </div>
            <div className="flex justify-center md:col-span-1">
-              <ArrowRight className="w-6 h-6 text-slate-600 rotate-90 md:rotate-0" />
+              <ArrowRight className="w-6 h-6 text-muted-foreground rotate-90 md:rotate-0" />
            </div>
            <div className="md:col-span-3 space-y-2">
-              <p className="text-[10px] font-black text-slate-500 uppercase">Encoded</p>
-              <div className="p-3 bg-blue-500/5 rounded-lg border border-blue-500/20 font-mono text-xs text-blue-400 break-all">
+              <p className="text-[10px] font-black text-muted-foreground uppercase">Encoded</p>
+              <div className="p-3 bg-primary/5 rounded-lg border border-primary/20 font-mono text-xs text-primary break-all">
                 https%3A%2F%2Fexample.com%2Fsearch%3Fq%3Dhello%20world
               </div>
            </div>
@@ -258,22 +258,22 @@ export function UrlEncoderForm() {
 
       {/* 6. Reference Table */}
       <div className="space-y-4 pt-6">
-        <div className="flex items-center gap-2 text-slate-200 font-bold text-sm uppercase tracking-widest ml-1">
+        <div className="flex items-center gap-2 text-foreground font-bold text-sm uppercase tracking-widest ml-1">
            Common Encodings
         </div>
-        <div className="rounded-2xl border border-slate-800 overflow-hidden bg-slate-950/30">
+        <div className="rounded-2xl border border-border overflow-hidden bg-white dark:bg-card shadow-sm dark:shadow-none">
           <Table>
-            <TableHeader className="bg-slate-800/50">
-              <TableRow className="border-slate-800">
-                <TableHead className="text-slate-300 font-bold">Character</TableHead>
-                <TableHead className="text-slate-300 font-bold">Encoded Value</TableHead>
+            <TableHeader className="bg-secondary/50">
+              <TableRow className="border-border">
+                <TableHead className="text-foreground font-bold">Character</TableHead>
+                <TableHead className="text-foreground font-bold">Encoded Value</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {COMMON_ENCODINGS.map((row) => (
-                <TableRow key={row.char} className="border-slate-800/50 hover:bg-slate-800/20">
-                  <TableCell className="text-slate-400 font-medium">{row.char}</TableCell>
-                  <TableCell className="font-mono text-blue-400 font-bold">{row.code}</TableCell>
+                <TableRow key={row.char} className="border-border hover:bg-secondary/30 transition-colors">
+                  <TableCell className="text-muted-foreground font-medium">{row.char}</TableCell>
+                  <TableCell className="font-mono text-primary font-bold">{row.code}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

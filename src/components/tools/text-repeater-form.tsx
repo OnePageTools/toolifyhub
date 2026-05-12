@@ -113,12 +113,12 @@ export function TextRepeaterForm() {
         {/* Left Side: Input */}
         <motion.div variants={itemVariants} className="space-y-6">
           <div className="space-y-3">
-            <Label htmlFor="input-text" className="text-slate-200 font-semibold ml-1">Input Text</Label>
+            <Label htmlFor="input-text" className="text-foreground font-bold uppercase tracking-wider text-xs ml-1">Input Text</Label>
             <div className="group relative">
               <Textarea
                 id="input-text"
                 placeholder="Type or paste your text here..."
-                className="min-h-[160px] bg-slate-800/50 border-slate-700 text-slate-100 rounded-2xl transition-all duration-300 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 focus:bg-slate-800 p-4"
+                className="min-h-[160px] bg-white dark:bg-card border-border text-foreground rounded-2xl transition-all duration-300 focus:ring-2 focus:ring-primary/10 focus:border-primary p-4"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
               />
@@ -127,13 +127,14 @@ export function TextRepeaterForm() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <Label htmlFor="repeat-count" className="text-slate-200 font-semibold ml-1">Repeat Count</Label>
-              <div className="flex items-center bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500/50 transition-all">
+              <Label htmlFor="repeat-count" className="text-foreground font-bold uppercase tracking-wider text-xs ml-1">Repeat Count</Label>
+              <div className="flex items-center bg-white dark:bg-card border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/10 transition-all">
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={decrementCount}
-                  className="h-12 w-12 rounded-none hover:bg-slate-700 text-slate-400"
+                  className="h-12 w-12 rounded-none hover:bg-secondary text-muted-foreground"
+                  aria-label="Decrease count"
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -142,7 +143,7 @@ export function TextRepeaterForm() {
                   type="number"
                   min={1}
                   max={1000}
-                  className="border-0 bg-transparent text-center h-12 text-lg font-bold focus-visible:ring-0 focus-visible:ring-offset-0 text-blue-400"
+                  className="border-0 bg-transparent text-center h-12 text-lg font-bold focus-visible:ring-0 focus-visible:ring-offset-0 text-primary"
                   value={repeatCount}
                   onChange={(e) => setRepeatCount(parseInt(e.target.value) || 0)}
                 />
@@ -150,7 +151,8 @@ export function TextRepeaterForm() {
                   variant="ghost" 
                   size="icon" 
                   onClick={incrementCount}
-                  className="h-12 w-12 rounded-none hover:bg-slate-700 text-slate-400"
+                  className="h-12 w-12 rounded-none hover:bg-secondary text-muted-foreground"
+                  aria-label="Increase count"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -158,12 +160,12 @@ export function TextRepeaterForm() {
             </div>
 
             <div className="space-y-3">
-              <Label htmlFor="separator" className="text-slate-200 font-semibold ml-1">Separator</Label>
+              <Label htmlFor="separator" className="text-foreground font-bold uppercase tracking-wider text-xs ml-1">Separator</Label>
               <Select value={separator} onValueChange={setSeparator}>
-                <SelectTrigger id="separator" className="h-12 bg-slate-800/50 border-slate-700 rounded-xl text-slate-200 focus:ring-2 focus:ring-blue-500/50">
+                <SelectTrigger id="separator" className="h-12 bg-white dark:bg-card border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary/10">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-slate-700 text-slate-200">
+                <SelectContent>
                   <SelectItem value="none">None</SelectItem>
                   <SelectItem value="newline">New Line</SelectItem>
                   <SelectItem value="comma">Comma (,)</SelectItem>
@@ -182,11 +184,11 @@ export function TextRepeaterForm() {
                 exit={{ opacity: 0, height: 0 }}
                 className="space-y-3"
               >
-                <Label htmlFor="custom-sep" className="text-slate-200 font-semibold ml-1">Custom Separator</Label>
+                <Label htmlFor="custom-sep" className="text-foreground font-bold uppercase tracking-wider text-xs ml-1">Custom Separator</Label>
                 <Input
                   id="custom-sep"
                   placeholder="e.g., - | -"
-                  className="h-12 bg-slate-800/50 border-slate-700 rounded-xl text-slate-200 focus:ring-2 focus:ring-blue-500/50"
+                  className="h-12 bg-white dark:bg-card border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary/10"
                   value={customSeparator}
                   onChange={(e) => setCustomSeparator(e.target.value)}
                 />
@@ -197,7 +199,7 @@ export function TextRepeaterForm() {
           <Button 
             onClick={handleRepeat} 
             size="lg" 
-            className="w-full h-[52px] rounded-xl text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-500/20"
+            className="w-full h-[52px] rounded-xl text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 transition-all duration-300 shadow-lg shadow-blue-500/20"
           >
             <Repeat className="mr-2 h-5 w-5" /> Repeat Text
           </Button>
@@ -207,32 +209,32 @@ export function TextRepeaterForm() {
         <motion.div variants={itemVariants} className="space-y-6">
           <div className="space-y-3">
             <div className="flex justify-between items-center ml-1">
-              <Label className="text-slate-200 font-semibold">Generated Result</Label>
+              <Label className="text-foreground font-bold uppercase tracking-wider text-xs">Generated Result</Label>
               <div className="flex gap-2">
-                <div className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-wider">
+                <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider">
                   {wordCount} Words
                 </div>
-                <div className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-wider">
+                <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider">
                   {charCount} Chars
                 </div>
               </div>
             </div>
             
-            <Card className="border-slate-700 bg-slate-950/50 rounded-2xl overflow-hidden">
+            <Card className="border-border bg-white dark:bg-card rounded-2xl overflow-hidden shadow-sm dark:shadow-none">
               <CardContent className="p-0">
-                <ScrollArea className="h-[320px] w-full bg-slate-950/30">
+                <ScrollArea className="h-[320px] w-full bg-secondary/20">
                   <AnimatePresence mode="wait">
                     {outputText ? (
                       <motion.div 
                         key="output-present"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="p-5 whitespace-pre-wrap break-all text-sm font-mono text-slate-300 selection:bg-blue-500/30"
+                        className="p-5 whitespace-pre-wrap break-all text-sm font-mono text-foreground selection:bg-primary/30"
                       >
                         {outputText}
                       </motion.div>
                     ) : (
-                      <div className="h-full flex items-center justify-center text-slate-500 italic p-10 text-center">
+                      <div className="h-full flex items-center justify-center text-muted-foreground italic p-10 text-center">
                         Your repeated text will appear here instantly...
                       </div>
                     )}
@@ -248,8 +250,8 @@ export function TextRepeaterForm() {
               variant="outline"
               disabled={!outputText}
               className={cn(
-                "w-full h-12 rounded-xl font-bold transition-all border-slate-700",
-                outputText && "bg-emerald-500/10 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500 hover:text-white"
+                "w-full h-12 rounded-xl font-bold transition-all border-border",
+                outputText && "bg-emerald-500/10 border-emerald-500/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white"
               )}
             >
               {isCopied ? <ClipboardCheck className="mr-2 h-5 w-5" /> : <Copy className="mr-2 h-5 w-5" />}
@@ -258,7 +260,7 @@ export function TextRepeaterForm() {
             <Button
               onClick={handleClear}
               variant="ghost"
-              className="w-full h-12 rounded-xl font-semibold text-slate-400 hover:text-red-400 hover:bg-red-400/10"
+              className="w-full h-12 rounded-xl font-semibold text-muted-foreground hover:text-destructive hover:bg-destructive/10"
             >
               <Trash2 className="mr-2 h-5 w-5" /> Clear All
             </Button>

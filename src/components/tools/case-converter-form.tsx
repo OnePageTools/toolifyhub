@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
 
 type CaseType = 
   | 'upper' 
@@ -37,7 +38,6 @@ export function CaseConverterForm() {
   const convertText = (text: string, type: CaseType): string => {
     if (!text) return '';
     
-    // Helper to get clean word array
     const toWords = (str: string) => str.trim().split(/\s+/).filter(Boolean);
 
     switch (type) {
@@ -131,25 +131,26 @@ export function CaseConverterForm() {
       {/* Input Area */}
       <div className="space-y-4">
         <div className="relative group">
+          <Label className="text-foreground font-bold uppercase tracking-wider text-xs ml-1 mb-2 block">Text Content</Label>
           <Textarea
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Type or paste your text here..."
-            className="min-h-[180px] bg-slate-800/50 border-slate-700 text-slate-100 rounded-2xl focus:ring-blue-500/50 p-6 text-lg leading-relaxed resize-none"
+            className="min-h-[180px] bg-white dark:bg-card border-border text-foreground rounded-2xl focus:ring-2 focus:ring-primary/10 p-6 text-lg leading-relaxed resize-none"
           />
         </div>
         
         {/* Stats Row */}
         <div className="flex justify-center gap-4">
-          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800 border border-slate-700">
-            <Type className="h-3.5 w-3.5 text-blue-400" />
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Chars:</span>
-            <span className="text-sm font-black text-slate-100 tabular-nums">{stats.chars}</span>
+          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/50 border border-border">
+            <Type className="h-3.5 w-3.5 text-primary" />
+            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Chars:</span>
+            <span className="text-sm font-black text-foreground tabular-nums">{stats.chars}</span>
           </div>
-          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800 border border-slate-700">
-            <Hash className="h-3.5 w-3.5 text-purple-400" />
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Words:</span>
-            <span className="text-sm font-black text-slate-100 tabular-nums">{stats.words}</span>
+          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/50 border border-border">
+            <Hash className="h-3.5 w-3.5 text-primary" />
+            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Words:</span>
+            <span className="text-sm font-black text-foreground tabular-nums">{stats.words}</span>
           </div>
         </div>
       </div>
@@ -162,10 +163,10 @@ export function CaseConverterForm() {
             variant="ghost"
             onClick={() => handleCaseChange(btn.type)}
             className={cn(
-              "h-11 rounded-xl text-xs font-bold uppercase tracking-tight transition-all duration-300 border border-slate-700/50",
+              "h-11 rounded-xl text-xs font-bold uppercase tracking-tight transition-all duration-300 border border-border",
               activeCase === btn.type 
-                ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/20 border-transparent"
-                : "bg-slate-800/40 text-slate-300 hover:bg-slate-700 hover:text-white hover:shadow-lg"
+                ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg border-transparent"
+                : "bg-white dark:bg-card text-foreground hover:bg-secondary"
             )}
             title={`Example: ${btn.example}`}
           >
@@ -175,14 +176,14 @@ export function CaseConverterForm() {
       </div>
 
       {/* Action Row */}
-      <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-800">
+      <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
         <Button 
           onClick={handleCopy}
           size="lg"
           disabled={!inputText}
-          className="flex-1 h-14 rounded-xl text-lg font-bold bg-blue-600 hover:bg-blue-500 shadow-xl shadow-blue-600/20"
+          className="flex-1 h-14 rounded-xl text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 shadow-xl shadow-blue-600/20"
         >
-          {isCopied ? <ClipboardCheck className="mr-2" /> : <Copy className="mr-2" />}
+          {isCopied ? <ClipboardCheck className="mr-2 h-5 w-5" /> : <Copy className="mr-2 h-5 w-5" />}
           {isCopied ? 'Copied Text' : 'Copy Converted Text'}
         </Button>
         <div className="flex gap-3">
@@ -191,8 +192,9 @@ export function CaseConverterForm() {
             size="lg"
             onClick={handleDownload}
             disabled={!inputText}
-            className="h-14 w-14 rounded-xl border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-slate-400 p-0"
+            className="h-14 w-14 rounded-xl border-border bg-secondary/30 hover:bg-secondary text-muted-foreground p-0"
             title="Download as .txt"
+            aria-label="Download as text file"
           >
             <Download className="h-6 w-6" />
           </Button>
@@ -201,8 +203,9 @@ export function CaseConverterForm() {
             size="lg"
             onClick={handleClear}
             disabled={!inputText}
-            className="h-14 w-14 rounded-xl border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-slate-400 p-0"
+            className="h-14 w-14 rounded-xl border-border bg-secondary/30 hover:bg-secondary text-muted-foreground p-0"
             title="Clear Text"
+            aria-label="Clear all text"
           >
             <Trash2 className="h-6 w-6" />
           </Button>

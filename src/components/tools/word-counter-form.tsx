@@ -15,6 +15,7 @@ import {
   FileText
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 const stopWords = new Set(['the', 'a', 'an', 'is', 'are', 'was', 'were', 'in', 'on', 'at', 'to', 'of', 'and', 'or', 'for', 'with', 'about', 'by']);
 
@@ -31,7 +32,6 @@ export function WordCounterForm() {
     const paragraphs = text.split(/\n+/).filter(p => p.trim().length > 0).length;
     const readingTime = Math.ceil(wordCount / 200);
 
-    // Top words calculation
     const wordFreq: Record<string, number> = {};
     words.forEach(w => {
       const cleanWord = w.toLowerCase().replace(/[^\w]/g, '');
@@ -58,17 +58,16 @@ export function WordCounterForm() {
   const handleClear = () => setText('');
 
   const statItems = [
-    { label: 'Words', value: stats.wordCount, icon: Hash, color: 'text-blue-400' },
-    { label: 'Characters', value: stats.charWithSpaces, icon: Type, color: 'text-purple-400' },
-    { label: 'No Spaces', value: stats.charNoSpaces, icon: ALargeSmall, color: 'text-indigo-400' },
+    { label: 'Words', value: stats.wordCount, icon: Hash, color: 'text-blue-600 dark:text-blue-400' },
+    { label: 'Characters', value: stats.charWithSpaces, icon: Type, color: 'text-purple-600 dark:text-purple-400' },
+    { label: 'No Spaces', value: stats.charNoSpaces, icon: ALargeSmall, color: 'text-indigo-600 dark:text-indigo-400' },
     { label: 'Sentences', value: stats.sentences, icon: AlignLeft, color: 'text-blue-500' },
     { label: 'Paragraphs', value: stats.paragraphs, icon: FileText, color: 'text-purple-500' },
-    { label: 'Reading Time', value: `${stats.readingTime} min`, icon: Clock, color: 'text-emerald-400' },
+    { label: 'Reading Time', value: `${stats.readingTime} min`, icon: Clock, color: 'text-emerald-600 dark:text-emerald-400' },
   ];
 
   return (
     <div className="space-y-8">
-      {/* Input Area */}
       <motion.div 
         initial={{ opacity: 0, y: 10 }} 
         animate={{ opacity: 1, y: 0 }}
@@ -77,7 +76,7 @@ export function WordCounterForm() {
         <div className="relative">
           <Textarea
             placeholder="Paste or type your text here for instant analysis..."
-            className="min-h-[250px] bg-slate-800/50 border-slate-700 text-slate-100 rounded-2xl transition-all duration-300 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 focus:bg-slate-800 p-6 text-base leading-relaxed"
+            className="min-h-[250px] bg-white dark:bg-card border-border text-foreground rounded-2xl transition-all duration-300 focus:ring-2 focus:ring-primary/10 focus:border-primary p-6 text-base leading-relaxed"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
@@ -86,7 +85,8 @@ export function WordCounterForm() {
               variant="ghost"
               size="sm"
               onClick={handleClear}
-              className="absolute bottom-4 right-4 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-xl"
+              className="absolute bottom-4 right-4 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl"
+              aria-label="Clear all text"
             >
               <Trash2 className="h-4 w-4 mr-2" />
               Clear All
@@ -95,7 +95,6 @@ export function WordCounterForm() {
         </div>
       </motion.div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {statItems.map((item, index) => (
           <motion.div
@@ -104,35 +103,34 @@ export function WordCounterForm() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.05 }}
           >
-            <Card className="bg-[#1E293B] border-[#334155] rounded-2xl overflow-hidden hover:border-blue-500/30 transition-colors group">
+            <Card className="bg-white dark:bg-card border-border rounded-2xl overflow-hidden hover:border-primary/30 transition-all shadow-sm dark:shadow-none group">
               <CardContent className="p-5 flex flex-col items-center text-center">
-                <item.icon className={`h-6 w-6 mb-3 ${item.color} group-hover:scale-110 transition-transform`} />
+                <item.icon className={cn("h-6 w-6 mb-3 transition-transform group-hover:scale-110", item.color)} />
                 <AnimatePresence mode="wait">
                   <motion.p
                     key={item.value}
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-2xl font-bold text-slate-100 tabular-nums"
+                    className="text-2xl font-black text-foreground tabular-nums"
                   >
                     {item.value}
                   </motion.p>
                 </AnimatePresence>
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">{item.label}</p>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1">{item.label}</p>
               </CardContent>
             </Card>
           </motion.div>
         ))}
       </div>
 
-      {/* Top Words Section */}
       {stats.topWords.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
+          className="space-y-4 pt-4 border-t"
         >
-          <div className="flex items-center gap-2 text-slate-200 font-semibold ml-1">
-            <BarChart3 className="h-5 w-5 text-blue-400" />
+          <div className="flex items-center gap-2 text-foreground font-bold text-xs uppercase tracking-widest ml-1">
+            <BarChart3 className="h-4 w-4 text-primary" />
             <h3>Top Used Words (Excl. common words)</h3>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -142,10 +140,10 @@ export function WordCounterForm() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-800/80 border border-slate-700 rounded-xl"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-card border border-border rounded-xl shadow-sm dark:shadow-none"
               >
-                <span className="text-slate-100 font-medium">{word}</span>
-                <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs font-bold rounded-lg border border-blue-500/20">
+                <span className="text-foreground font-bold text-sm">{word}</span>
+                <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-black rounded-lg border border-primary/20">
                   {count}
                 </span>
               </motion.div>
