@@ -4,6 +4,7 @@ import { BookOpen, HelpCircle, CheckCircle2 } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 
 const tool = {
