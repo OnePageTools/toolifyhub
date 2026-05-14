@@ -186,7 +186,11 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-            <Button size="lg" className="rounded-full px-10 h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-[0_4px_30px_rgba(59,130,246,0.3)] transition-all">
+            <Button 
+              size="lg" 
+              className="rounded-full px-10 h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-[0_4px_30px_rgba(59,130,246,0.3)] transition-all"
+              onClick={() => document.getElementById('search-section')?.scrollIntoView({ behavior: 'smooth' })}
+            >
                 Explore All Tools <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
             <Button 
@@ -228,7 +232,7 @@ export default function Home() {
         </div>
 
         {/* Search Bar */}
-        <div className="container mx-auto px-6 mb-12">
+        <div id="search-section" className="container mx-auto px-6 mb-12">
             <div className="max-w-3xl mx-auto relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur opacity-5 group-focus-within:opacity-20 transition duration-500"></div>
                 <div className="relative flex items-center bg-white dark:bg-card border border-slate-300 dark:border-border rounded-full px-6 h-16 shadow-[0_2px_12px_rgba(0,0,0,0.06)] dark:shadow-none">
@@ -319,7 +323,7 @@ export default function Home() {
         <section id="how-it-works" className="container mx-auto px-6 py-32 border-t border-border bg-slate-50/50 dark:bg-secondary/10">
             <div className="text-center mb-20">
                 <h2 className="text-4xl md:text-5xl font-black text-[#0F172A] dark:text-foreground mb-4 tracking-tight">How It Works</h2>
-                <p className="text-slate-600 dark:text-muted-foreground text-lg max-w-xl mx-auto">Get started in seconds — no signup, no download required</p>
+                <p className="text-slate-600 dark:text-muted-foreground text-lg max-xl mx-auto">Get started in seconds — no signup, no download required</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
