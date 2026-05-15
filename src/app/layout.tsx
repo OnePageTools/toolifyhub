@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
@@ -6,6 +7,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Poppins, Inter, Playfair_Display, Noto_Nastaliq_Urdu } from 'next/font/google';
 import Footer from '@/components/common/footer';
 import Script from 'next/script';
+import { SupportWidget } from '@/components/support-widget';
 
 const siteConfig = {
   name: 'ToolifyHub',
@@ -19,7 +21,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.title,
-    template: `%s | ${siteConfig.name}`,
+    template: `%s`, // Fixed: Removed suffix to prevent duplication
   },
   description: siteConfig.description,
   keywords: [
@@ -128,6 +130,7 @@ export default function RootLayout({
             <main className="flex-grow">{children}</main>
             <Footer />
           </div>
+          <SupportWidget />
           <Toaster />
         </ThemeProvider>
       <Analytics />

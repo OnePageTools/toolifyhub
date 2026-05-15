@@ -1,5 +1,6 @@
+
 import Link from 'next/link';
-import { Mail, Github, Twitter, Globe, Zap, Heart } from 'lucide-react';
+import { Mail, Github, Twitter, Globe, Zap, Heart, Facebook, Youtube } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -22,14 +23,16 @@ export default function Footer() {
             </p>
             <div className="flex gap-4">
                 {[
-                    { icon: Twitter, href: "#", label: "ToolifyHub on Twitter" },
-                    { icon: Github, href: "#", label: "ToolifyHub on GitHub" },
-                    { icon: Globe, href: "#", label: "ToolifyHub Official Website" },
+                    { icon: Facebook, href: "https://facebook.com/toolifyhub", label: "ToolifyHub on Facebook" },
+                    { icon: Twitter, href: "https://twitter.com/toolifyhub", label: "ToolifyHub on Twitter" },
+                    { icon: Youtube, href: "https://youtube.com/@toolifyhub", label: "ToolifyHub on YouTube" },
                     { icon: Mail, href: "mailto:goherkhan12131415@gmail.com", label: "Contact Support Email" },
                 ].map((social, i) => (
                     <a 
                       key={i} 
                       href={social.href} 
+                      target="_blank"
+                      rel="noopener noreferrer"
                       aria-label={social.label}
                       className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary/20 hover:border-primary/50 hover:text-white transition-all text-slate-400"
                     >
