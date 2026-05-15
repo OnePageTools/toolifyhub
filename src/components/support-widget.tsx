@@ -36,7 +36,16 @@ export function SupportWidget() {
     }
 
     const mailto = `mailto:goherkhan12131415@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(mailto, '_blank');
+    
+    // Using a robust dynamic anchor tag approach to prevent browser blocking
+    const link = document.createElement('a');
+    link.href = mailto;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
     setIsOpen(false);
   };
 
