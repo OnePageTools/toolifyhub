@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useCallback, useMemo } from 'react';
@@ -20,7 +21,6 @@ import {
   Captions,
   Clock,
   RefreshCw,
-  ArrowRight,
   Hash
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -49,6 +49,7 @@ type CaptionTrack = {
 export function YoutubeTranscriptForm() {
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [tracks, setTracks] = useState<CaptionTrack[]>([]);
   const [selectedTrackUrl, setSelectedTrackUrl] = useState<string>('');
   const [transcriptData, setTranscriptData] = useState<TranscriptItem[]>([]);
@@ -67,6 +68,7 @@ export function YoutubeTranscriptForm() {
 
   const fetchTranscript = async (baseUrl: string) => {
     setIsLoading(true);
+    setIsLoaded(false);
     try {
       const response = await fetch(baseUrl);
       if (!response.ok) throw new Error('Could not fetch transcript text.');
@@ -79,17 +81,33 @@ export function YoutubeTranscriptForm() {
       const items: TranscriptItem[] = [];
       for (let i = 0; i < textNodes.length; i++) {
         const node = textNodes[i];
+        // Decode HTML entities (e.g. &#39; -> ')
+        const rawText = node.textContent || '';
+        const decodedText = rawText
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&quot;/g, '"')
+          .replace(/&#39;/g, "'")
+          .replace(/&nbsp;/g, ' ');
+
         items.push({
           start: parseFloat(node.getAttribute('start') || '0'),
           duration: parseFloat(node.getAttribute('dur') || '0'),
-          text: node.textContent || '',
+          text: decodedText,
         });
       }
       
+      if (items.length === 0) {
+        throw new Error("The transcript content is empty.");
+      }
+
       setTranscriptData(items);
+      setIsLoaded(true);
       toast({ title: 'Transcript loaded!', description: 'You can now copy or download the text.' });
     } catch (err: any) {
       toast({ variant: 'destructive', title: 'Error', description: err.message });
+      setIsLoaded(false);
     } finally {
       setIsLoading(false);
     }
@@ -103,6 +121,7 @@ export function YoutubeTranscriptForm() {
     }
 
     setIsLoading(true);
+    setIsLoaded(false);
     setTranscriptData([]);
     setTracks([]);
 
@@ -128,6 +147,7 @@ export function YoutubeTranscriptForm() {
   };
 
   const fullTranscriptText = useMemo(() => {
+    if (transcriptData.length === 0) return '';
     if (showTimestamps) {
       return transcriptData.map(item => `${formatTimestamp(item.start)} ${item.text}`).join('\n');
     }
@@ -158,9 +178,16 @@ export function YoutubeTranscriptForm() {
     } else {
       // Simple SRT conversion
       content = transcriptData.map((item, i) => {
-        const start = formatTimestamp(item.start).replace('[', '').replace(']', '');
-        const end = formatTimestamp(item.start + item.duration).replace('[', '').replace(']', '');
-        return `${i + 1}\n00:${start},000 --> 00:${end},000\n${item.text}\n`;
+        const formatSrtTime = (sec: number) => {
+          const h = Math.floor(sec / 3600).toString().padStart(2, '0');
+          const m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
+          const s = Math.floor(sec % 60).toString().padStart(2, '0');
+          const ms = Math.floor((sec % 1) * 1000).toString().padStart(3, '0');
+          return `${h}:${m}:${s},${ms}`;
+        };
+        const start = formatSrtTime(item.start);
+        const end = formatSrtTime(item.start + item.duration);
+        return `${i + 1}\n${start} --> ${end}\n${item.text}\n`;
       }).join('\n');
     }
 
@@ -177,6 +204,7 @@ export function YoutubeTranscriptForm() {
 
   const handleClear = () => {
     setUrl('');
+    setIsLoaded(false);
     setTranscriptData([]);
     setTracks([]);
     setSelectedTrackUrl('');
@@ -198,27 +226,38 @@ export function YoutubeTranscriptForm() {
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleGetTracks()}
-                  placeholder="Paste URL (e.g. https://youtube.com/watch?v=...)"
+                  placeholder="Paste YouTube video URL here..."
                   className="bg-transparent border-0 h-full text-lg text-foreground focus-visible:ring-0 placeholder:text-slate-700 px-4"
+                  disabled={isLoading}
                />
             </div>
           </div>
           <Button 
             onClick={handleGetTracks}
             disabled={isLoading || !url.trim()}
-            className="h-14 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 font-bold text-lg rounded-2xl shadow-xl shadow-blue-600/20"
+            className="h-14 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 font-bold text-lg rounded-2xl shadow-xl shadow-blue-600/20 min-w-[200px]"
           >
-            {isLoading ? <Loader2 className="animate-spin mr-2" /> : <Search className="mr-2" />}
-            Get Transcript
+            {isLoading ? (
+              <>
+                <Loader2 className="animate-spin mr-2 h-5 w-5" />
+                Fetching transcript...
+              </>
+            ) : (
+              <>
+                <Search className="mr-2 h-5 w-5" />
+                Get Transcript
+              </>
+            )}
           </Button>
         </div>
       </div>
 
       <AnimatePresence mode="wait">
-        {transcriptData.length > 0 && (
+        {isLoaded && transcriptData.length > 0 && (
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 15 }}
             className="space-y-6"
           >
             {/* Control Bar */}
@@ -269,7 +308,8 @@ export function YoutubeTranscriptForm() {
               <Textarea 
                 readOnly
                 value={fullTranscriptText}
-                className="relative bg-slate-900 border-slate-700 min-h-[400px] text-foreground rounded-2xl p-6 text-base leading-relaxed resize-none font-sans"
+                className="relative bg-slate-900 border-slate-700 min-h-[400px] text-foreground rounded-2xl p-6 text-base leading-relaxed resize-none font-sans focus-visible:ring-0"
+                placeholder="Transcript text will appear here..."
               />
               <div className="absolute top-4 right-4 flex flex-col gap-2">
                  <Button 
@@ -313,7 +353,7 @@ export function YoutubeTranscriptForm() {
         )}
       </AnimatePresence>
 
-      {!transcriptData.length && !isLoading && (
+      {!isLoaded && !isLoading && (
         <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-slate-800 rounded-[32px] opacity-40">
            <Captions className="w-16 h-16 text-slate-700 mb-4 animate-pulse" />
            <p className="text-slate-500 font-medium text-center px-10">The video transcript will appear here instantly. Enter a URL above to start.</p>
