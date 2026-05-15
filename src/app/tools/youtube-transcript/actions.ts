@@ -1,55 +1,63 @@
 'use server';
 
 /**
- * @fileOverview Server action to fetch YouTube transcript data.
- * This bypasses CORS issues when fetching YouTube pages from the browser.
+ * @fileOverview Server action to fetch YouTube transcript data using external APIs.
+ * This bypasses CORS and extraction issues.
  */
 
 export async function getYouTubeTranscriptAction(videoId: string) {
   try {
-    const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Could not reach YouTube.');
-    }
-
-    const html = await response.text();
-    
-    // Extract the ytInitialPlayerResponse JSON
-    const match = html.match(/ytInitialPlayerResponse\s*=\s*({.+?});/);
-    if (!match) {
-      // Check if video is private or unavailable
-      if (html.includes('class="ytp-error-content"')) {
-        throw new Error('This video is private or unavailable.');
+    // API 1: Kome.ai (Primary)
+    const response1 = await fetch(
+      `https://api.kome.ai/api/tools/youtube-transcripts?video_id=${videoId}&format=true`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
       }
-      throw new Error('Could not extract video data from YouTube.');
+    );
+
+    if (response1.ok) {
+      const data1 = await response1.json();
+      if (data1 && data1.transcript && data1.transcript.length > 0) {
+        return {
+          success: true,
+          transcript: data1.transcript.map((item: any) => ({
+            start: item.start || 0,
+            text: item.text || '',
+          })),
+        };
+      }
     }
 
-    const playerResponse = JSON.parse(match[1]);
-    const captionTracks = playerResponse.captions?.playerCaptionsTracklistRenderer?.captionTracks;
-
-    if (!captionTracks || captionTracks.length === 0) {
-      throw new Error("This video doesn't have captions available. Try a video with CC enabled.");
+    // API 2: Backup (Vercel hosted helper)
+    const response2 = await fetch(`https://yt-transcript-api.vercel.app/transcript?video_id=${videoId}`);
+    if (response2.ok) {
+      const data2 = await response2.json();
+      // Handle both { transcript: [] } and plain array formats
+      const list = Array.isArray(data2) ? data2 : data2.transcript;
+      if (list && list.length > 0) {
+        return {
+          success: true,
+          transcript: list.map((item: any) => ({
+            start: item.start || item.offset / 1000 || 0,
+            text: item.text || item.content || '',
+          })),
+        };
+      }
     }
 
-    return {
-      success: true,
-      tracks: captionTracks.map((track: any) => ({
-        baseUrl: track.baseUrl,
-        name: track.name.simpleText || track.name.runs?.[0]?.text || 'English',
-        languageCode: track.languageCode,
-        isTranslatable: track.isTranslatable,
-      })),
-    };
+    throw new Error('This video has no captions. Try another video.');
   } catch (error: any) {
-    console.error('Transcript Error:', error.message);
+    console.error('Transcript API Error:', error.message);
+    
+    // Customize error message for common failures
+    let msg = 'Could not fetch transcript. Please try again.';
+    if (error.message.includes('private')) msg = 'This video is private.';
+    if (error.message.includes('captions')) msg = 'This video has no captions. Try another video.';
+    
     return {
       success: false,
-      error: error.message || 'An unexpected error occurred.',
+      error: msg,
     };
   }
 }

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useCallback, useMemo } from 'react';
@@ -21,37 +20,22 @@ import {
   Captions,
   Clock,
   RefreshCw,
-  Hash
+  Hash,
+  ClipboardPaste
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
 import { getYouTubeTranscriptAction } from '@/app/tools/youtube-transcript/actions';
 
 type TranscriptItem = {
   start: number;
-  duration: number;
   text: string;
-};
-
-type CaptionTrack = {
-  baseUrl: string;
-  name: string;
-  languageCode: string;
 };
 
 export function YoutubeTranscriptForm() {
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [tracks, setTracks] = useState<CaptionTrack[]>([]);
-  const [selectedTrackUrl, setSelectedTrackUrl] = useState<string>('');
   const [transcriptData, setTranscriptData] = useState<TranscriptItem[]>([]);
   const [showTimestamps, setShowTimestamps] = useState(true);
   const [isCopied, setIsCopied] = useState(false);
@@ -59,97 +43,59 @@ export function YoutubeTranscriptForm() {
   const { toast } = useToast();
 
   const extractVideoId = (input: string) => {
-    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-    const match = input.match(regex);
-    if (match && match[1]) return match[1];
-    if (input.trim().length === 11) return input.trim();
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/
+    ];
+    for (const pattern of patterns) {
+      const match = input.match(pattern);
+      if (match) return match[1];
+    }
     return null;
   };
 
-  const fetchTranscript = async (baseUrl: string) => {
-    setIsLoading(true);
-    setIsLoaded(false);
-    try {
-      const response = await fetch(baseUrl);
-      if (!response.ok) throw new Error('Could not fetch transcript text.');
-      const xmlText = await response.text();
-      
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-      const textNodes = xmlDoc.getElementsByTagName('text');
-      
-      const items: TranscriptItem[] = [];
-      for (let i = 0; i < textNodes.length; i++) {
-        const node = textNodes[i];
-        // Decode HTML entities (e.g. &#39; -> ')
-        const rawText = node.textContent || '';
-        const decodedText = rawText
-          .replace(/&amp;/g, '&')
-          .replace(/&lt;/g, '<')
-          .replace(/&gt;/g, '>')
-          .replace(/&quot;/g, '"')
-          .replace(/&#39;/g, "'")
-          .replace(/&nbsp;/g, ' ');
-
-        items.push({
-          start: parseFloat(node.getAttribute('start') || '0'),
-          duration: parseFloat(node.getAttribute('dur') || '0'),
-          text: decodedText,
-        });
-      }
-      
-      if (items.length === 0) {
-        throw new Error("The transcript content is empty.");
-      }
-
-      setTranscriptData(items);
-      setIsLoaded(true);
-      toast({ title: 'Transcript loaded!', description: 'You can now copy or download the text.' });
-    } catch (err: any) {
-      toast({ variant: 'destructive', title: 'Error', description: err.message });
-      setIsLoaded(false);
-    } finally {
-      setIsLoading(false);
-    }
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleGetTracks = async () => {
+  const handleGetTranscript = async () => {
     const id = extractVideoId(url);
     if (!id) {
-      toast({ variant: 'destructive', title: 'Invalid URL', description: 'Please enter a valid YouTube video URL.' });
+      toast({ variant: 'destructive', title: 'Invalid URL', description: 'Please enter a valid YouTube URL.' });
       return;
     }
 
     setIsLoading(true);
     setIsLoaded(false);
     setTranscriptData([]);
-    setTracks([]);
 
-    const result = await getYouTubeTranscriptAction(id);
+    try {
+      const result = await getYouTubeTranscriptAction(id);
 
-    if (!result.success) {
-      toast({ variant: 'destructive', title: 'Failed', description: result.error });
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      setTranscriptData(result.transcript);
+      setIsLoaded(true);
+      toast({ title: 'Transcript loaded!', description: 'You can now copy or download the text.' });
+    } catch (err: any) {
+      toast({ 
+        variant: 'destructive', 
+        title: 'Transcript Failed', 
+        description: err.message || 'Could not fetch transcript. Please try again.' 
+      });
+      setIsLoaded(false);
+    } finally {
       setIsLoading(false);
-      return;
     }
-
-    setTracks(result.tracks);
-    const firstTrack = result.tracks[0];
-    setSelectedTrackUrl(firstTrack.baseUrl);
-    await fetchTranscript(firstTrack.baseUrl);
-  };
-
-  const formatTimestamp = (seconds: number) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = Math.floor(seconds % 60);
-    return `[${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}]`;
   };
 
   const fullTranscriptText = useMemo(() => {
     if (transcriptData.length === 0) return '';
     if (showTimestamps) {
-      return transcriptData.map(item => `${formatTimestamp(item.start)} ${item.text}`).join('\n');
+      return transcriptData.map(item => `[${formatTime(item.start)}] ${item.text}`).join('\n');
     }
     return transcriptData.map(item => item.text).join(' ');
   }, [transcriptData, showTimestamps]);
@@ -167,6 +113,15 @@ export function YoutubeTranscriptForm() {
     });
   };
 
+  const handlePaste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      setUrl(text);
+    } catch (err) {
+      toast({ variant: 'destructive', title: 'Paste failed', description: 'Please allow clipboard access.' });
+    }
+  };
+
   const handleDownload = (type: 'txt' | 'srt') => {
     if (!transcriptData.length) return;
     
@@ -176,7 +131,6 @@ export function YoutubeTranscriptForm() {
     if (type === 'txt') {
       content = fullTranscriptText;
     } else {
-      // Simple SRT conversion
       content = transcriptData.map((item, i) => {
         const formatSrtTime = (sec: number) => {
           const h = Math.floor(sec / 3600).toString().padStart(2, '0');
@@ -186,7 +140,7 @@ export function YoutubeTranscriptForm() {
           return `${h}:${m}:${s},${ms}`;
         };
         const start = formatSrtTime(item.start);
-        const end = formatSrtTime(item.start + item.duration);
+        const end = formatSrtTime(item.start + 2); // Fallback duration
         return `${i + 1}\n${start} --> ${end}\n${item.text}\n`;
       }).join('\n');
     }
@@ -206,8 +160,6 @@ export function YoutubeTranscriptForm() {
     setUrl('');
     setIsLoaded(false);
     setTranscriptData([]);
-    setTracks([]);
-    setSelectedTrackUrl('');
   };
 
   return (
@@ -225,15 +177,23 @@ export function YoutubeTranscriptForm() {
                <Input
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleGetTracks()}
+                  onKeyDown={(e) => e.key === 'Enter' && handleGetTranscript()}
                   placeholder="Paste YouTube video URL here..."
                   className="bg-transparent border-0 h-full text-lg text-foreground focus-visible:ring-0 placeholder:text-slate-700 px-4"
                   disabled={isLoading}
                />
+               <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handlePaste}
+                className="mr-2 h-10 w-10 text-slate-500 hover:text-white"
+               >
+                 <ClipboardPaste className="w-5 h-5" />
+               </Button>
             </div>
           </div>
           <Button 
-            onClick={handleGetTracks}
+            onClick={handleGetTranscript}
             disabled={isLoading || !url.trim()}
             className="h-14 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 font-bold text-lg rounded-2xl shadow-xl shadow-blue-600/20 min-w-[200px]"
           >
@@ -265,34 +225,13 @@ export function YoutubeTranscriptForm() {
                <div className="flex flex-wrap items-center gap-6 w-full md:w-auto">
                   <div className="flex items-center gap-3">
                     <div className="space-y-0.5">
-                      <Label className="text-slate-200 font-bold text-sm">Timestamps</Label>
-                      <p className="text-[10px] text-slate-500 uppercase tracking-widest font-black">Show timeline</p>
+                      <Label className="text-slate-200 font-bold text-sm">Time Formatter</Label>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest font-black">
+                        {showTimestamps ? 'With Timestamps' : 'Without Timestamps'}
+                      </p>
                     </div>
                     <Switch checked={showTimestamps} onCheckedChange={setShowTimestamps} className="data-[state=checked]:bg-blue-600" />
                   </div>
-
-                  {tracks.length > 1 && (
-                    <div className="flex-1 min-w-[200px]">
-                      <Select 
-                        value={selectedTrackUrl} 
-                        onValueChange={(val) => {
-                          setSelectedTrackUrl(val);
-                          fetchTranscript(val);
-                        }}
-                      >
-                        <SelectTrigger className="bg-slate-900 border-slate-700 h-10">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-slate-900 border-slate-700">
-                          {tracks.map(track => (
-                            <SelectItem key={track.baseUrl} value={track.baseUrl} className="text-slate-200">
-                              {track.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
                </div>
 
                <div className="flex items-center gap-2 px-4 py-2 bg-slate-900/50 rounded-xl border border-slate-700">
