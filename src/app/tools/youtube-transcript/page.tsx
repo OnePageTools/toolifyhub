@@ -7,16 +7,16 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "YouTube Transcript Generator Free — Get Video Transcript Instantly | ToolifyHub",
-  description: "Extract transcript from any YouTube video free online. Copy or download subtitles instantly. No signup needed.",
+  title: "YouTube Transcript Extractor Free — Clean & Copy Video Text | ToolifyHub",
+  description: "Easily extract and clean YouTube transcripts. Automatically remove timestamps, music tags, and messy formatting for free. No signup required.",
   openGraph: {
-    title: "YouTube Transcript Generator Free — Get Video Transcript Instantly | ToolifyHub",
-    description: "Extract transcript from any YouTube video free online. Copy or download subtitles instantly. No signup needed.",
+    title: "YouTube Transcript Extractor Free — Clean & Copy Video Text | ToolifyHub",
+    description: "Easily extract and clean YouTube transcripts. Automatically remove timestamps and formatting for free.",
     url: "https://onepagetools.vercel.app/tools/youtube-transcript",
   },
   twitter: {
-    title: "YouTube Transcript Generator Free — Get Video Transcript Instantly | ToolifyHub",
-    description: "Extract transcript from any YouTube video free online. Copy or download subtitles instantly. No signup needed.",
+    title: "YouTube Transcript Extractor Free — Clean & Copy Video Text | ToolifyHub",
+    description: "Easily extract and clean YouTube transcripts. Automatically remove timestamps and formatting for free.",
   }
 };
 
@@ -29,34 +29,34 @@ const FAQSchema = () => (
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Is this YouTube transcript tool free?",
+          "name": "How do I get a transcript from a YouTube video?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes, completely free. No signup needed."
+            "text": "Open any YouTube video, click the 'More (...)' button below the video, select 'Show Transcript', and copy the text. Paste it into our tool to clean it instantly."
           }
         },
         {
           "@type": "Question",
-          "name": "Which videos work with this tool?",
+          "name": "Does this tool remove timestamps?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Any YouTube video that has captions or subtitles enabled works perfectly."
+            "text": "Yes! Our tool automatically detects and strips all timestamps (like 0:00 or 12:34) to leave you with only the spoken text."
           }
         },
         {
           "@type": "Question",
-          "name": "Can I download the transcript?",
+          "name": "Is this YouTube transcript extractor free?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes, you can download the full text as a .txt file or as an .srt file with timestamps."
+            "text": "Yes, it is 100% free with no usage limits and no signup required."
           }
         },
         {
           "@type": "Question",
-          "name": "Does it work with auto-generated captions?",
+          "name": "Why can't I see the 'Show Transcript' option on YouTube?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes, our tool supports both manual uploads and auto-generated YouTube captions."
+            "text": "If the option is missing, it's likely because the video creator has disabled captions or the video is still processing its automatic subtitles."
           }
         }
       ]
@@ -75,44 +75,17 @@ export default function YoutubeTranscriptPage() {
       <FAQSchema />
       <div className="max-w-[900px] mx-auto space-y-12">
         <ToolHeader 
-          title="YouTube Transcript Generator"
-          description="Instantly extract and download the full text transcript from any YouTube video."
+          title="YouTube Transcript Extractor"
+          description="The easiest way to extract, clean, and format text from any YouTube video without the technical mess."
           icon={<Captions className="w-6 h-6 md:w-8 md:h-8" />}
           category="Social Media"
         />
 
-        <Card className="border-white/[0.08] bg-white/[0.02] md:bg-white/[0.03] rounded-none md:rounded-[24px] border-x-0 md:border-x">
+        <Card className="border-white/[0.08] bg-white/[0.02] md:bg-white/[0.03] rounded-none md:rounded-[24px] border-x-0 md:border-x shadow-2xl">
           <CardContent className="p-5 md:p-12">
             <YoutubeTranscriptForm />
           </CardContent>
         </Card>
-
-        {/* How to Use */}
-        <section className="space-y-6 px-4 md:px-0">
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="w-6 h-6 text-primary" />
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-foreground">How to Get YouTube Transcript</h2>
-          </div>
-          <Card className="tool-card border-slate-800 bg-slate-800/30">
-            <CardContent className="p-6 md:p-8">
-              <ol className="grid grid-cols-1 md:grid-cols-2 gap-6 list-none p-0">
-                {[
-                  "Copy the URL of your favorite YouTube video",
-                  "Paste the link into the box above",
-                  "Click the 'Get Transcript' button",
-                  "Copy the text or download as .txt or .srt"
-                ].map((step, i) => (
-                  <li key={i} className="flex gap-4 items-start">
-                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
-                      {i + 1}
-                    </span>
-                    <p className="text-slate-600 dark:text-muted-foreground pt-1">{step}</p>
-                  </li>
-                ))}
-              </ol>
-            </CardContent>
-          </Card>
-        </section>
 
         {/* FAQ Section */}
         <section className="space-y-6 px-4 md:px-0">
@@ -125,28 +98,28 @@ export default function YoutubeTranscriptPage() {
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold hover:no-underline text-foreground">
-                    Is this YouTube transcript tool free?
+                    Is this tool safe to use?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
-                    Yes, it's 100% free. We don't ask for credit cards or signups. Just paste and extract.
+                    Yes, absolutely. The text processing happens entirely inside your browser. We don't save your transcripts or track the videos you analyze.
                   </AccordionContent>
                 </AccordionItem>
                 <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="item-2" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold hover:no-underline text-foreground">
-                    Which videos work with this tool?
+                    What tags does the cleaner remove?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
-                    Most videos work, provided they have Closed Captions (CC) enabled by the creator or auto-generated by YouTube.
+                    It strips out timestamps, speaker names (if in brackets), and common non-speech tags like [Music], [Applause], and (Laughter).
                   </AccordionContent>
                 </AccordionItem>
                 <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="item-3" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold hover:no-underline text-foreground">
-                    Can I download the transcript?
+                    Can I use this for long videos?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
-                    Yes! You can download it as a plain text (.txt) file or as a professional .srt file which includes all the timing data.
+                    Yes. There is no word limit. You can paste transcripts from 1-minute shorts or 3-hour podcasts and it will clean them just the same.
                   </AccordionContent>
                 </AccordionItem>
                 <div className="mx-6 h-px bg-slate-800" />
@@ -155,7 +128,7 @@ export default function YoutubeTranscriptPage() {
                     Does it work on mobile?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
-                    Absolutely. The tool is fully responsive and works perfectly on iPhones, Android devices, and tablets.
+                    Yes, though copying the transcript on the YouTube mobile app can be tricky. We recommend using a desktop browser or opening YouTube in 'Desktop Mode' on your mobile browser.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
