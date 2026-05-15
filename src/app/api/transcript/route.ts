@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * @fileOverview API Route to fetch and parse YouTube transcripts.
- * This runs on the server to bypass CORS and extract caption data from the YouTube page source.
+ * @fileOverview API Route to fetch and parse YouTube transcripts using RapidAPI.
+ * This route communicates with the YouTube Transcriptor API to retrieve structured caption data.
  */
 
 export async function GET(request: NextRequest) {
@@ -13,78 +13,63 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // 1. Fetch the YouTube watch page with a real user-agent
-    const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9',
-      },
-    });
+    const response = await fetch(
+      `https://youtube-transcriptor.p.rapidapi.com/transcript?video_id=${videoId}&lang=en`,
+      {
+        method: 'GET',
+        headers: {
+          'x-rapidapi-host': 'youtube-transcriptor.p.rapidapi.com',
+          'x-rapidapi-key': '9913b167dfmsh2eec0ca41008052p12f7cdjsn0ec96fd3bfde'
+        }
+      }
+    );
 
-    const html = await response.text();
+    if (!response.ok) {
+        return NextResponse.json({ error: 'Failed to communicate with the transcript service.' }, { status: response.status });
+    }
 
-    // 2. Extract the captionTracks data using regex
-    const captionMatch = html.match(/"captionTracks":(\[.*?\])/);
+    const data = await response.json();
 
-    if (!captionMatch) {
+    if (!data || data.error || (Array.isArray(data) && data.length === 0)) {
       return NextResponse.json(
-        { error: 'No captions found for this video. It might be private or have disabled CC.' },
+        { error: 'No transcript found for this video. It might be private or have captions disabled.' },
         { status: 404 }
       );
     }
 
-    const captionTracks = JSON.parse(captionMatch[1]);
+    // Parse transcript data from various potential response formats
+    let lines = [];
 
-    // 3. Find the best track (prefer English, fallback to first available)
-    const preferredTrack =
-      captionTracks.find((track: any) => track.languageCode === 'en') ||
-      captionTracks.find((track: any) => track.languageCode.startsWith('en')) ||
-      captionTracks[0];
-
-    if (!preferredTrack || !preferredTrack.baseUrl) {
-      return NextResponse.json({ error: 'No caption tracks available' }, { status: 404 });
-    }
-
-    // 4. Fetch the XML transcript data
-    const transcriptResponse = await fetch(preferredTrack.baseUrl);
-    const transcriptXml = await transcriptResponse.text();
-
-    // 5. Parse the XML to extract text and timestamps
-    const lines = [];
-    const regex = /<text start="([^"]*)" dur="([^"]*)"[^>]*>(.*?)<\/text>/gs;
-    let match;
-
-    while ((match = regex.exec(transcriptXml)) !== null) {
-      const start = parseFloat(match[1]);
-      const text = match[3]
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
-        .replace(/&nbsp;/g, ' ')
-        .replace(/<[^>]*>/g, '') // Remove any internal tags
-        .trim();
-
-      if (text) {
-        lines.push({
-          start: start,
-          text: text,
-        });
-      }
+    if (Array.isArray(data)) {
+      lines = data.map((item) => ({
+        start: item.start || 0,
+        text: item.text || item.transcript || ''
+      }));
+    } else if (data.transcript) {
+      lines = data.transcript.map((item: any) => ({
+        start: item.start || 0,
+        text: item.text || ''
+      }));
+    } else if (data.transcription) {
+      lines = data.transcription.map((item: any) => ({
+        start: (item.offset / 1000) || 0,
+        text: item.text || ''
+      }));
     }
 
     if (lines.length === 0) {
-      return NextResponse.json({ error: 'The transcript content was empty or unreadable' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'The transcript content was empty or unreadable' },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({
       transcript: lines,
-      language: preferredTrack.languageCode,
       videoId: videoId,
     });
   } catch (error: any) {
     console.error('Transcript API Error:', error);
-    return NextResponse.json({ error: 'Failed to fetch or parse the transcript' }, { status: 500 });
+    return NextResponse.json({ error: 'An unexpected error occurred while fetching the transcript' }, { status: 500 });
   }
 }
