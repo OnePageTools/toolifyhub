@@ -53,6 +53,7 @@ import {
   Youtube,
   Video,
   Rocket,
+  Captions,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design' | 'Fun' | 'Social Media';
@@ -121,6 +122,14 @@ export const tools: Tool[] = [
     href: '/tools/passport-photo-maker',
     icon: Camera,
     category: 'Image',
+    implemented: true,
+  },
+  {
+    name: 'YouTube Transcript',
+    description: 'Extract transcript from any YouTube video free instantly',
+    href: '/tools/youtube-transcript',
+    icon: Captions,
+    category: 'Social Media',
     implemented: true,
   },
   {
