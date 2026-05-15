@@ -124,7 +124,7 @@ export default function YoutubeTranscriptPage() {
             <CardContent className="p-0">
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1" className="px-6 border-b-0">
-                  <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                  <AccordionTrigger className="text-left font-semibold hover:no-underline text-foreground">
                     Is this YouTube transcript tool free?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
@@ -133,7 +133,7 @@ export default function YoutubeTranscriptPage() {
                 </AccordionItem>
                 <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="item-2" className="px-6 border-b-0">
-                  <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                  <AccordionTrigger className="text-left font-semibold hover:no-underline text-foreground">
                     Which videos work with this tool?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
@@ -142,7 +142,7 @@ export default function YoutubeTranscriptPage() {
                 </AccordionItem>
                 <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="item-3" className="px-6 border-b-0">
-                  <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                  <AccordionTrigger className="text-left font-semibold hover:no-underline text-foreground">
                     Can I download the transcript?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
@@ -151,7 +151,7 @@ export default function YoutubeTranscriptPage() {
                 </AccordionItem>
                 <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="item-4" className="px-6 border-b-0">
-                  <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                  <AccordionTrigger className="text-left font-semibold hover:no-underline text-foreground">
                     Does it work on mobile?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">

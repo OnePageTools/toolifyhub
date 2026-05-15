@@ -21,11 +21,11 @@ import {
   Clock,
   RefreshCw,
   Hash,
-  ClipboardPaste
+  ClipboardPaste,
+  AlertCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { getYouTubeTranscriptAction } from '@/app/tools/youtube-transcript/actions';
 
 type TranscriptItem = {
   start: number;
@@ -39,17 +39,23 @@ export function YoutubeTranscriptForm() {
   const [transcriptData, setTranscriptData] = useState<TranscriptItem[]>([]);
   const [showTimestamps, setShowTimestamps] = useState(true);
   const [isCopied, setIsCopied] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const { toast } = useToast();
 
   const extractVideoId = (input: string) => {
     const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/
+      /(?:v=)([^&\n?#]+)/,
+      /(?:youtu\.be\/)([^&\n?#]+)/,
+      /(?:embed\/)([^&\n?#]+)/,
+      /(?:v\/)([^&\n?#]+)/,
     ];
     for (const pattern of patterns) {
       const match = input.match(pattern);
-      if (match) return match[1];
+      if (match && match[1]) return match[1];
     }
+    // Handle cases where the ID is just passed alone (11 chars)
+    if (input.trim().length === 11 && !input.includes(' ')) return input.trim();
     return null;
   };
 
@@ -62,29 +68,33 @@ export function YoutubeTranscriptForm() {
   const handleGetTranscript = async () => {
     const id = extractVideoId(url);
     if (!id) {
+      setError('Please enter a valid YouTube URL');
       toast({ variant: 'destructive', title: 'Invalid URL', description: 'Please enter a valid YouTube URL.' });
       return;
     }
 
     setIsLoading(true);
     setIsLoaded(false);
+    setError(null);
     setTranscriptData([]);
 
     try {
-      const result = await getYouTubeTranscriptAction(id);
+      const response = await fetch(`/api/transcript?videoId=${id}`);
+      const data = await response.json();
 
-      if (!result.success) {
-        throw new Error(result.error);
+      if (!response.ok || data.error) {
+        throw new Error(data.error || 'Failed to fetch transcript');
       }
 
-      setTranscriptData(result.transcript);
+      setTranscriptData(data.transcript);
       setIsLoaded(true);
-      toast({ title: 'Transcript loaded!', description: 'You can now copy or download the text.' });
+      toast({ title: 'Transcript loaded!', description: 'You can now format or download the text.' });
     } catch (err: any) {
+      setError(err.message || 'Could not fetch transcript. Please try again.');
       toast({ 
         variant: 'destructive', 
         title: 'Transcript Failed', 
-        description: err.message || 'Could not fetch transcript. Please try again.' 
+        description: err.message || 'Check if the video has captions available.' 
       });
       setIsLoaded(false);
     } finally {
@@ -140,7 +150,9 @@ export function YoutubeTranscriptForm() {
           return `${h}:${m}:${s},${ms}`;
         };
         const start = formatSrtTime(item.start);
-        const end = formatSrtTime(item.start + 2); // Fallback duration
+        // Estimate end as next start or +3 seconds
+        const nextStart = transcriptData[i+1]?.start || item.start + 3;
+        const end = formatSrtTime(nextStart);
         return `${i + 1}\n${start} --> ${end}\n${item.text}\n`;
       }).join('\n');
     }
@@ -159,6 +171,7 @@ export function YoutubeTranscriptForm() {
   const handleClear = () => {
     setUrl('');
     setIsLoaded(false);
+    setError(null);
     setTranscriptData([]);
   };
 
@@ -213,6 +226,21 @@ export function YoutubeTranscriptForm() {
       </div>
 
       <AnimatePresence mode="wait">
+        {error && (
+            <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-400"
+            >
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <p className="text-sm font-semibold">{error}</p>
+                <Button variant="ghost" size="icon" onClick={() => setError(null)} className="ml-auto h-8 w-8">
+                    <Trash2 className="w-4 h-4" />
+                </Button>
+            </motion.div>
+        )}
+
         {isLoaded && transcriptData.length > 0 && (
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
@@ -227,7 +255,7 @@ export function YoutubeTranscriptForm() {
                     <div className="space-y-0.5">
                       <Label className="text-slate-200 font-bold text-sm">Time Formatter</Label>
                       <p className="text-[10px] text-slate-500 uppercase tracking-widest font-black">
-                        {showTimestamps ? 'With Timestamps' : 'Without Timestamps'}
+                        {showTimestamps ? 'With Timestamps' : 'Text Only'}
                       </p>
                     </div>
                     <Switch checked={showTimestamps} onCheckedChange={setShowTimestamps} className="data-[state=checked]:bg-blue-600" />
@@ -276,14 +304,14 @@ export function YoutubeTranscriptForm() {
                <Button 
                   onClick={() => handleDownload('txt')}
                   size="lg" 
-                  className="h-14 bg-slate-800 border border-slate-700 hover:bg-slate-700 font-bold text-lg rounded-xl"
+                  className="h-14 bg-slate-800 border border-slate-800 hover:bg-slate-700 font-bold text-lg rounded-xl"
                 >
                   <FileText className="mr-2 h-5 w-5" /> Download .txt
                </Button>
                <Button 
                   onClick={() => handleDownload('srt')}
                   size="lg" 
-                  className="h-14 bg-slate-800 border border-slate-700 hover:bg-slate-700 font-bold text-lg rounded-xl"
+                  className="h-14 bg-slate-800 border border-slate-800 hover:bg-slate-700 font-bold text-lg rounded-xl"
                 >
                   <Clock className="mr-2 h-5 w-5" /> Download .srt
                </Button>
@@ -292,7 +320,7 @@ export function YoutubeTranscriptForm() {
         )}
       </AnimatePresence>
 
-      {!isLoaded && !isLoading && (
+      {!isLoaded && !isLoading && !error && (
         <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-slate-800 rounded-[32px] opacity-40">
            <Captions className="w-16 h-16 text-slate-700 mb-4 animate-pulse" />
            <p className="text-slate-500 font-medium text-center px-10">The video transcript will appear here instantly. Enter a URL above to start.</p>
