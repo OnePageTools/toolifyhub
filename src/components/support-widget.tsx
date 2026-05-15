@@ -1,90 +1,138 @@
-
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, MessageSquare, X, Bug, Lightbulb, HelpCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { X } from 'lucide-react';
 
 export function SupportWidget() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const supportOptions = [
-    {
-      label: "Report a Bug 🐛",
-      subject: "Bug Report - ToolifyHub",
-      icon: Bug,
-    },
-    {
-      label: "Suggest a Tool 💡",
-      subject: "Tool Suggestion - ToolifyHub",
-      icon: Lightbulb,
-    },
-    {
-      label: "General Question ❓",
-      subject: "Question - ToolifyHub",
-      icon: HelpCircle,
-    },
-  ];
+  // Close on Escape key
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, []);
 
-  const handleContact = (subject: string) => {
-    window.location.href = `mailto:goherkhan12131415@gmail.com?subject=${encodeURIComponent(subject)}`;
+  const handleSupportAction = (type: 'bug' | 'suggest' | 'question') => {
+    let subject = "";
+    let body = "";
+
+    switch (type) {
+      case 'bug':
+        subject = "Bug Report - ToolifyHub";
+        body = "Please describe the issue:";
+        break;
+      case 'suggest':
+        subject = "Tool Suggestion - ToolifyHub";
+        body = "I would like to suggest:";
+        break;
+      case 'question':
+        subject = "Question - ToolifyHub";
+        body = "My question is:";
+        break;
+    }
+
+    const mailto = `mailto:goherkhan12131415@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailto, '_blank');
+    setIsOpen(false);
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] print:hidden">
+    <div className="fixed bottom-6 right-6 z-[99999] print:hidden">
+      {/* Backdrop for clicking outside to close */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 z-[-1] cursor-default"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Popup Modal */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className="mb-4"
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute bottom-16 right-0 w-[300px] mb-4 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-[0_20px_60px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
+            onClick={(e) => e.stopPropagation()}
           >
-            <Card className="w-72 shadow-2xl border-primary/20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl">
-              <CardHeader className="p-4 flex flex-row items-center justify-between border-b border-border/50">
-                <CardTitle className="text-sm font-bold uppercase tracking-widest text-primary">How can we help?</CardTitle>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => setIsOpen(false)}
-                  className="h-6 w-6 rounded-full hover:bg-secondary"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </CardHeader>
-              <CardContent className="p-4 space-y-2">
-                {supportOptions.map((opt) => (
-                  <Button
-                    key={opt.label}
-                    variant="outline"
-                    className="w-full justify-start text-xs font-semibold h-11 bg-secondary/30 hover:bg-primary hover:text-white transition-all border-border"
-                    onClick={() => handleContact(opt.subject)}
-                  >
-                    <opt.icon className="mr-2 h-4 w-4" />
-                    {opt.label}
-                  </Button>
-                ))}
-                <p className="text-[10px] text-center text-muted-foreground pt-2">
-                  Average response time: 24 hours
-                </p>
-              </CardContent>
-            </Card>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
+                How can we help? 👋
+              </h3>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-1 rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Support Option Cards */}
+            <div className="space-y-2">
+              {/* Option 1: Bug */}
+              <button
+                onClick={() => handleSupportAction('bug')}
+                className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-[#F1F5F9] dark:hover:bg-white/10 transition-all group"
+              >
+                <span className="text-xl">🐛</span>
+                <div>
+                  <p className="text-sm font-bold text-[#0F172A] dark:text-white">Report a Bug</p>
+                  <p className="text-[11px] text-[#64748B] dark:text-slate-400 leading-tight">Something not working?</p>
+                </div>
+              </button>
+
+              {/* Option 2: Suggest */}
+              <button
+                onClick={() => handleSupportAction('suggest')}
+                className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-[#F1F5F9] dark:hover:bg-white/10 transition-all group"
+              >
+                <span className="text-xl">💡</span>
+                <div>
+                  <p className="text-sm font-bold text-[#0F172A] dark:text-white">Suggest a Tool</p>
+                  <p className="text-[11px] text-[#64748B] dark:text-slate-400 leading-tight">Want a new tool?</p>
+                </div>
+              </button>
+
+              {/* Option 3: Question */}
+              <button
+                onClick={() => handleSupportAction('question')}
+                className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-[#F1F5F9] dark:hover:bg-white/10 transition-all group"
+              >
+                <span className="text-xl">❓</span>
+                <div>
+                  <p className="text-sm font-bold text-[#0F172A] dark:text-white">General Question</p>
+                  <p className="text-[11px] text-[#64748B] dark:text-slate-400 leading-tight">We read every message</p>
+                </div>
+              </button>
+            </div>
+
+            <p className="text-[10px] text-center text-slate-400 mt-4 font-medium uppercase tracking-widest">
+              Usually replies in 24h
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <Button
+      {/* Floating Toggle Button */}
+      <button
         onClick={() => setIsOpen(!isOpen)}
-        size="lg"
-        className="rounded-full shadow-2xl bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-blue-500/20 h-14 px-6 gap-2"
+        className="flex items-center gap-2 px-5 h-12 rounded-full text-white font-semibold text-sm shadow-[0_4px_20px_rgba(59,130,246,0.4)] transition-all hover:scale-105 active:scale-95 bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6]"
       >
-        <MessageSquare className={cn("h-5 w-5 transition-transform", isOpen && "rotate-90")} />
-        <span className="font-bold">Need Help?</span>
-      </Button>
+        <span className="text-lg">{isOpen ? '✕' : '💬'}</span>
+        <span>Help</span>
+      </button>
     </div>
   );
 }
-
-import { cn } from '@/lib/utils';
