@@ -16,35 +16,24 @@ export function SupportWidget() {
     return () => window.removeEventListener('keydown', handleEsc);
   }, []);
 
-  const handleSupportAction = (type: 'bug' | 'suggest' | 'question') => {
-    let subject = "";
-    let body = "";
+  const handleSupportAction = (type: 'whatsapp' | 'suggest' | 'bug') => {
+    let url = "";
 
     switch (type) {
-      case 'bug':
-        subject = "Bug Report - ToolifyHub";
-        body = "Please describe the issue:";
+      case 'whatsapp':
+        url = 'https://wa.me/923121374994?text=Hi%20ToolifyHub%2C%20I%20need%20help%20with%3A';
         break;
       case 'suggest':
-        subject = "Tool Suggestion - ToolifyHub";
-        body = "I would like to suggest:";
+        url = 'https://wa.me/923121374994?text=Hi%20ToolifyHub%2C%20I%20want%20to%20suggest%20a%20new%20tool%3A';
         break;
-      case 'question':
-        subject = "Question - ToolifyHub";
-        body = "My question is:";
+      case 'bug':
+        url = 'https://wa.me/923121374994?text=Hi%20ToolifyHub%2C%20I%20found%20a%20bug%3A';
         break;
     }
 
-    const mailto = `mailto:goherkhan12131415@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
-    // Using a robust dynamic anchor tag approach to prevent browser blocking
-    const link = document.createElement('a');
-    link.href = mailto;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (url) {
+        window.location.href = url;
+    }
     
     setIsOpen(false);
   };
@@ -90,15 +79,15 @@ export function SupportWidget() {
 
             {/* Support Option Cards */}
             <div className="space-y-2">
-              {/* Option 1: Bug */}
+              {/* Option 1: WhatsApp */}
               <button
-                onClick={() => handleSupportAction('bug')}
+                onClick={() => handleSupportAction('whatsapp')}
                 className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-[#F1F5F9] dark:hover:bg-white/10 transition-all group"
               >
-                <span className="text-xl">🐛</span>
+                <span className="text-xl">💬</span>
                 <div>
-                  <p className="text-sm font-bold text-[#0F172A] dark:text-white">Report a Bug</p>
-                  <p className="text-[11px] text-[#64748B] dark:text-slate-400 leading-tight">Something not working?</p>
+                  <p className="text-sm font-bold text-[#0F172A] dark:text-white">Chat on WhatsApp</p>
+                  <p className="text-[11px] text-[#64748B] dark:text-slate-400 leading-tight">Get instant help</p>
                 </div>
               </button>
 
@@ -110,25 +99,25 @@ export function SupportWidget() {
                 <span className="text-xl">💡</span>
                 <div>
                   <p className="text-sm font-bold text-[#0F172A] dark:text-white">Suggest a Tool</p>
-                  <p className="text-[11px] text-[#64748B] dark:text-slate-400 leading-tight">Want a new tool?</p>
+                  <p className="text-[11px] text-[#64748B] dark:text-slate-400 leading-tight">Request new tools</p>
                 </div>
               </button>
 
-              {/* Option 3: Question */}
+              {/* Option 3: Bug */}
               <button
-                onClick={() => handleSupportAction('question')}
+                onClick={() => handleSupportAction('bug')}
                 className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-[#F1F5F9] dark:hover:bg-white/10 transition-all group"
               >
-                <span className="text-xl">❓</span>
+                <span className="text-xl">🐛</span>
                 <div>
-                  <p className="text-sm font-bold text-[#0F172A] dark:text-white">General Question</p>
-                  <p className="text-[11px] text-[#64748B] dark:text-slate-400 leading-tight">We read every message</p>
+                  <p className="text-sm font-bold text-[#0F172A] dark:text-white">Report a Bug</p>
+                  <p className="text-[11px] text-[#64748B] dark:text-slate-400 leading-tight">Something broken?</p>
                 </div>
               </button>
             </div>
 
             <p className="text-[10px] text-center text-slate-400 mt-4 font-medium uppercase tracking-widest">
-              Usually replies in 24h
+              Replies usually in 24h
             </p>
           </motion.div>
         )}
