@@ -21,18 +21,18 @@ export function SupportWidget() {
 
     switch (type) {
       case 'whatsapp':
-        url = 'https://wa.me/923121374994?text=Hi%20ToolifyHub%2C%20I%20need%20help%20with%3A';
+        url = 'https://api.whatsapp.com/send?phone=923121374994&text=Hi ToolifyHub, I need help with:';
         break;
       case 'suggest':
-        url = 'https://wa.me/923121374994?text=Hi%20ToolifyHub%2C%20I%20want%20to%20suggest%20a%20new%20tool%3A';
+        url = 'https://api.whatsapp.com/send?phone=923121374994&text=Hi ToolifyHub, I want to suggest a tool:';
         break;
       case 'bug':
-        url = 'https://wa.me/923121374994?text=Hi%20ToolifyHub%2C%20I%20found%20a%20bug%3A';
+        url = 'https://api.whatsapp.com/send?phone=923121374994&text=Hi ToolifyHub, I found a bug:';
         break;
     }
 
     if (url) {
-        window.location.href = url;
+        window.open(url, '_blank');
     }
     
     setIsOpen(false);
