@@ -28,6 +28,7 @@ const articles = [
     { href: '/blog/electricity-bill-calculator-online-free' },
     { href: '/blog/cgpa-calculator-online-free' },
     { href: '/blog/discount-calculator-online-free' },
+    { href: '/blog/tip-calculator-online-free' },
 ];
  
 export default function sitemap(): MetadataRoute.Sitemap {

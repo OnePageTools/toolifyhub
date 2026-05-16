@@ -56,6 +56,7 @@ import {
   Zap,
   GraduationCap,
   BadgePercent,
+  ReceiptText,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design' | 'Fun' | 'Social Media' | 'Education';
@@ -275,6 +276,14 @@ export const tools: Tool[] = [
     description: 'Calculate sale price and savings with any discount percentage free',
     href: '/tools/discount-calculator',
     icon: BadgePercent,
+    category: 'Finance',
+    implemented: true,
+  },
+  {
+    name: 'Tip Calculator',
+    description: 'Calculate tip amount and split restaurant bill among friends free',
+    href: '/tools/tip-calculator',
+    icon: ReceiptText,
     category: 'Finance',
     implemented: true,
   },

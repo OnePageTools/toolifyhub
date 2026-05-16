@@ -11,6 +11,16 @@ export type Article = {
 
 export const articles: Article[] = [
     {
+        title: 'How to Calculate Tip Online Free — Restaurant Bill Split Guide 2026',
+        description: 'Never struggle with restaurant bills again. Learn how to calculate tips, split bills fairly among friends, and understand global tipping etiquette.',
+        href: '/blog/tip-calculator-online-free',
+        author: 'ToolifyHub Team',
+        date: 'May 26, 2026',
+        readingTime: '8 min read',
+        category: 'Finance',
+        image: 'https://picsum.photos/seed/tips/800/400',
+    },
+    {
         title: 'How to Calculate Discount Percentage Online Free — Shopping Guide 2026',
         description: 'Sale season is here! Learn exactly how to calculate discounts, verify fake sale claims, and save more with our free discount calculator guide.',
         href: '/blog/discount-calculator-online-free',
