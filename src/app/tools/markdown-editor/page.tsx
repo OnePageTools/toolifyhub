@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -13,11 +14,40 @@ const MarkdownEditorForm = dynamic(
 export default function MarkdownEditorPage() {
   const tool = {
     name: 'Markdown Editor',
-    url: '/tools/markdown-editor',
+    url: 'https://onepagetools.vercel.app/tools/markdown-editor',
   };
 
   return (
     <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem", 
+                "position": 2,
+                "name": "Tools",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": tool.name,
+                "item": tool.url
+              }
+            ]
+          })
+        }}
+      />
       <div className="max-w-[1200px] mx-auto space-y-6 md:space-y-8">
         <ToolHeader 
           title="Markdown Editor"
@@ -28,7 +58,7 @@ export default function MarkdownEditorPage() {
 
         <MarkdownEditorForm />
 
-        <RelatedTools currentToolHref={tool.url} />
+        <RelatedTools currentToolHref="/tools/markdown-editor" />
       </div>
     </div>
   );

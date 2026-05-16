@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -14,11 +15,40 @@ const TypingSpeedTestForm = dynamic(
 export default function TypingSpeedTestPage() {
   const tool = {
     name: 'Typing Speed Test',
-    url: '/tools/typing-speed-test',
+    url: 'https://onepagetools.vercel.app/tools/typing-speed-test',
   };
 
   return (
     <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem", 
+                "position": 2,
+                "name": "Tools",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": tool.name,
+                "item": tool.url
+              }
+            ]
+          })
+        }}
+      />
       <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
         <ToolHeader 
           title="Typing Speed Test"
@@ -33,7 +63,7 @@ export default function TypingSpeedTestPage() {
           </CardContent>
         </Card>
 
-        <RelatedTools currentToolHref={tool.url} />
+        <RelatedTools currentToolHref="/tools/typing-speed-test" />
       </div>
     </div>
   );

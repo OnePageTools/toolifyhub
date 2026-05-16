@@ -1,3 +1,4 @@
+
 import { Base64EncoderForm } from '@/components/tools/base64-encoder-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { SquareCode } from 'lucide-react';
@@ -5,19 +6,51 @@ import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
 
+const tool = {
+  name: 'Base64 Encoder',
+  url: 'https://onepagetools.vercel.app/tools/base64-encoder',
+};
+
 export const metadata: Metadata = {
   title: "Free Base64 Encoder Decoder Online — Encode & Decode | ToolifyHub",
   description: "Encode and decode text and files to Base64 free online. No signup needed.",
+  other: {
+    'last-modified': '2026-05-16'
+  }
 };
 
 export default function Base64EncoderPage() {
-  const tool = {
-    name: 'Base64 Encoder',
-    url: '/tools/base64-encoder',
-  };
-
   return (
     <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem", 
+                "position": 2,
+                "name": "Tools",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": tool.name,
+                "item": tool.url
+              }
+            ]
+          })
+        }}
+      />
       <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
         <ToolHeader 
           title="Base64 Encoder & Decoder"
@@ -32,7 +65,7 @@ export default function Base64EncoderPage() {
           </CardContent>
         </Card>
 
-        <RelatedTools currentToolHref={tool.url} />
+        <RelatedTools currentToolHref="/tools/base64-encoder" />
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+
 import { TextSummarizerForm } from '@/components/tools/text-summarizer-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookOpen, HelpCircle, CheckCircle2 } from 'lucide-react';
@@ -10,6 +11,7 @@ import type { Metadata } from 'next';
 const tool = {
   name: 'Text Summarizer',
   url: '/tools/text-summarizer',
+  fullUrl: 'https://onepagetools.vercel.app/tools/text-summarizer',
   title: "Free Text Summarizer Online — Summarize Any Text Instantly | ToolifyHub",
   description: "Summarize long articles, documents and text free online instantly. AI powered. No signup needed.",
 };
@@ -25,6 +27,9 @@ export const metadata: Metadata = {
   twitter: {
     title: "Free Text Summarizer Online — Summarize Any Text | ToolifyHub",
     description: tool.description,
+  },
+  other: {
+    'last-modified': '2026-05-16'
   }
 };
 
@@ -84,6 +89,35 @@ export default function TextSummarizerPage() {
   return (
     <div className="container mx-auto py-8 md:py-16 px-4 tool-page-fade">
       <FAQSchema />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem", 
+                "position": 2,
+                "name": "Tools",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": tool.name,
+                "item": tool.fullUrl
+              }
+            ]
+          })
+        }}
+      />
       <div className="max-w-[900px] mx-auto space-y-12">
         <ToolHeader 
           title="Text Summarizer"
@@ -183,7 +217,7 @@ export default function TextSummarizerPage() {
           </Card>
         </section>
 
-        <RelatedTools currentToolHref={tool.url} />
+        <RelatedTools currentToolHref="/tools/text-summarizer" />
       </div>
     </div>
   );

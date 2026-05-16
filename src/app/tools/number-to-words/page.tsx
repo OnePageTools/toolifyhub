@@ -1,3 +1,4 @@
+
 import { NumberToWordsForm } from '@/components/tools/number-to-words-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { Hash } from 'lucide-react';
@@ -5,19 +6,51 @@ import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
 
+const tool = {
+  name: 'Number to Words',
+  url: 'https://onepagetools.vercel.app/tools/number-to-words',
+};
+
 export const metadata: Metadata = {
   title: "Free Number to Words Converter — Convert Numbers Instantly | ToolifyHub",
   description: "Convert numbers to words in English and Urdu free online. Perfect for cheques. No signup needed.",
+  other: {
+    'last-modified': '2026-05-16'
+  }
 };
 
 export default function NumberToWordsPage() {
-  const tool = {
-    name: 'Number to Words',
-    url: '/tools/number-to-words',
-  };
-
   return (
     <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem", 
+                "position": 2,
+                "name": "Tools",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": tool.name,
+                "item": tool.url
+              }
+            ]
+          })
+        }}
+      />
       <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
         <ToolHeader 
           title="Number to Words"
@@ -32,7 +65,7 @@ export default function NumberToWordsPage() {
           </CardContent>
         </Card>
 
-        <RelatedTools currentToolHref={tool.url} />
+        <RelatedTools currentToolHref="/tools/number-to-words" />
       </div>
     </div>
   );

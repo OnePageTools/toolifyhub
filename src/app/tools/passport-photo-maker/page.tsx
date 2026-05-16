@@ -1,3 +1,4 @@
+
 import { PassportPhotoMakerForm } from '@/components/tools/passport-photo-maker-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { Camera } from 'lucide-react';
@@ -5,19 +6,51 @@ import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
 
+const tool = {
+  name: 'Passport Photo Maker',
+  url: 'https://onepagetools.vercel.app/tools/passport-photo-maker',
+};
+
 export const metadata: Metadata = {
   title: "Free Passport Photo Maker Online — Create Passport Photos | ToolifyHub",
   description: "Create passport size photos for any country free online. Download instantly. No signup needed.",
+  other: {
+    'last-modified': '2026-05-16'
+  }
 };
 
 export default function PassportPhotoMakerPage() {
-  const tool = {
-    name: 'Passport Photo Maker',
-    url: '/tools/passport-photo-maker',
-  };
-
   return (
     <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem", 
+                "position": 2,
+                "name": "Tools",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": tool.name,
+                "item": tool.url
+              }
+            ]
+          })
+        }}
+      />
       <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
         <ToolHeader 
           title="Passport Photo Maker"
@@ -32,7 +65,7 @@ export default function PassportPhotoMakerPage() {
           </CardContent>
         </Card>
 
-        <RelatedTools currentToolHref={tool.url} />
+        <RelatedTools currentToolHref="/tools/passport-photo-maker" />
       </div>
     </div>
   );

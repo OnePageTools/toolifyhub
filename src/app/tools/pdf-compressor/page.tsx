@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -51,12 +52,41 @@ const FAQSchema = () => (
 export default function PdfCompressorPage() {
   const tool = {
     name: 'PDF Compressor',
-    url: '/tools/pdf-compressor',
+    url: 'https://onepagetools.vercel.app/tools/pdf-compressor',
   };
 
   return (
     <div className="container mx-auto py-8 md:py-16 px-4 tool-page-fade">
       <FAQSchema />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem", 
+                "position": 2,
+                "name": "Tools",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": tool.name,
+                "item": tool.url
+              }
+            ]
+          })
+        }}
+      />
       <div className="max-w-[900px] mx-auto space-y-12">
         <ToolHeader 
           title="PDF Compressor"
@@ -138,7 +168,7 @@ export default function PdfCompressorPage() {
           </Card>
         </section>
 
-        <RelatedTools currentToolHref={tool.url} />
+        <RelatedTools currentToolHref="/tools/pdf-compressor" />
       </div>
     </div>
   );

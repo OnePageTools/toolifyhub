@@ -1,3 +1,4 @@
+
 'use client';
 
 import { ImageToTextForm } from '@/components/tools/image-to-text-form';
@@ -5,8 +6,42 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Type } from 'lucide-react';
 
 export default function ImageToTextPage() {
+  const tool = {
+    name: 'Image to Text',
+    url: 'https://onepagetools.vercel.app/tools/image-to-text',
+  };
+
   return (
     <div className="container mx-auto py-12 px-4 page-transition">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem", 
+                "position": 2,
+                "name": "Tools",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": tool.name,
+                "item": tool.url
+              }
+            ]
+          })
+        }}
+      />
       <div className="max-w-4xl mx-auto space-y-8">
         <header className="flex flex-col items-center text-center space-y-4 mb-8">
           <div className="w-[60px] h-[60px] rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-xl text-white">

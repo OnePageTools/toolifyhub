@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.title,
-    template: `%s`, // Fixed: Removed suffix to prevent duplication
+    template: `%s`,
   },
   description: siteConfig.description,
   keywords: [
@@ -118,6 +118,46 @@ export default function RootLayout({
             gtag('config', 'G-EY46Z7XSVT');
           `}
         </Script>
+        {/* WebSite Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "ToolifyHub",
+              "url": "https://onepagetools.vercel.app",
+              "description": "35+ free online tools for productivity",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                  "@type": "EntryPoint",
+                  "urlTemplate": "https://onepagetools.vercel.app/?search={search_term_string}"
+                },
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
+        {/* Organization Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "ToolifyHub",
+              "url": "https://onepagetools.vercel.app",
+              "logo": "https://onepagetools.vercel.app/logo.png",
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+92-312-1374994",
+                "contactType": "customer support",
+                "availableLanguage": ["English", "Urdu"]
+              }
+            })
+          }}
+        />
       </head>
       <body className="font-body antialiased">
         <ThemeProvider
