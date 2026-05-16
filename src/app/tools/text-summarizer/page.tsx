@@ -1,5 +1,5 @@
 import { TextSummarizerForm } from '@/components/tools/text-summarizer-form';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BookOpen, HelpCircle, CheckCircle2, ArrowRight } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
@@ -7,6 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const tool = {
   name: 'Text Summarizer',
@@ -135,35 +136,76 @@ export default function TextSummarizerPage() {
           category="Text"
         />
 
+        <div className="text-center space-y-2 mb-8 px-4 md:px-0">
+          <p className="text-lg text-slate-600 dark:text-muted-foreground leading-relaxed">
+            Paste any article, essay, or document below. Get a clear summary in seconds — 
+            no account needed, no limits.
+          </p>
+        </div>
+
         <Card className="bg-white dark:bg-card border-border shadow-sm dark:shadow-none overflow-hidden">
           <CardContent className="p-5 md:p-12">
             <TextSummarizerForm />
           </CardContent>
         </Card>
 
+        {/* Author Bio Section */}
+        <div className="mt-12 p-8 bg-secondary/10 border border-border rounded-3xl flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-2xl font-black shrink-0 shadow-lg">
+            TH
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-xl font-bold text-foreground">ToolifyHub Team</h3>
+            <p className="text-slate-500 dark:text-muted-foreground leading-relaxed">
+              We build free tools to make everyone's life easier. Our <Link href="/tools/text-summarizer" className="text-primary hover:underline">free text summarizer</Link> is designed to be fast, accurate, and respect your privacy. No signups, no payments, just results.
+            </p>
+          </div>
+        </div>
+
         {/* Content Section: How to Use */}
-        <section className="space-y-6">
+        <section className="space-y-6 pt-8">
           <div className="flex items-center gap-3">
             <CheckCircle2 className="w-6 h-6 text-primary" />
             <h2 className="text-2xl font-bold text-slate-900 dark:text-foreground">How to Summarize Text Online Free</h2>
           </div>
           <Card className="bg-white dark:bg-card border-border">
             <CardContent className="p-6 md:p-8">
-              <ol className="grid grid-cols-1 md:grid-cols-2 gap-6 list-none p-0">
-                {[
-                  "Paste your article or text in the box above",
-                  "Choose your summary length (Short, Medium, or Detailed)",
-                  "Click the Summarize button to process instantly",
-                  "Copy or download your summary for your work"
-                ].map((step, i) => (
-                  <li key={i} className="flex gap-4 items-start">
-                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
-                      {i + 1}
-                    </span>
-                    <p className="text-slate-600 dark:text-muted-foreground pt-1">{step}</p>
-                  </li>
-                ))}
-              </ol>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="space-y-6">
+                  <p className="text-slate-600 dark:text-muted-foreground leading-relaxed">
+                    Our <strong>online summarizing tool</strong> is built for speed and simplicity. Whether you need to <strong>summarize paragraph free</strong> for a quick check or use an <strong>article summarizer free</strong> for long research papers, our tool delivers consistent quality.
+                  </p>
+                  <ol className="space-y-4 list-none p-0">
+                    {[
+                      "Paste your article or text in the box above to use our free text summarizer.",
+                      "Choose your summary length (Short, Medium, or Detailed) to summarize text online free.",
+                      "Click the Summarize button to process your document instantly.",
+                      "Copy or download your summary for your academic or professional work."
+                    ].map((step, i) => (
+                      <li key={i} className="flex gap-4 items-start">
+                        <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
+                          {i + 1}
+                        </span>
+                        <p className="text-slate-600 dark:text-muted-foreground pt-1">{step}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+                <div className="relative aspect-[4/3] md:aspect-square rounded-2xl overflow-hidden border border-border bg-slate-50 dark:bg-slate-900 group">
+                   <Image 
+                    src="https://picsum.photos/seed/summarize/800/800" 
+                    alt="free text summarizer tool online" 
+                    fill 
+                    className="object-cover opacity-40 group-hover:opacity-60 transition-opacity"
+                    data-ai-hint="summarization tool"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="p-6 bg-white/80 dark:bg-black/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20">
+                      <BookOpen className="w-12 h-12 text-primary" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </section>
@@ -210,6 +252,15 @@ export default function TextSummarizerPage() {
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
                     You can summarize articles, essays, research papers, blog posts, news articles, books chapters, emails, and any other text.
+                  </AccordionContent>
+                </AccordionItem>
+                <Separator className="mx-6" />
+                <AccordionItem value="item-wiki" className="px-6 border-b-0">
+                  <AccordionTrigger className="text-left font-semibold text-slate-900 dark:text-foreground hover:no-underline">
+                    Where can I learn more about how AI summarization works?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
+                    Our tool uses advanced algorithms to extract key information. <a href="https://en.wikipedia.org/wiki/Automatic_summarization" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-bold">Learn more about text summarization on Wikipedia</a> to understand the science behind automatic content condensation.
                   </AccordionContent>
                 </AccordionItem>
                 <Separator className="mx-6" />
