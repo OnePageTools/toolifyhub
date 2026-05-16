@@ -184,6 +184,14 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    name: 'Roman Numerals',
+    description: 'Convert numbers to Roman numerals and back instantly for free',
+    href: '/tools/roman-numerals-converter',
+    icon: Hash,
+    category: 'Education',
+    implemented: true,
+  },
+  {
     name: 'CGPA Calculator',
     description: 'Calculate your GPA and CGPA by adding subjects and grades free',
     href: '/tools/cgpa-calculator',
