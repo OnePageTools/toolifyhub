@@ -19,6 +19,7 @@ import { Loader2, Wand2, RefreshCw, ArrowRight, CheckCircle, XCircle, Copy, Clip
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { sanitizeInput } from '@/lib/sanitize';
 
 const formSchema = z.object({
   text: z.string().min(10, { message: 'Please enter at least 10 characters to check.' }),
@@ -70,12 +71,15 @@ export function GrammarCheckerForm() {
     setError(null);
     setMatches([]);
     setShowResults(false);
-    setOriginalText(values.text);
-    setCorrectedText(values.text);
+    
+    // Sanitize input before sending to external API
+    const sanitizedText = values.text.trim();
+    setOriginalText(sanitizedText);
+    setCorrectedText(sanitizedText);
     
     try {
       const params = new URLSearchParams();
-      params.append('text', values.text);
+      params.append('text', sanitizedText);
       params.append('language', 'en-US');
 
       const response = await fetch('https://api.languagetool.org/v2/check', {
@@ -231,7 +235,7 @@ export function GrammarCheckerForm() {
                     <h3 className="text-lg font-semibold">Suggestions</h3>
                     {matches.map((match, index) => (
                         <Card key={`${match.offset}-${index}`} className="p-4 bg-secondary/30">
-                           <p className="text-sm text-muted-foreground mb-2">{match.message}</p>
+                           <p className="text-sm text-muted-foreground mb-2">{sanitizeInput(match.message)}</p>
                            <div className="flex flex-wrap items-center gap-2 text-sm bg-background p-2 rounded-md">
                                <span className="text-red-500 line-through bg-red-500/10 px-1 rounded">
                                    {match.context.text.substring(match.context.offset, match.context.offset + match.length)}

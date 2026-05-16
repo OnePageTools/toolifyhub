@@ -1,4 +1,6 @@
+
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit } from '@/lib/rateLimit';
 
 /**
  * @fileOverview API Route to fetch and parse YouTube transcripts using RapidAPI.
@@ -6,10 +8,24 @@ import { NextRequest, NextResponse } from 'next/server';
  */
 
 export async function GET(request: NextRequest) {
+  // Apply Rate Limiting
+  if (!rateLimit(request, 10, 60000)) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please wait a minute.' },
+      { status: 429 }
+    );
+  }
+
   const videoId = request.nextUrl.searchParams.get('videoId');
 
   if (!videoId || videoId.length !== 11) {
     return NextResponse.json({ error: 'Valid Video ID is required' }, { status: 400 });
+  }
+
+  const apiKey = process.env.RAPIDAPI_KEY;
+
+  if (!apiKey) {
+    return NextResponse.json({ error: 'API key configuration missing' }, { status: 500 });
   }
 
   try {
@@ -19,7 +35,7 @@ export async function GET(request: NextRequest) {
         method: 'GET',
         headers: {
           'x-rapidapi-host': 'youtube-transcriptor.p.rapidapi.com',
-          'x-rapidapi-key': '9913b167dfmsh2eec0ca41008052p12f7cdjsn0ec96fd3bfde'
+          'x-rapidapi-key': apiKey
         }
       }
     );

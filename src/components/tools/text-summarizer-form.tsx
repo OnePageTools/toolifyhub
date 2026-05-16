@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,6 +19,7 @@ import { Loader2, Zap, RefreshCw, Clipboard, ClipboardCheck, AlignLeft, AlignCen
 import { ScrollArea } from '../ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { sanitizeInput } from '@/lib/sanitize';
 
 const formSchema = z.object({
   text: z.string().min(100, { message: 'Please enter at least 100 characters to summarize.' }),
