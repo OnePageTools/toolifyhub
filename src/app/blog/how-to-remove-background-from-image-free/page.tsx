@@ -1,3 +1,4 @@
+
 import { PostLayout } from "@/components/blog/post-layout";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
 
 export default function BlogPost() {
   return (
-    <PostLayout title={post.title} author={post.author} date="April 18, 2026" readingTime={post.readingTime}>
+    <PostLayout title={post.title} author="ToolifyHub Team" date="April 18, 2026" readingTime={post.readingTime}>
       <p>
         I had a perfect professional photo for my LinkedIn last month. But there was one problem: my messy, unmade bed was right in the <Link href="/tools/background-remover">background</Link>. 
       </p>
@@ -44,7 +45,7 @@ export default function BlogPost() {
         Most people think you need expensive Photoshop skills to fix this. They spend hours trying to "mask" around their hair. It usually looks jagged and weird. 
       </p>
       <p>
-        Why waste your time on manual editing? In my experience, a <Link href="/tools/background-remover">free background remover</Link> using AI is much more accurate. 
+        Why waste your time on manual editing? In my experience, a <Link href="/tools/background-remover">free background remover</Link> using AI is much more accurate. Many creators also use an <Link href="/tools/image-compressor">Image Compressor</Link> afterwards to ensure their profile shots load instantly on slow networks.
       </p>
 
       <h2>The mistake most people make</h2>
@@ -58,16 +59,17 @@ export default function BlogPost() {
       </p>
       <p><strong>How to get a clean cutout:</strong></p>
       <ol>
-        <li>Upload your photo.</li>
+        <li>Upload your photo to our <Link href="/tools/background-remover">Background Remover</Link>.</li>
         <li>Wait about 5 seconds.</li>
         <li>Review the preview.</li>
         <li>Download your transparent PNG.</li>
       </ol>
 
       <div className="my-6 p-4 border-l-4 border-primary bg-secondary/50 rounded-r-lg">
-          <Button asChild>
-            <Link href="/tools/background-remover">Remove Background Now</Link>
-          </Button>
+          <p className="font-bold mb-2">Pro Tip for Travel Docs:</p>
+          <p className="text-sm">
+            If you need a biometric-ready photo for a visa, use our <Link href="/tools/passport-photo-maker">Passport Photo Maker</Link>. It uses the same background removal tech to ensure your photo meets government standards!
+          </p>
       </div>
 
       <h2>A surprising fact</h2>

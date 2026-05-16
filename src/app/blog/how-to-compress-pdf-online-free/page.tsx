@@ -1,3 +1,4 @@
+
 import { PostLayout } from "@/components/blog/post-layout";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -44,7 +45,7 @@ export default function BlogPost() {
         Big files aren't just an email problem. They eat your cloud storage and slow down your website. Most people fail because they don't know how to shrink them properly. 
       </p>
       <p>
-        Why buy more Google Drive space? In my experience, a <Link href="/tools/pdf-compressor">free pdf compressor</Link> is a much cheaper solution. 
+        Why buy more Google Drive space? In my experience, a <Link href="/tools/pdf-compressor">free pdf compressor</Link> is a much cheaper solution. Many users start by <Link href="/tools/word-to-pdf">converting Word to PDF</Link> and then immediately shrinking the result for email.
       </p>
 
       <h2>The mistake most people make</h2>

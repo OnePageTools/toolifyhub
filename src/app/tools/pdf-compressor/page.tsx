@@ -3,10 +3,11 @@
 
 import dynamic from 'next/dynamic';
 import { Card, CardContent } from '@/components/ui/card';
-import { FileArchive, Loader2, CheckCircle2, HelpCircle } from 'lucide-react';
+import { FileArchive, Loader2, CheckCircle2, HelpCircle, ArrowRight } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import Link from 'next/link';
 
 const PdfCompressorForm = dynamic(
   () => import('@/components/tools/pdf-compressor-form').then(mod => mod.PdfCompressorForm),
@@ -88,9 +89,18 @@ export default function PdfCompressorPage() {
         }}
       />
       <div className="max-w-[900px] mx-auto space-y-12">
+        <div className="flex flex-wrap gap-3 items-center text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 px-4 md:px-0">
+          <span className="flex items-center gap-1.5"><ArrowRight className="w-3 h-3 text-primary" /> You might also need:</span>
+          <Link href="/tools/word-to-pdf" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">Word to PDF</Link>
+          <span className="opacity-30">|</span>
+          <Link href="/tools/image-compressor" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">Image Compressor</Link>
+          <span className="opacity-30">|</span>
+          <Link href="/tools/pdf-to-word" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">PDF to Word</Link>
+        </div>
+
         <ToolHeader 
           title="PDF Compressor"
-          description="Reduce the file size of your PDF documents while maintaining the best possible quality."
+          description="Reduce the file size of your PDF documents while maintaining the best possible quality. If you need to convert a Word document first, use our Word to PDF tool before compressing."
           icon={<FileArchive />}
           category="PDF"
         />

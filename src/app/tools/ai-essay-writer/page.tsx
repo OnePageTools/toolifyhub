@@ -1,31 +1,40 @@
+
 'use client';
 
 import { EssayWriterForm } from '@/components/tools/essay-writer-form';
 import { Card, CardContent } from '@/components/ui/card';
-import { PenTool } from 'lucide-react';
+import { PenTool, ArrowRight } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/tool-header';
+import { RelatedTools } from '@/components/tools/related-tools';
+import Link from 'next/link';
 
 export default function AIEssayWriterPage() {
   return (
-    <div className="container mx-auto py-12 px-4 page-transition">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <header className="flex flex-col items-center text-center space-y-4 mb-8">
-          <div className="w-[60px] h-[60px] rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-xl text-white">
-            <PenTool className="w-8 h-8" />
-          </div>
-          <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-black text-foreground">Essay Draft Generator</h1>
-            <div className="w-[60px] h-[3px] bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto" />
-          </div>
-          <p className="text-muted-foreground text-lg max-w-xl">
-            Instantly generate a structured essay draft from a template by entering your topic.
-          </p>
-        </header>
+    <div className="container mx-auto py-8 md:py-16 px-0 md:px-4 tool-page-fade">
+      <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
+        <div className="flex flex-wrap gap-3 items-center text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 px-4 md:px-0">
+          <span className="flex items-center gap-1.5"><ArrowRight className="w-3 h-3 text-primary" /> You might also need:</span>
+          <Link href="/tools/grammar-checker" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">Grammar Checker</Link>
+          <span className="opacity-30">|</span>
+          <Link href="/tools/text-summarizer" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">Text Summarizer</Link>
+          <span className="opacity-30">|</span>
+          <Link href="/tools/word-counter" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">Word Counter</Link>
+        </div>
 
-        <Card className="border-border/50">
-          <CardContent className="p-8 md:p-12">
+        <ToolHeader 
+          title="AI Essay Writer"
+          description="Instantly generate structured essay drafts and creative content. For a polished final version, remember to run your draft through our Grammar Checker."
+          icon={<PenTool />}
+          category="Text"
+        />
+
+        <Card className="border-white/[0.08] bg-white/[0.02] md:bg-white/[0.03] rounded-none md:rounded-[24px] border-x-0 md:border-x">
+          <CardContent className="p-5 md:p-12">
             <EssayWriterForm />
           </CardContent>
         </Card>
+
+        <RelatedTools currentToolHref="/tools/ai-essay-writer" />
       </div>
     </div>
   );
