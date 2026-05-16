@@ -206,15 +206,15 @@ export function ElectricityBillCalculatorForm() {
               </div>
 
               <Card className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-blue-500/30 overflow-hidden">
-                <CardContent className="p-8 text-center space-y-2">
-                  <h3 className="text-sm font-black uppercase tracking-[0.2em] text-blue-400">Total Estimated Bill</h3>
-                  <div className="flex items-center justify-center gap-3">
-                    <span className="text-3xl font-bold text-slate-500">{results.currency}</span>
-                    <span className="text-7xl font-black text-blue-500 tracking-tighter tabular-nums">
+                <CardContent className="p-6 md:p-8 text-center space-y-2">
+                  <h3 className="text-xs md:text-sm font-black uppercase tracking-[0.2em] text-blue-400">Total Estimated Bill</h3>
+                  <div className="flex items-baseline justify-center gap-2 md:gap-3 flex-wrap px-4">
+                    <span className="text-xl md:text-3xl font-bold text-slate-500 shrink-0">{results.currency}</span>
+                    <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-blue-500 tracking-tighter tabular-nums leading-none">
                       {results.total.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 pt-2 font-medium">Estimated for 2026 tariff cycle</p>
+                  <p className="text-[10px] md:text-xs text-slate-400 pt-2 font-medium">Estimated for 2026 tariff cycle</p>
                 </CardContent>
               </Card>
 
