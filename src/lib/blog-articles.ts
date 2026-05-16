@@ -11,16 +11,6 @@ export type Article = {
 
 export const articles: Article[] = [
     {
-        title: 'How to Get YouTube Video Transcript Free Online — Complete Guide 2026',
-        description: 'Need the text from a video? Our free YouTube transcript generator lets you extract and download captions instantly. Perfect for notes and research.',
-        href: '/blog/youtube-transcript-free-online',
-        author: 'ToolifyHub Team',
-        date: 'May 21, 2026',
-        readingTime: '6 min read',
-        category: 'Social Media',
-        image: 'https://picsum.photos/seed/yttranscript/800/400',
-    },
-    {
         title: 'YouTube Thumbnail Downloader Free — Download HD Thumbnails Instantly (2026)',
         description: 'Need to grab a YouTube thumbnail? Our free tool lets you download HD thumbnails instantly. Learn why thumbnails matter for SEO and engagement.',
         href: '/blog/youtube-thumbnail-downloader-free',
