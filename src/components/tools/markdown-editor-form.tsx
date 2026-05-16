@@ -31,6 +31,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { marked } from 'marked';
 import { cn } from '@/lib/utils';
+import DOMPurify from 'dompurify';
 
 const SAMPLE_MARKDOWN = `# Welcome to ToolifyHub Markdown Editor!
 
@@ -62,15 +63,13 @@ export function MarkdownEditorForm() {
   const [markdown, setMarkdown] = useState(SAMPLE_MARKDOWN);
   const [activeTab, setActiveTab] = useState('write');
   const [isCopied, setIsCopied] = useState<'md' | 'html' | null>(null);
-  const [DOMPurify, setDOMPurify] = useState<any>(null);
+  const [isMounted, setIsMounted] = useState(false);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Only initialize on the client
-    const createDOMPurify = require('dompurify');
-    setDOMPurify(createDOMPurify(window));
+    setIsMounted(true);
   }, []);
 
   const wordCount = useMemo(() => {
@@ -79,11 +78,11 @@ export function MarkdownEditorForm() {
 
   const htmlOutput = useMemo(() => {
     const rawHtml = marked.parse(markdown) as string;
-    if (DOMPurify) {
+    if (isMounted && typeof window !== 'undefined') {
       return DOMPurify.sanitize(rawHtml);
     }
-    return rawHtml; // Fallback until DOMPurify is ready
-  }, [markdown, DOMPurify]);
+    return rawHtml; // Fallback until component is mounted
+  }, [markdown, isMounted]);
 
   const insertText = useCallback((before: string, after: string = '') => {
     const textarea = textareaRef.current;
