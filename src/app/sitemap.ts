@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next'
 import { tools } from '@/lib/tools';
 
 const articles = [
+    { href: '/blog/percentage-calculator-online-free' },
     { href: '/blog/binary-converter-online-free' },
     { href: '/blog/roman-numerals-converter-free-online' },
     { href: '/blog/best-free-online-tools-for-students-2026' },

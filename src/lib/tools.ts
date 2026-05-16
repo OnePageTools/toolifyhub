@@ -58,6 +58,7 @@ import {
   BadgePercent,
   ReceiptText,
   Binary,
+  Percent,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design' | 'Fun' | 'Social Media' | 'Education';
@@ -293,6 +294,14 @@ export const tools: Tool[] = [
     description: 'Calculate sale price and savings with any discount percentage free',
     href: '/tools/discount-calculator',
     icon: BadgePercent,
+    category: 'Finance',
+    implemented: true,
+  },
+  {
+    name: 'Percentage Calculator',
+    description: 'Calculate percentages, find percent of number and percentage change instantly free',
+    href: '/tools/percentage-calculator',
+    icon: Percent,
     category: 'Finance',
     implemented: true,
   },

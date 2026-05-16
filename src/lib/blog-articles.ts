@@ -11,6 +11,16 @@ export type Article = {
 
 export const articles: Article[] = [
     {
+        title: 'Percentage Calculator Online Free — Calculate Any Percentage Instantly 2026',
+        description: 'Percentages follow us everywhere. Your phone battery, exam marks, sale discounts, bank interest. Learn how to calculate them instantly with our 2026 guide.',
+        href: '/blog/percentage-calculator-online-free',
+        author: 'ToolifyHub Team',
+        date: 'May 31, 2026',
+        readingTime: '9 min read',
+        category: 'Finance',
+        image: 'https://picsum.photos/seed/percent/800/400',
+    },
+    {
         title: 'Binary Converter Online Free — Convert Binary Decimal Hex Octal 2026',
         description: 'Your computer is secretly speaking a different language. Learn how to convert binary to decimal, hex, and more with our 2026 guide.',
         href: '/blog/binary-converter-online-free',
