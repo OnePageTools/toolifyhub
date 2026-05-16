@@ -11,6 +11,16 @@ export type Article = {
 
 export const articles: Article[] = [
     {
+        title: 'How to Calculate CGPA Online Free — Complete Guide for Students 2026',
+        description: 'Struggling with GPA math? Learn exactly how to calculate your semester GPA and cumulative CGPA with our step-by-step student guide.',
+        href: '/blog/cgpa-calculator-online-free',
+        author: 'ToolifyHub Team',
+        date: 'May 22, 2026',
+        readingTime: '9 min read',
+        category: 'Education',
+        image: 'https://picsum.photos/seed/cgpa/800/400',
+    },
+    {
         title: 'How to Calculate Electricity Bill Online Free — Pakistan, India, USA Guide 2026',
         description: 'Understand how your electricity bill is calculated. A detailed guide on units, tariffs, and taxes for WAPDA and global users.',
         href: '/blog/electricity-bill-calculator-online-free',

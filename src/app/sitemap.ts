@@ -26,6 +26,7 @@ const articles = [
     { href: '/blog/free-pomodoro-timer-online' },
     { href: '/blog/youtube-thumbnail-downloader-free' },
     { href: '/blog/electricity-bill-calculator-online-free' },
+    { href: '/blog/cgpa-calculator-online-free' },
 ];
  
 export default function sitemap(): MetadataRoute.Sitemap {

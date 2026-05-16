@@ -54,9 +54,10 @@ import {
   Video,
   Rocket,
   Zap,
+  GraduationCap,
 } from 'lucide-react';
 
-export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design' | 'Fun' | 'Social Media';
+export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design' | 'Fun' | 'Social Media' | 'Education';
 
 export type Tool = {
   name: string;
@@ -178,6 +179,14 @@ export const tools: Tool[] = [
     href: '/tools/text-summarizer',
     icon: BookOpen,
     category: 'Text',
+    implemented: true,
+  },
+  {
+    name: 'CGPA Calculator',
+    description: 'Calculate your GPA and CGPA by adding subjects and grades free',
+    href: '/tools/cgpa-calculator',
+    icon: GraduationCap,
+    category: 'Education',
     implemented: true,
   },
   {
