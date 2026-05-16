@@ -4,50 +4,6 @@
 
 @layer base {
   :root {
-    --background: 226 100% 97%; /* #F0F4FF */
-    --foreground: 222 47% 11%; /* #0F172A */
-
-    --card: 0 0% 100%; /* #FFFFFF */
-    --card-foreground: 222 47% 11%; /* #0F172A */
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-
-    --primary: 216 100% 52%; /* #3B82F6 */
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%; /* #F1F5F9 */
-    --secondary-foreground: 215 25% 27%; /* #374151 */
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215 16% 47%; /* #64748B */
-
-    --accent: 216 100% 52%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214 32% 91%; /* #E2E8F0 */
-    --input: 214 32% 91%;
-    --ring: 216 100% 52%;
-    --radius: 0.75rem;
-
-    /* User requested light mode variables */
-    --card-bg: #FFFFFF;
-    --card-border: #E2E8F0;
-    --card-shadow: 0 2px 16px rgba(0,0,0,0.06);
-    --input-bg: #F8FAFC;
-    --input-border: #CBD5E1;
-    --input-text: #0F172A;
-    --label-text: #374151;
-    --muted-text: #64748B;
-    --page-bg: #F0F4FF;
-    --output-bg: #F1F5F9;
-    --output-border: #E2E8F0;
-  }
-
-  .dark {
     --background: 222 47% 6%; /* #0A0F1E approx */
     --foreground: 210 40% 98%; /* #F1F5F9 */
 
@@ -75,8 +31,9 @@
     --border: 215 28% 22%;
     --input: 215 28% 22%;
     --ring: 216 100% 52%;
+    --radius: 0.75rem;
 
-    /* User requested dark mode variables */
+    /* Global variables forced to dark mode */
     --card-bg: #1E293B;
     --card-border: rgba(255,255,255,0.08);
     --card-shadow: none;
@@ -97,38 +54,21 @@
   }
   body {
     background-color: var(--page-bg);
-    color: #374151; /* Default paragraph text */
-    @apply font-body antialiased transition-colors duration-300;
+    color: var(--foreground);
+    @apply font-body antialiased;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    color: #0F172A;
+    color: var(--foreground);
     @apply font-headline;
   }
 
   p {
-    color: #374151;
+    @apply text-muted-foreground;
   }
 
   a {
-    color: #3B82F6;
-  }
-
-  .dark body {
-    background-color: var(--page-bg);
-    color: var(--foreground);
-  }
-
-  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
-    color: var(--foreground);
-  }
-  
-  .dark p {
-    color: var(--muted-foreground);
-  }
-
-  .dark a {
-    color: var(--primary);
+    @apply text-primary;
   }
 }
 
@@ -178,5 +118,5 @@
 
 /* Blog Link Styling */
 .blog-content a {
-  @apply text-blue-600 dark:text-blue-400 font-semibold hover:underline;
+  @apply text-blue-400 font-semibold hover:underline;
 }
