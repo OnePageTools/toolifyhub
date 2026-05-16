@@ -135,11 +135,18 @@ export function CgpaCalculatorForm() {
     };
 
     const getClassification = (score: number) => {
-        const threshold = system === '4.0' ? 1.0 : 2.5;
-        if (score >= (system === '4.0' ? 3.7 : 9.0)) return { label: "Distinction 🏆", color: "text-blue-400 bg-blue-500/10 border-blue-500/30" };
-        if (score >= (system === '4.0' ? 3.3 : 8.0)) return { label: "First Division ⭐", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30" };
-        if (score >= (system === '4.0' ? 2.7 : 7.0)) return { label: "Second Division ✅", color: "text-yellow-400 bg-yellow-500/10 border-yellow-500/30" };
-        if (score >= (system === '4.0' ? 2.0 : 5.0)) return { label: "Pass 📚", color: "text-slate-400 bg-slate-500/10 border-slate-500/30" };
+        if (system === '4.0') {
+            if (score >= 3.7) return { label: "Distinction 🏆", color: "text-blue-400 bg-blue-500/10 border-blue-500/30" };
+            if (score >= 3.3) return { label: "First Division ⭐", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30" };
+            if (score >= 2.7) return { label: "Second Division ✅", color: "text-yellow-400 bg-yellow-500/10 border-yellow-500/30" };
+            if (score >= 2.0) return { label: "Pass 📚", color: "text-slate-400 bg-slate-500/10 border-slate-500/30" };
+        } else {
+            // 10.0 scale logic
+            if (score >= 8.5) return { label: "Distinction 🏆", color: "text-blue-400 bg-blue-500/10 border-blue-500/30" };
+            if (score >= 7.0) return { label: "First Division ⭐", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30" };
+            if (score >= 5.5) return { label: "Second Division ✅", color: "text-yellow-400 bg-yellow-500/10 border-yellow-500/30" };
+            if (score >= 4.0) return { label: "Pass 📚", color: "text-slate-400 bg-slate-500/10 border-slate-500/30" };
+        }
         return { label: "At Risk ⚠️", color: "text-red-400 bg-red-500/10 border-red-500/30" };
     };
 
