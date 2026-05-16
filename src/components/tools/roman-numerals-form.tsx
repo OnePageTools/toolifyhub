@@ -16,7 +16,8 @@ import {
   Hash,
   Type,
   BookOpen,
-  Info
+  Info,
+  Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -276,7 +277,7 @@ export function RomanNumeralsForm() {
 
                 {/* 3. REFERENCE TABLE (Right) */}
                 <div className="lg:col-span-5 space-y-6">
-                    <Card className="bg-slate-900 border-slate-800 shadow-2xl overflow-hidden">
+                    <Card className="bg-slate-900 border-slate-700 shadow-2xl overflow-hidden">
                         <div className="p-6 bg-gradient-to-br from-blue-600/10 to-purple-600/10 border-b border-slate-800">
                              <div className="flex items-center gap-2 text-blue-400 font-black text-xs uppercase tracking-widest">
                                 <BookOpen className="w-4 h-4" /> Symbols Reference
