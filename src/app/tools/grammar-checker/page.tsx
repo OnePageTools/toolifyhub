@@ -1,10 +1,10 @@
-
 import { GrammarCheckerForm } from '@/components/tools/grammar-checker-form';
 import { Card, CardContent } from '@/components/ui/card';
-import { SpellCheck } from 'lucide-react';
+import { SpellCheck, ArrowRight } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 const tool = {
   name: 'Grammar Checker',
@@ -57,9 +57,18 @@ export default function GrammarCheckerPage() {
         }}
       />
       <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
+        <div className="flex flex-wrap gap-3 items-center text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 px-4 md:px-0">
+          <span className="flex items-center gap-1.5"><ArrowRight className="w-3 h-3 text-primary" /> You might also need:</span>
+          <Link href="/tools/text-summarizer" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">Text Summarizer</Link>
+          <span className="opacity-30">|</span>
+          <Link href="/tools/resume-builder" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">Resume Builder</Link>
+          <span className="opacity-30">|</span>
+          <Link href="/tools/plagiarism-checker" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">Plagiarism Checker</Link>
+        </div>
+
         <ToolHeader 
           title="Grammar & Spell Checker"
-          description="Paste your text below to get instant feedback on grammar, spelling, and punctuation."
+          description="Fix errors instantly and write like a pro. After polishing your text, use our Text Summarizer for a quick overview or our Resume Builder to apply your new writing skills to your career."
           icon={<SpellCheck className="w-6 h-6 md:w-8 md:h-8" />}
           category="Text"
         />

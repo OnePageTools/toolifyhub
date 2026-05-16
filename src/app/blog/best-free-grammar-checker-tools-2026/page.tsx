@@ -35,13 +35,13 @@ export default function BlogPost() {
         I tested this myself and found that most "premium" tools just want your credit card. They block the best features behind a paywall. It's annoying and unnecessary.
       </p>
       <p>
-        The mistake most people make is trusting their eyes too much. Your brain sees what it *wants* to see, not what's actually on the screen.
+        The mistake most people make is trusting their eyes too much. Your brain sees what it *wants* to see, not what's actually on the screen. A better approach is to use a <Link href="/tools/text-summarizer">Text Summarizer</Link> to check if your main points are clear before running a grammar check.
       </p>
 
       <div className="my-6 p-4 border-l-4 border-primary bg-secondary/50 rounded-r-lg">
           <p className="font-bold mb-2">How to use our tool:</p>
           <ol>
-            <li>Paste your text into the box.</li>
+            <li>Paste your text into the <Link href="/tools/grammar-checker">Grammar Checker</Link> box.</li>
             <li>Click "Check Grammar" to find issues.</li>
             <li>Review suggestions and click to fix them.</li>
             <li>Copy your clean, professional text!</li>
@@ -50,7 +50,7 @@ export default function BlogPost() {
 
       <h2>What surprised me most</h2>
       <p>
-        Here's what most people get wrong: they think grammar checkers are only for students. Honestly, even professional writers <Link href="/tools/grammar-checker">use our free grammar checker</Link> daily to stay sharp.
+        Here's what most people get wrong: they think grammar checkers are only for students. Honestly, even professional writers <Link href="/tools/grammar-checker">use our free grammar checker</Link> daily to stay sharp. Many also use our <Link href="/tools/resume-builder">Resume Builder</Link> to ensure their career documents are perfectly polished.
       </p>
       <p>
         Don't let a tiny slip cost you a big opportunity. Give your draft a quick audit before you hit send. It takes 10 seconds but saves your reputation.

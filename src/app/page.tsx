@@ -171,7 +171,7 @@ export default function Home() {
           </h1>
           
           <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            50+ powerful free tools at your fingertips. No registration. No limits. Just results.
+            Over 50 powerful free tools at your fingertips. From our professional <Link href="/tools/pdf-compressor" className="text-primary hover:underline font-bold">PDF Compressor</Link> to AI-powered writing utilities, we've got you covered.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">

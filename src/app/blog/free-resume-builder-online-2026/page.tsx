@@ -1,4 +1,3 @@
-
 import { PostLayout } from "@/components/blog/post-layout";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -50,7 +49,7 @@ export default function BlogPost() {
 
       <h2>The mistake most people make</h2>
       <p>
-        The biggest mistake is including a "Hobbies" section that's longer than your actual work experience. Unless your hobby is relevant to the job, keep it brief!
+        The biggest mistake is including a "Hobbies" section that's longer than your actual work experience. Unless your hobby is relevant to the job, keep it brief! Also, don't forget to run your draft through a <Link href="/tools/grammar-checker">Grammar Checker</Link> to catch those embarrassing typos.
       </p>
 
       <h2>Let me show you something cool</h2>
@@ -73,13 +72,13 @@ export default function BlogPost() {
 
       <h2>A surprising fact</h2>
       <p>
-        Did you know that 75% of resumes are rejected before they even reach a human? Modern companies use software to scan your CV first. Our templates are built to pass these scans.
+        Did you know that 75% of resumes are rejected before they even reach a human? Modern companies use software (ATS) to scan your CV first. Our templates are built to pass these scans.
       </p>
       <p>
         I tested this myself by applying to a few roles with my old resume and then with our new builder. The difference in response rate was massive. 
       </p>
       <p>
-        Stop guessing. Give yourself the best chance to land that dream job. Build your resume today and start getting the calls you deserve.
+        Stop guessing. Give yourself the best chance to land that dream job. Build your resume today and start getting the calls you deserve. If you need a professional headshot, don't forget our <Link href="/tools/passport-photo-maker">Passport Photo Maker</Link> for biometric-ready results.
       </p>
     </PostLayout>
   );

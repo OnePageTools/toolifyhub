@@ -1,10 +1,10 @@
-
 import { ImageCompressorForm } from '@/components/tools/image-compressor-form';
 import { Card, CardContent } from '@/components/ui/card';
-import { ImageIcon } from 'lucide-react';
+import { ImageIcon, ArrowRight } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 const tool = {
   name: 'Image Compressor',
@@ -57,9 +57,18 @@ export default function ImageCompressorPage() {
         }}
       />
       <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
+        <div className="flex flex-wrap gap-3 items-center text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 px-4 md:px-0">
+          <span className="flex items-center gap-1.5"><ArrowRight className="w-3 h-3 text-primary" /> You might also need:</span>
+          <Link href="/tools/background-remover" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">Background Remover</Link>
+          <span className="opacity-30">|</span>
+          <Link href="/tools/image-resizer" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">Image Resizer</Link>
+          <span className="opacity-30">|</span>
+          <Link href="/tools/youtube-thumbnail-downloader" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">YouTube Thumbnail Downloader</Link>
+        </div>
+
         <ToolHeader 
           title="Image Compressor"
-          description="Compress, resize, and convert multiple images (JPG, PNG, WEBP) at once without quality loss."
+          description="Compress JPG, PNG, and WEBP files without losing quality. Need a transparent background? Try our AI-powered Background Remover for professional cutouts."
           icon={<ImageIcon className="w-6 h-6 md:w-8 md:h-8" />}
           category="Image"
         />

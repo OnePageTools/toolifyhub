@@ -56,13 +56,15 @@ export default function BlogPost() {
       <p>
         Our tool uses "lossless" compression for text. That means your words stay sharp while the file size drops. 
       </p>
-      <p><strong>How to shrink your files:</strong></p>
-      <ol>
-        <li>Upload your bulky PDF.</li>
-        <li>Choose your compression level (Standard is best for most).</li>
-        <li>Click "Compress PDF."</li>
-        <li>Save your new, lighter file.</li>
-      </ol>
+      <div className="my-8 p-6 bg-blue-500/5 border border-blue-500/20 rounded-2xl">
+        <p className="font-bold text-blue-400 mb-2">Step-by-step to a smaller PDF:</p>
+        <ol className="space-y-2 text-sm">
+          <li>Upload your bulky PDF to our <Link href="/tools/pdf-compressor">Online PDF Compressor</Link>.</li>
+          <li>Choose your compression level (Standard is best for most).</li>
+          <li>Click "Compress PDF" and wait for our AI to optimize the structure.</li>
+          <li>Save your new, lighter file and send it anywhere!</li>
+        </ol>
+      </div>
 
       <div className="my-6 p-4 border-l-4 border-primary bg-secondary/50 rounded-r-lg">
           <Button asChild>

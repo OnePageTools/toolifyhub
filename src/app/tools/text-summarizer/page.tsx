@@ -1,12 +1,12 @@
-
 import { TextSummarizerForm } from '@/components/tools/text-summarizer-form';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, HelpCircle, CheckCircle2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { BookOpen, HelpCircle, CheckCircle2, ArrowRight } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/tool-header';
 import { RelatedTools } from '@/components/tools/related-tools';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 const tool = {
   name: 'Text Summarizer',
@@ -118,10 +118,19 @@ export default function TextSummarizerPage() {
           })
         }}
       />
-      <div className="max-w-[900px] mx-auto space-y-12">
+      <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
+        <div className="flex flex-wrap gap-3 items-center text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 px-4 md:px-0">
+          <span className="flex items-center gap-1.5"><ArrowRight className="w-3 h-3 text-primary" /> You might also need:</span>
+          <Link href="/tools/grammar-checker" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">Grammar Checker</Link>
+          <span className="opacity-30">|</span>
+          <Link href="/tools/word-counter" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">Word Counter</Link>
+          <span className="opacity-30">|</span>
+          <Link href="/tools/ai-essay-writer" className="text-blue-400 hover:text-white transition-colors underline decoration-blue-400/30 underline-offset-4">AI Essay Writer</Link>
+        </div>
+
         <ToolHeader 
           title="Text Summarizer"
-          description="Quickly summarize long articles, documents, or any text into concise and easy-to-read points."
+          description="Condense long articles into concise points. After summarizing, use our Grammar Checker to ensure your key takeaways are written perfectly."
           icon={<BookOpen className="w-6 h-6 md:w-8 md:h-8" />}
           category="Text"
         />
