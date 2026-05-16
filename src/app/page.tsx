@@ -171,7 +171,7 @@ export default function Home() {
         {/* Hero Section */}
         <div className="container mx-auto px-6 py-20 text-center relative">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-secondary border border-border text-sm font-semibold text-blue-500 mb-8 shadow-sm">
-            <Sparkles className="w-4 h-4" /> 35+ Free Tools — No Signup Required
+            <Sparkles className="w-4 h-4" /> 50+ Free Tools — No Signup Required
           </div>
           
           <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-6 text-[#0F172A] dark:text-foreground">
@@ -182,7 +182,7 @@ export default function Home() {
           </h1>
           
           <p className="text-slate-600 dark:text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            35+ powerful free tools at your fingertips. No registration. No limits. Just results.
+            50+ powerful free tools at your fingertips. No registration. No limits. Just results.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
@@ -204,7 +204,7 @@ export default function Home() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6">
-            {["35+ Tools", "100% Free", "No Signup"].map((stat) => (
+            {["50+ Tools", "100% Free", "No Signup"].map((stat) => (
                 <div key={stat} className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.05] border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-widest shadow-sm">
                     <Check className="w-3.5 h-3.5" /> {stat}
                 </div>
@@ -216,7 +216,7 @@ export default function Home() {
         <div className="w-full bg-white dark:bg-secondary/30 border-y border-border py-12 mb-16">
             <div className="container mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
                 {[
-                    { label: "Free Tools", value: "35+" },
+                    { label: "Free Tools", value: "50+" },
                     { label: "Privacy Level", value: "100%" },
                     { label: "Registration Required", value: "0" },
                     { label: "Usage Limit", value: "∞" },
@@ -241,7 +241,7 @@ export default function Home() {
                         type="text"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search 35+ tools instantly..."
+                        placeholder="Search 50+ tools instantly..."
                         className="bg-transparent flex-1 outline-none text-lg placeholder:text-slate-400 text-[#0F172A] dark:text-foreground"
                     />
                     <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-secondary border border-border text-[10px] font-bold text-slate-500 dark:text-muted-foreground">
@@ -332,7 +332,7 @@ export default function Home() {
                         num: "01", 
                         icon: Search, 
                         title: "Choose Your Tool", 
-                        desc: "Browse our 35+ free tools or search for what you need instantly",
+                        desc: "Browse our 50+ free tools or search for what you need instantly",
                         color: "from-blue-600 to-cyan-500" 
                     },
                     { 
@@ -354,7 +354,7 @@ export default function Home() {
                         <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-[32px] p-8 h-full hover:bg-slate-50 dark:hover:bg-secondary/50 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-sm">
                             <span className="text-5xl font-black text-slate-100 dark:text-foreground/5 absolute top-6 right-8 select-none">{step.num}</span>
                             <div className={cn(
-                                "w-16 h-16 rounded-2xl bg-gradient-to-br flex items-center justify-center mb-6 shadow-xl",
+                                "w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mb-6 shadow-xl",
                                 step.color
                             )}>
                                 <step.icon className="w-8 h-8 text-white" />

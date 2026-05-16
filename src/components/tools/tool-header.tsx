@@ -21,7 +21,7 @@ export function ToolHeader({ title, description, icon, category }: ToolHeaderPro
       <nav className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-slate-500 dark:text-muted-foreground mb-2">
         <Link href="/" className="hover:text-primary transition-colors">Home</Link>
         <span className="text-slate-300 dark:text-slate-700 mx-1">></span>
-        <span className="text-slate-900 dark:text-foreground">{title}</span>
+        <span className="text-foreground">{title}</span>
       </nav>
 
       {/* Icon Container */}
@@ -31,7 +31,7 @@ export function ToolHeader({ title, description, icon, category }: ToolHeaderPro
 
       {/* Title Area */}
       <div className="space-y-2">
-        <h1 className="text-[28px] md:text-4xl font-black text-slate-900 dark:text-foreground tracking-tight leading-tight">{title}</h1>
+        <h1 className="text-[28px] md:text-4xl font-black text-foreground tracking-tight leading-tight">{title}</h1>
         <p className="text-slate-600 dark:text-muted-foreground text-[15px] md:text-base max-w-xl mx-auto leading-relaxed">
           {description}
         </p>

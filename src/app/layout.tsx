@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
@@ -12,8 +11,8 @@ import { SupportWidget } from '@/components/support-widget';
 const siteConfig = {
   name: 'ToolifyHub',
   url: 'https://onepagetools.vercel.app',
-  ogImage: 'https://placehold.co/1200x630/0F172A/FFFFFF?text=ToolifyHub+-+35+Free+Online+Tools',
-  description: 'Your ultimate suite of 20+ free, professional online tools. Featuring AI-powered utilities like PDF converters, image compressors, text summarizers, and a resume builder. No sign-up required, 100% free.',
+  ogImage: 'https://placehold.co/1200x630/0F172A/FFFFFF?text=ToolifyHub+-+50+Free+Online+Tools',
+  description: 'Your ultimate suite of 50+ free, professional online tools. Featuring AI-powered utilities like PDF converters, image compressors, text summarizers, and a resume builder. No sign-up required, 100% free.',
   title: 'ToolifyHub - Free All-in-One Tools for Productivity',
 };
 
@@ -127,7 +126,7 @@ export default function RootLayout({
               "@type": "WebSite",
               "name": "ToolifyHub",
               "url": "https://onepagetools.vercel.app",
-              "description": "35+ free online tools for productivity",
+              "description": "50+ free online tools for productivity",
               "potentialAction": {
                 "@type": "SearchAction",
                 "target": {
