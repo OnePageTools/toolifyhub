@@ -57,6 +57,7 @@ import {
   GraduationCap,
   BadgePercent,
   ReceiptText,
+  Binary,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design' | 'Fun' | 'Social Media' | 'Education';
@@ -133,6 +134,14 @@ export const tools: Tool[] = [
     href: '/tools/youtube-thumbnail-downloader',
     icon: Youtube,
     category: 'Social Media',
+    implemented: true,
+  },
+  {
+    name: 'Binary Converter',
+    description: 'Convert binary decimal hex and octal numbers instantly free',
+    href: '/tools/binary-converter',
+    icon: Binary,
+    category: 'Dev',
     implemented: true,
   },
   {

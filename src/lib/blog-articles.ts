@@ -11,6 +11,16 @@ export type Article = {
 
 export const articles: Article[] = [
     {
+        title: 'Binary Converter Online Free — Convert Binary Decimal Hex Octal 2026',
+        description: 'Your computer is secretly speaking a different language. Learn how to convert binary to decimal, hex, and more with our 2026 guide.',
+        href: '/blog/binary-converter-online-free',
+        author: 'ToolifyHub Team',
+        date: 'May 30, 2026',
+        readingTime: '9 min read',
+        category: 'Development',
+        image: 'https://picsum.photos/seed/binary/800/400',
+    },
+    {
         title: 'Roman Numerals Converter Online Free — Complete Guide 2026',
         description: 'Super Bowl LVIII. The Godfather Part II. iPhone XIV. Roman numerals are everywhere. Learn how to convert and read them with our complete guide.',
         href: '/blog/roman-numerals-converter-free-online',
