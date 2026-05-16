@@ -53,6 +53,7 @@ import {
   Youtube,
   Video,
   Rocket,
+  Zap,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design' | 'Fun' | 'Social Media';
@@ -256,6 +257,14 @@ export const tools: Tool[] = [
     description: 'Calculate monthly EMI and total interest for any loan instantly',
     href: '/tools/loan-calculator',
     icon: Calculator,
+    category: 'Finance',
+    implemented: true,
+  },
+  {
+    name: 'Electricity Bill Calculator',
+    description: 'Calculate your electricity bill by units consumed instantly free',
+    href: '/tools/electricity-bill-calculator',
+    icon: Zap,
     category: 'Finance',
     implemented: true,
   },

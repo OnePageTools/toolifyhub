@@ -11,6 +11,16 @@ export type Article = {
 
 export const articles: Article[] = [
     {
+        title: 'How to Calculate Electricity Bill Online Free — Pakistan, India, USA Guide 2026',
+        description: 'Understand how your electricity bill is calculated. A detailed guide on units, tariffs, and taxes for WAPDA and global users.',
+        href: '/blog/electricity-bill-calculator-online-free',
+        author: 'ToolifyHub Team',
+        date: 'May 20, 2026',
+        readingTime: '8 min read',
+        category: 'Finance',
+        image: 'https://picsum.photos/seed/electricity/800/400',
+    },
+    {
         title: 'YouTube Thumbnail Downloader Free — Download HD Thumbnails Instantly (2026)',
         description: 'Need to grab a YouTube thumbnail? Our free tool lets you download HD thumbnails instantly. Learn why thumbnails matter for SEO and engagement.',
         href: '/blog/youtube-thumbnail-downloader-free',

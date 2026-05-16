@@ -25,6 +25,7 @@ const articles = [
     { href: '/blog/number-to-words-converter-free' },
     { href: '/blog/free-pomodoro-timer-online' },
     { href: '/blog/youtube-thumbnail-downloader-free' },
+    { href: '/blog/electricity-bill-calculator-online-free' },
 ];
  
 export default function sitemap(): MetadataRoute.Sitemap {
