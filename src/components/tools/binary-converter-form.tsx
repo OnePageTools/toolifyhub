@@ -16,7 +16,8 @@ import {
   Settings2,
   Table,
   CheckCircle2,
-  Zap
+  Zap,
+  Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
