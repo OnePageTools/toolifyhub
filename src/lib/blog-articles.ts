@@ -11,6 +11,16 @@ export type Article = {
 
 export const articles: Article[] = [
     {
+        title: 'How to Calculate Discount Percentage Online Free — Shopping Guide 2026',
+        description: 'Sale season is here! Learn exactly how to calculate discounts, verify fake sale claims, and save more with our free discount calculator guide.',
+        href: '/blog/discount-calculator-online-free',
+        author: 'ToolifyHub Team',
+        date: 'May 24, 2026',
+        readingTime: '8 min read',
+        category: 'Finance',
+        image: 'https://picsum.photos/seed/discount/800/400',
+    },
+    {
         title: 'How to Calculate CGPA Online Free — Complete Guide for Students 2026',
         description: 'Struggling with GPA math? Learn exactly how to calculate your semester GPA and cumulative CGPA with our step-by-step student guide.',
         href: '/blog/cgpa-calculator-online-free',

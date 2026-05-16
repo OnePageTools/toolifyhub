@@ -55,6 +55,7 @@ import {
   Rocket,
   Zap,
   GraduationCap,
+  BadgePercent,
 } from 'lucide-react';
 
 export type ToolCategory = 'PDF' | 'Image' | 'Text' | 'Dev' | 'Utilities' | 'Security' | 'Business' | 'Finance' | 'Productivity' | 'Web' | 'Health' | 'Design' | 'Fun' | 'Social Media' | 'Education';
@@ -266,6 +267,14 @@ export const tools: Tool[] = [
     description: 'Calculate monthly EMI and total interest for any loan instantly',
     href: '/tools/loan-calculator',
     icon: Calculator,
+    category: 'Finance',
+    implemented: true,
+  },
+  {
+    name: 'Discount Calculator',
+    description: 'Calculate sale price and savings with any discount percentage free',
+    href: '/tools/discount-calculator',
+    icon: BadgePercent,
     category: 'Finance',
     implemented: true,
   },
