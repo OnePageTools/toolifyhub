@@ -90,9 +90,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    allowedDevOrigins: ["*.cloudworkstations.dev"],
-  },
   async redirects() {
     return [
       {

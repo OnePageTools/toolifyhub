@@ -44,7 +44,6 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: {
     optimizeCss: true,
-    allowedDevOrigins: ["*.cloudworkstations.dev"],
   },
   async redirects() {
     return [
