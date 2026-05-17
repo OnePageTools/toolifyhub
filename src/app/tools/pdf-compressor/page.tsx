@@ -1,4 +1,3 @@
-
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -14,6 +13,33 @@ const PdfCompressorForm = dynamic(
   { ssr: false, loading: () => <div className="h-64 flex items-center justify-center"><Loader2 className="animate-spin" /></div> }
 );
 
+const WebAppSchema = () => (
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{ __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Free PDF Compressor Online",
+      "url": "https://onepagetools.vercel.app/tools/pdf-compressor",
+      "description": "Compress PDF file size online free without losing quality.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Compress PDF online free",
+        "No signup required",
+        "No watermark",
+        "Up to 90% size reduction",
+        "Max 100MB file size"
+      ]
+    })}}
+  />
+);
+
 const FAQSchema = () => (
   <script
     type="application/ld+json"
@@ -23,26 +49,42 @@ const FAQSchema = () => (
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Is this PDF compressor safe to use?",
+          "name": "How to compress PDF file size online free?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes, our tool works entirely in your browser. Your files are never uploaded to a server, ensuring 100% privacy."
+            "text": "Upload your PDF above, select compression level, and click Compress. Our free PDF compressor reduces file size instantly — no software download, no signup required."
           }
         },
         {
           "@type": "Question",
-          "name": "How much can I reduce my PDF size?",
+          "name": "Can I compress PDF below 1MB free?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "You can often reduce PDF size by 50% to 90%, depending on the original content and the compression level you choose."
+            "text": "Yes. Our free online PDF compressor can reduce PDF file size by up to 90%. Most files compress below 1MB easily."
           }
         },
         {
           "@type": "Question",
-          "name": "Will compression affect the quality of my images?",
+          "name": "Does compressing PDF reduce quality?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "High compression may slightly reduce image quality. For documents with many photos, we recommend using 'Medium' compression."
+            "text": "Our PDF size reducer online maintains the best possible quality. Choose low compression to keep high quality, or high compression for maximum size reduction."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this PDF compressor really free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "100% free. No signup, no watermark, no hidden charges. Compress unlimited PDF files online free anytime."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the maximum PDF file size?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can compress PDF files up to 100MB completely free. No account needed."
           }
         }
       ]
@@ -58,6 +100,7 @@ export default function PdfCompressorPage() {
 
   return (
     <div className="container mx-auto py-8 md:py-16 px-4 tool-page-fade">
+      <WebAppSchema />
       <FAQSchema />
       <script
         type="application/ld+json"
@@ -100,7 +143,7 @@ export default function PdfCompressorPage() {
 
         <ToolHeader 
           title="PDF Compressor"
-          description="Reduce the file size of your PDF documents while maintaining the best possible quality. If you need to convert a Word document first, use our Word to PDF tool before compressing."
+          description="Reduce PDF file size online free without losing quality. Perfect for email attachments, WhatsApp sharing, and file uploads. No signup, no watermark, instant download."
           icon={<FileArchive />}
           category="PDF"
         />
@@ -121,10 +164,10 @@ export default function PdfCompressorPage() {
             <CardContent className="p-6 md:p-8">
               <ol className="grid grid-cols-1 md:grid-cols-2 gap-6 list-none p-0">
                 {[
-                  "Drag and drop your PDF into the upload box",
-                  "Choose your desired compression level",
-                  "Wait a few seconds for the magic to happen",
-                  "Download your perfectly optimized PDF file"
+                  "Upload your PDF file — drag and drop or click to browse",
+                  "Choose your compression level — low, medium, or high",
+                  "Click Compress PDF to reduce your PDF file size online free",
+                  "Download your compressed PDF — no watermark, no signup needed"
                 ].map((step, i) => (
                   <li key={i} className="flex gap-4 items-start">
                     <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
@@ -149,28 +192,46 @@ export default function PdfCompressorPage() {
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold hover:no-underline">
-                    Is this PDF compressor safe to use?
+                    How to compress PDF file size online free?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
-                    Yes, it's 100% safe. The compression happens entirely inside your browser on your computer. Your sensitive files never reach any external server.
+                    Upload your PDF above, select compression level, and click Compress. Our free PDF compressor reduces file size instantly — no software download, no signup required.
                   </AccordionContent>
                 </AccordionItem>
                 <div className="mx-6 h-px bg-border" />
                 <AccordionItem value="item-2" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold hover:no-underline">
-                    How much can I reduce my PDF size?
+                    Can I compress PDF below 1MB free?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
-                    It depends on the original file. Text-heavy PDFs might shrink by 30-50%, while image-rich PDFs can often be reduced by 90% without visible loss in quality.
+                    Yes. Our free online PDF compressor can reduce PDF file size by up to 90%. Most files compress below 1MB easily.
                   </AccordionContent>
                 </AccordionItem>
                 <div className="mx-6 h-px bg-border" />
                 <AccordionItem value="item-3" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold hover:no-underline">
-                    Is there a file size limit?
+                    Does compressing PDF reduce quality?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
-                    We currently support files up to 100MB. For larger files, we recommend splitting them or using our 'High' compression setting.
+                    Our PDF size reducer online maintains the best possible quality. Choose low compression to keep high quality, or high compression for maximum size reduction.
+                  </AccordionContent>
+                </AccordionItem>
+                <div className="mx-6 h-px bg-border" />
+                <AccordionItem value="item-4" className="px-6 border-b-0">
+                  <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                    Is this PDF compressor really free?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
+                    100% free. No signup, no watermark, no hidden charges. Compress unlimited PDF files online free anytime.
+                  </AccordionContent>
+                </AccordionItem>
+                <div className="mx-6 h-px bg-border" />
+                <AccordionItem value="item-5" className="px-6 border-b-0">
+                  <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                    What is the maximum PDF file size?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
+                    You can compress PDF files up to 100MB completely free. No account needed.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

@@ -1,16 +1,19 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Free PDF Compressor Online — Reduce PDF Size Instantly | ToolifyHub",
-  description: "Compress PDF files free online with 100% privacy. No quality loss. No signup needed.",
+  title: "Compress PDF File Size Online Free — Reduce PDF Below 1MB Instantly | ToolifyHub",
+  description: "Reduce PDF file size online free without losing quality. Compress PDF for email, WhatsApp uploads instantly. No signup, no watermark ever.",
+  alternates: {
+    canonical: "https://onepagetools.vercel.app/tools/pdf-compressor",
+  },
   openGraph: {
-    title: "Free PDF Compressor Online — Reduce PDF Size Instantly | ToolifyHub",
-    description: "Compress PDF files free online with 100% privacy. No quality loss. No signup needed.",
+    title: "Compress PDF File Size Online Free — Reduce PDF Below 1MB | ToolifyHub",
+    description: "Reduce PDF file size online free without losing quality. No signup needed.",
     url: "https://onepagetools.vercel.app/tools/pdf-compressor",
   },
   twitter: {
-    title: "Free PDF Compressor Online — Reduce PDF Size Instantly | ToolifyHub",
-    description: "Compress PDF files free online with 100% privacy. No quality loss. No signup needed.",
+    title: "Compress PDF File Size Online Free — Reduce PDF Below 1MB | ToolifyHub",
+    description: "Reduce PDF file size online free without losing quality. No signup needed.",
   }
 };
 
