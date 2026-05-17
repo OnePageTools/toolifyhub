@@ -1,8 +1,17 @@
 
+"use client";
+
 import Link from 'next/link';
 import { Mail, Github, Twitter, Globe, Zap, Heart, Facebook, Youtube } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function Footer() {
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="w-full bg-[#0F172A] border-t border-white/5 pt-20 pb-10 print:hidden relative z-20 transition-colors">
       <div className="container mx-auto px-6">
@@ -66,7 +75,7 @@ export default function Footer() {
 
         <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-slate-500 text-xs font-medium">
-            © {new Date().getFullYear()} ToolifyHub. Global high-performance tools for everyone.
+            © {currentYear ?? 2025} ToolifyHub. Global high-performance tools for everyone.
           </p>
           <div className="flex items-center gap-2 text-slate-500 text-xs">
               Built with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> globally.
