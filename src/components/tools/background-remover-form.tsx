@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Wand2, Upload, Download, Trash2, Image as ImageIcon, Eye, Clock, Info, CheckCircle2 } from 'lucide-react';
+import { Loader2, Wand2, Upload, Download, Trash2, Image as ImageIcon, Eye, Clock, Info, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { ImagePreviewDialog } from '@/components/common/image-preview-dialog';
@@ -28,7 +29,6 @@ export function BackgroundRemoverForm() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  // Check if it's potentially first use (no cached model)
   useEffect(() => {
     const hasUsedBefore = localStorage.getItem('background_remover_used');
     if (!hasUsedBefore) {
@@ -93,13 +93,13 @@ export function BackgroundRemoverForm() {
       const blob = await removeBackground(selectedFile, {
         progress: (key, current, total) => {
           if (key.includes('fetch')) {
-            setStatus('Loading AI model (approx 40MB)...');
+            setStatus('Downloading AI model (~40MB)...');
             setProgress(Math.round((current / total) * 100));
           } else if (key === 'compute:inference') {
-            setStatus(`Removing background... ${Math.round((current / total) * 100)}%`);
+            setStatus(`AI Processing... ${Math.round((current / total) * 100)}%`);
             setProgress(Math.round((current / total) * 100));
           } else {
-            setStatus('Analyzing image...');
+            setStatus('Analyzing image layers...');
           }
         }
       });
@@ -117,18 +117,22 @@ export function BackgroundRemoverForm() {
       setIsFirstUse(false);
 
       toast({
-        title: "Success!",
-        description: `Background removed in ${duration.toFixed(2)} seconds.`,
+        title: "Background Removed!",
+        description: `Processed in ${duration.toFixed(2)}s.`,
       });
 
     } catch (error: any) {
       console.error(error);
+      const isFetchError = error.message?.toLowerCase().includes('fetch');
+      
       toast({
         variant: "destructive",
-        title: "Process Failed",
-        description: "Failed to remove background. Please try again with a clearer image.",
+        title: isFetchError ? "Download Failed" : "Processing Failed",
+        description: isFetchError 
+            ? "Could not download AI assets. Please check your internet connection or disable ad-blockers."
+            : "Failed to process image. Try a clearer photo with high contrast.",
       });
-      setStatus('Error!');
+      setStatus('Error occurred');
       setProgress(0);
     } finally {
       setIsLoading(false);
@@ -161,9 +165,9 @@ export function BackgroundRemoverForm() {
       {isFirstUse && !isLoading && !resultUrl && (
         <Alert className="bg-blue-500/10 border-blue-500/20 text-blue-400">
           <Info className="h-4 w-4" />
-          <AlertTitle className="text-xs font-bold uppercase tracking-widest">First Time Optimization</AlertTitle>
+          <AlertTitle className="text-xs font-bold uppercase tracking-widest">First Time Use</AlertTitle>
           <AlertDescription className="text-[13px]">
-            First use downloads the AI model (~40MB) for offline processing. Please wait 30-60 seconds while the model is cached for instant future use.
+            The AI model (~40MB) will be downloaded on first use. This may take 30-60 seconds depending on your connection. Subsequent uses will be instant.
           </AlertDescription>
         </Alert>
       )}
@@ -174,9 +178,9 @@ export function BackgroundRemoverForm() {
         <label
             htmlFor="image-upload"
             className={cn(
-                "group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-4 md:p-8 text-center transition-colors hover:bg-secondary min-h-[150px]",
-                isDragging && "border-primary bg-primary/10",
-                preview && "p-0 border-0"
+                "group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-700 bg-slate-800/20 p-4 md:p-8 text-center transition-all hover:bg-slate-800/40 min-h-[150px]",
+                isDragging && "border-blue-500 bg-blue-500/5",
+                preview && "p-0 border-0 overflow-hidden"
             )}
             onDragEnter={onDragEnter}
             onDragLeave={onDragLeave}
@@ -184,91 +188,104 @@ export function BackgroundRemoverForm() {
             onDrop={onDrop}
         >
             {preview ? (
-              <div className="relative w-full h-80">
-                <Image src={preview} alt="Original image preview" fill className="object-contain rounded-md" loading="lazy" />
-                <Button variant="destructive" size="icon" aria-label="Clear image" onClick={(e) => { e.preventDefault(); handleClear()}} className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-md z-10">
+              <div className="relative w-full h-80 bg-slate-950/40">
+                <Image src={preview} alt="Original image preview" fill className="object-contain" loading="lazy" />
+                <Button variant="destructive" size="icon" aria-label="Clear image" onClick={(e) => { e.preventDefault(); handleClear()}} className="absolute top-4 right-4 h-9 w-9 rounded-full shadow-2xl z-10">
                     <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             ) : (
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <ImageIcon className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
-                    <span className="font-semibold text-primary">Click to upload or drag & drop</span>
-                    <p className="text-xs">PNG, JPG, or WEBP (Max 20MB)</p>
+                <div className="flex flex-col items-center gap-4 text-muted-foreground">
+                    <div className="p-4 bg-slate-800 rounded-full group-hover:scale-110 transition-transform shadow-lg">
+                        <ImageIcon className="h-10 w-10 text-blue-500" />
+                    </div>
+                    <div>
+                        <span className="text-lg font-bold text-slate-200">Click to upload or drag & drop</span>
+                        <p className="text-xs text-slate-500 mt-1">PNG, JPG, or WEBP up to 20MB</p>
+                    </div>
                 </div>
             )}
         </label>
       </div>
       
       <div className="w-full">
-         <Button onClick={handleSubmit} disabled={isLoading || !selectedFile} className="w-full h-12 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 font-bold shadow-lg shadow-blue-500/20">
+         <Button onClick={handleSubmit} disabled={isLoading || !selectedFile} className="w-full h-14 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 font-bold text-lg shadow-xl shadow-blue-500/20">
             {isLoading ? (
                 <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 {status || 'Processing...'}
                 </>
             ) : (
                 <>
-                <Wand2 className="mr-2 h-4 w-4" />
-                Remove Background
+                <Wand2 className="mr-2 h-5 w-5" />
+                Start AI Background Removal
                 </>
             )}
          </Button>
       </div>
 
        {isLoading && (
-        <div className="space-y-2 text-center">
+        <div className="space-y-3 text-center">
             <Progress value={progress} className="w-full h-1.5 bg-slate-800" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{status}</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center justify-center gap-2">
+                {status.includes('Download') ? <Download className="w-3 h-3 animate-bounce" /> : <Loader2 className="w-3 h-3 animate-spin" />}
+                {status}
+            </p>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[256px]">
-        <div className="flex flex-col items-center justify-center border border-border bg-slate-900/30 rounded-2xl p-4 space-y-2 relative overflow-hidden">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 absolute top-4 left-4 z-10">Original</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[300px]">
+        <div className="flex flex-col items-center justify-center border border-slate-800 bg-slate-900/40 rounded-2xl p-4 relative overflow-hidden">
+            <div className="absolute top-4 left-4 z-10 bg-slate-900/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/5">
+                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Input Source</p>
+            </div>
             {preview ? (
                 <div className="relative w-full h-64">
-                    <Image src={preview} alt="Original input" fill className="object-contain rounded-md" loading="lazy" />
+                    <Image src={preview} alt="Original input" fill className="object-contain" loading="lazy" />
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center text-muted-foreground text-center flex-grow opacity-40">
-                    <Upload className="w-8 h-8 mb-2" />
-                    <span className="text-[10px] font-bold">Awaiting Upload</span>
+                <div className="flex flex-col items-center justify-center text-slate-700 text-center flex-grow">
+                    <ImageIcon className="w-12 h-12 mb-3 opacity-20" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">No Image Uploaded</span>
                 </div>
             )}
         </div>
-        <div className="flex flex-col items-center justify-center border border-border bg-slate-900/30 rounded-2xl p-4 space-y-2 relative overflow-hidden">
-             <h3 className="text-[10px] font-black uppercase tracking-widest text-blue-500 absolute top-4 left-4 z-10">Result</h3>
+        <div className="flex flex-col items-center justify-center border border-slate-800 bg-slate-900/40 rounded-2xl p-4 relative overflow-hidden">
+             <div className="absolute top-4 left-4 z-10 bg-blue-500/10 backdrop-blur-md px-3 py-1 rounded-full border border-blue-500/20">
+                <p className="text-[9px] font-black uppercase tracking-widest text-blue-400">Processed Result</p>
+            </div>
             {resultUrl ? (
-                <div className="space-y-2 w-full flex flex-col items-center">
-                  <button onClick={() => setIsPreviewOpen(true)} className="cursor-zoom-in relative w-full h-64">
-                    <Image src={resultUrl} alt="Removed background result" fill className="object-contain rounded-md" unoptimized />
+                <div className="space-y-4 w-full flex flex-col items-center">
+                  <button onClick={() => setIsPreviewOpen(true)} className="cursor-zoom-in relative w-full h-64 transition-transform hover:scale-[1.02]">
+                    <Image src={resultUrl} alt="Background removed result" fill className="object-contain" unoptimized />
                   </button>
                   {processingTime && (
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 pt-2 uppercase">
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
                       <Clock className="w-3 h-3" />
-                      <span>{processingTime.toFixed(2)}s</span>
+                      <span>Optimized in {processingTime.toFixed(2)}s</span>
                     </div>
                   )}
                 </div>
             ) : (
-                 <div className="flex flex-col items-center justify-center text-muted-foreground text-center flex-grow opacity-40">
-                    <Wand2 className="w-8 h-8 mb-2" />
-                    <span className="text-[10px] font-bold">Awaiting Process</span>
+                 <div className="flex flex-col items-center justify-center text-slate-700 text-center flex-grow">
+                    <Wand2 className="w-12 h-12 mb-3 opacity-20" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">
+                        {isLoading ? 'Processing...' : 'Awaiting Processing'}
+                    </span>
                 </div>
             )}
         </div>
       </div>
       
       {resultUrl && (
-        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
-           <Button variant="outline" onClick={() => setIsPreviewOpen(true)} className="flex-1 h-12 rounded-xl border-slate-800 bg-slate-800/40 font-bold">
-              <Eye className="mr-2 h-4 w-4" />
+        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-800">
+           <Button variant="outline" onClick={() => setIsPreviewOpen(true)} className="flex-1 h-14 rounded-xl border-slate-700 bg-slate-800/40 font-bold text-slate-200">
+              <Eye className="mr-2 h-5 w-5" />
               Fullscreen Preview
           </Button>
-          <a href={resultUrl} download="background-removed.png" className='flex-1'>
-              <Button variant="default" className="w-full h-12 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-500/20">
-                  <Download className="mr-2 h-4 w-4" />
+          <a href={resultUrl} download="toolifyhub-transparent.png" className='flex-1'>
+              <Button variant="default" className="w-full h-14 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-lg shadow-xl shadow-emerald-600/20">
+                  <Download className="mr-2 h-5 w-5" />
                   Download PNG
               </Button>
           </a>

@@ -38,7 +38,9 @@ const securityHeaders = [
         https://www.googletagmanager.com 
         https://www.google-analytics.com
         https://api.exchangerate-api.com
-        https://cdnjs.cloudflare.com;
+        https://cdnjs.cloudflare.com
+        https://cdn.jsdelivr.net
+        https://unpkg.com;
       style-src 'self' 'unsafe-inline' 
         https://fonts.googleapis.com;
       font-src 'self' 
@@ -58,7 +60,11 @@ const securityHeaders = [
         https://api.languagetool.org
         https://languagetool.org
         https://api.ipify.org
-        https://ipwho.is;
+        https://ipwho.is
+        https://static.imgly.com
+        https://cdn.jsdelivr.net
+        https://unpkg.com;
+      worker-src 'self' blob:;
       frame-src 'none';
       object-src 'none';
       base-uri 'self';
