@@ -9,7 +9,7 @@ import { Loader2, Wand2, Upload, Download, Trash2, Image as ImageIcon, Eye, Cloc
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { ImagePreviewDialog } from '@/components/common/image-preview-dialog';
-import { removeBackground as removeBackgroundClient } from '@imgly/background-removal';
+import { removeBackground } from '@/ai/flows/remove-background-flow';
 import { Progress } from '@/components/ui/progress';
 
 export function BackgroundRemoverForm() {
@@ -28,11 +28,11 @@ export function BackgroundRemoverForm() {
 
   const handleFileSelect = (file: File | undefined) => {
     if (file) {
-      if (file.size > 15 * 1024 * 1024) { // 15MB limit for client-side
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit for server action
         toast({
             variant: "destructive",
             title: "File too large",
-            description: "Please upload an image smaller than 15MB.",
+            description: "Please upload an image smaller than 10MB.",
         });
         return;
       }
@@ -75,37 +75,33 @@ export function BackgroundRemoverForm() {
     setIsLoading(true);
     setResult(null);
     setProcessingTime(null);
-    setProgress(0);
-    setStatus('Preparing...');
+    setProgress(10);
+    setStatus('Preparing image...');
     const startTime = performance.now();
 
     try {
-      setStatus('Processing background...');
-      
-      const resultBlob = await removeBackgroundClient(selectedFile, {
-          progress: (key, current, total) => {
-              const [type] = key.split(':');
-              const progressPercentage = Math.round((current / total) * 100);
-              
-              switch(type) {
-                  case 'download':
-                      setStatus('Downloading model...');
-                      setProgress(progressPercentage / 4); // First 25%
-                      break;
-                  case 'compute':
-                      setStatus('Analyzing image...');
-                      setProgress(25 + (progressPercentage / 2)); // Next 50%
-                      break;
-                  case 'encode':
-                       setStatus('Optimizing result...');
-                       setProgress(75 + (progressPercentage / 4)); // Last 25%
-                       break;
-              }
-          }
+      // Convert file to Base64 data URI
+      const reader = new FileReader();
+      const photoDataUri = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(selectedFile);
       });
+
+      setStatus('AI is removing background...');
+      setProgress(40);
+
+      const response = await removeBackground({ photoDataUri });
       
-      const resultUrl = URL.createObjectURL(resultBlob);
-      setResult({ imageDataUri: resultUrl });
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      if (!response.imageDataUri) {
+        throw new Error("No image was returned from the server.");
+      }
+
+      setResult({ imageDataUri: response.imageDataUri });
       setStatus('Complete!');
       setProgress(100);
       
@@ -123,9 +119,12 @@ export function BackgroundRemoverForm() {
       toast({
         variant: "destructive",
         title: "Process Failed",
-        description: error.message || "Failed to remove background. Please try again.",
+        description: error.message === "RATE_LIMIT_EXCEEDED" 
+          ? "The AI is busy. Please try again in a few moments."
+          : error.message || "Failed to remove background. Please try again.",
       });
       setStatus('Error!');
+      setProgress(0);
     } finally {
       setIsLoading(false);
     }
@@ -179,7 +178,7 @@ export function BackgroundRemoverForm() {
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                     <ImageIcon className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
                     <span className="font-semibold text-primary">Click to upload or drag & drop</span>
-                    <p className="text-xs">PNG, JPG, or WEBP (Max 15MB)</p>
+                    <p className="text-xs">PNG, JPG, or WEBP (Max 10MB)</p>
                 </div>
             )}
         </label>
