@@ -94,11 +94,31 @@ export function BackgroundRemoverForm() {
       const response = await removeBackground({ photoDataUri });
       
       if (response.error) {
-        throw new Error(response.error);
+        // Specifically handle rate limiting or other server-side flow errors without throwing
+        const isRateLimit = response.error === "RATE_LIMIT_EXCEEDED";
+        toast({
+          variant: "destructive",
+          title: isRateLimit ? "AI Service Busy" : "Processing Failed",
+          description: isRateLimit 
+            ? "The background removal service is experiencing high demand. Please try again in a few moments." 
+            : response.error,
+        });
+        setStatus('Error!');
+        setProgress(0);
+        setIsLoading(false);
+        return;
       }
 
       if (!response.imageDataUri) {
-        throw new Error("No image was returned from the server.");
+        toast({
+          variant: "destructive",
+          title: "Process Failed",
+          description: "The AI did not return a valid result. Please try another image.",
+        });
+        setStatus('Error!');
+        setProgress(0);
+        setIsLoading(false);
+        return;
       }
 
       setResult({ imageDataUri: response.imageDataUri });
@@ -118,10 +138,8 @@ export function BackgroundRemoverForm() {
       console.error(error);
       toast({
         variant: "destructive",
-        title: "Process Failed",
-        description: error.message === "RATE_LIMIT_EXCEEDED" 
-          ? "The AI is busy. Please try again in a few moments."
-          : error.message || "Failed to remove background. Please try again.",
+        title: "An unexpected error occurred",
+        description: "Something went wrong while communicating with the AI. Please check your connection and try again.",
       });
       setStatus('Error!');
       setProgress(0);
