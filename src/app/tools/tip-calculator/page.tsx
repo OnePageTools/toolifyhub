@@ -13,37 +13,54 @@ const tool = {
 };
 
 export const metadata: Metadata = {
-  title: "Free Tip Calculator Online — Calculate Tip & Split Bill Instantly | ToolifyHub",
-  description: "Calculate tip amount and split restaurant bill free online. Enter bill amount and tip percentage. Instant results. No signup needed.",
+  title: "Tip Calculator Online Free — Calculate Tip and Split Bill | ToolifyHub",
+  description: "Calculate tip amount and split restaurant bill free online instantly. Enter bill amount, select tip percentage, split among friends. No signup needed.",
+  alternates: {
+    canonical: tool.url,
+  },
   openGraph: {
-    title: "Free Tip Calculator — Calculate Tip & Split Bill Online | ToolifyHub",
-    description: "Instant tip and split bill calculation for groups. Supports multiple currencies and service quality presets. Free and private.",
+    title: "Tip Calculator Free — Calculate Tip and Split Bill | ToolifyHub",
+    description: "Calculate tip and split restaurant bill free online. Instant results. No signup needed.",
     url: tool.url,
   },
-  other: {
-    'last-modified': '2026-05-26'
+  twitter: {
+    title: "Tip Calculator Online Free — Calculate Tip and Split Bill | ToolifyHub",
+    description: "Calculate tip amount and split restaurant bill free online instantly. Enter bill amount, select tip percentage, split among friends. No signup needed.",
   }
 };
+
+const WebAppSchema = () => (
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{ __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Tip Calculator Online Free",
+      "url": "https://onepagetools.vercel.app/tools/tip-calculator",
+      "description": "Calculate tip and split restaurant bill free online.",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Tip calculator free online",
+        "Restaurant bill splitter",
+        "Split bill calculator",
+        "Service quality tip guide",
+        "No signup required",
+        "Instant results"
+      ]
+    })}}
+  />
+);
 
 export default function TipCalculatorPage() {
   return (
     <div className="container mx-auto py-8 md:py-16 px-4 tool-page-fade">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebApplication",
-          "name": "Tip Calculator",
-          "url": tool.url,
-          "applicationCategory": "FinanceApplication",
-          "operatingSystem": "Any",
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-          }
-        })}}
-      />
+      <WebAppSchema />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify({
@@ -60,7 +77,7 @@ export default function TipCalculatorPage() {
       <div className="max-w-[1100px] mx-auto space-y-12">
         <ToolHeader 
           title="Tip Calculator"
-          description="Split the bill fairly and calculate the perfect tip based on service quality and total cost."
+          description="Calculate tip amount and split restaurant bill among friends free online instantly. Select service quality for suggested tip percentage. No signup, no payment needed."
           icon={<ReceiptText className="w-6 h-6 md:w-8 md:h-8" />}
           category="Finance"
         />
@@ -75,10 +92,10 @@ export default function TipCalculatorPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              {[
-               "Enter the total bill amount including any local taxes.",
-               "Select a standard tip % or use the service quality emojis.",
-               "Slide to the number of people splitting the bill.",
-               "Use the 'Easy Rounding' buttons to simplify the per-person payment."
+               "Enter your total restaurant bill amount",
+               "Select tip percentage or choose service quality — Poor, Good, Great, Excellent",
+               "Enter number of people splitting the bill",
+               "See tip amount and per person share instantly — free, no signup"
              ].map((step, i) => (
                <div key={i} className="flex gap-4 p-5 bg-slate-800/40 border border-slate-700 rounded-2xl">
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600/10 text-blue-400 flex items-center justify-center font-bold text-sm">{i + 1}</span>
@@ -99,28 +116,46 @@ export default function TipCalculatorPage() {
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="q1" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    How much tip should I give?
+                    How to calculate tip online free?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    The standard tip for good restaurant service is generally between 15% and 20% of the pre-tax total. In some countries like Pakistan, a 10% tip is more traditional if a service charge isn't already included.
+                    Enter bill amount, select tip percentage or service quality, and our free tip calculator online shows tip amount and total instantly. No signup needed.
                   </AccordionContent>
                 </AccordionItem>
                 <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="q2" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    How is a 15% tip calculated?
+                    How much tip should I give at restaurant?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    To calculate a 15% tip manually, multiply your bill by 0.15. For example, on a Rs. 1000 bill: 1000 x 0.15 = Rs. 150 tip.
+                    Standard tip is 15% for good service, 18-20% for great service, 25% for excellent. Our free restaurant tip calculator suggests the right amount based on service quality.
                   </AccordionContent>
                 </AccordionItem>
                  <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="q3" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    What is the etiquette for splitting a bill?
+                    How to split restaurant bill equally?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    The most common and polite way is to split the total (including tip) equally among the number of diners. If one person ordered significantly more expensive items, it's customary to calculate their share separately or for them to cover the tip for the group.
+                    Enter total bill, add tip percentage, then enter number of people. Our free bill splitter calculator shows exact amount each person should pay instantly.
+                  </AccordionContent>
+                </AccordionItem>
+                <div className="mx-6 h-px bg-slate-800" />
+                <AccordionItem value="q4" className="px-6 border-b-0">
+                  <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
+                    What is standard tip percentage in Pakistan?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4">
+                    In Pakistan 10% tip is common at restaurants. Many restaurants now add service charge automatically — check your bill before adding extra tip.
+                  </AccordionContent>
+                </AccordionItem>
+                <div className="mx-6 h-px bg-slate-800" />
+                <AccordionItem value="q5" className="px-6 border-b-0">
+                  <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
+                    How to calculate tip for delivery?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4">
+                    Enter delivery order total, select tip percentage (10-15% for delivery), our free tip calculator shows exact tip amount for delivery orders instantly.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
