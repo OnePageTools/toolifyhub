@@ -13,21 +13,26 @@ const tool = {
   name: 'Text Summarizer',
   url: '/tools/text-summarizer',
   fullUrl: 'https://onepagetools.vercel.app/tools/text-summarizer',
-  title: "Free Text Summarizer Online — Summarize Any Text Instantly | ToolifyHub",
-  description: "Summarize long articles, documents and text free online instantly. AI powered. No signup needed.",
+  title: "Free Text Summarizer Online — Summarize Any Article in Seconds | ToolifyHub",
+  description: "Paste any article and get a clear summary instantly. Free online text summarizer tool. No signup, no limits ever.",
 };
 
 export const metadata: Metadata = {
   title: tool.title,
   description: tool.description,
+  alternates: {
+    canonical: tool.fullUrl,
+  },
   openGraph: {
     title: tool.title,
     description: tool.description,
-    url: `https://onepagetools.vercel.app${tool.url}`,
+    url: tool.fullUrl,
+    type: 'website',
   },
   twitter: {
-    title: "Free Text Summarizer Online — Summarize Any Text | ToolifyHub",
+    title: tool.title,
     description: tool.description,
+    card: 'summary_large_image',
   },
   other: {
     'last-modified': '2026-05-16'
@@ -46,7 +51,7 @@ const FAQSchema = () => (
           "name": "What is a free text summarizer?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "A free text summarizer is an online tool that automatically condenses long articles, documents, or any text into shorter, easy-to-read summaries without losing the key points."
+            "text": "A free text summarizer is an online tool that automatically shortens long articles, essays, or documents into clear summaries. Our free online text summarizer works instantly — no signup, no limits."
           }
         },
         {
@@ -54,7 +59,7 @@ const FAQSchema = () => (
           "name": "How does this summarizer tool work?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Simply paste your text, choose summary length (short, medium, or detailed), and click Summarize. The tool analyzes your text and extracts the most important information instantly."
+            "text": "Simply paste your text into the box above, choose your summary length, and click Summarize. Our free summarizing tool online analyzes your text and extracts the most important points in seconds."
           }
         },
         {
@@ -62,7 +67,7 @@ const FAQSchema = () => (
           "name": "Is this text summarizer really free?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes, completely free. No signup, no payment, no watermark. Use it unlimited times."
+            "text": "Yes — completely free. This is a free summarizer tool online with no hidden charges, no signup required, and no usage limits. Use it as many times as you need."
           }
         },
         {
@@ -70,17 +75,35 @@ const FAQSchema = () => (
           "name": "What types of text can I summarize?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "You can summarize articles, essays, research papers, blog posts, news articles, books chapters, emails, and any other text."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is there a word limit?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Our tool handles texts of any length. For best results, paste text between 100 to 10,000 words."
+            "text": "You can summarize articles, essays, research papers, blog posts, news articles, book chapters, emails, and any other text. Our free article summarizer tool handles all types of content."
           }
         }
+      ]
+    })}}
+  />
+);
+
+const WebAppSchema = () => (
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{ __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Free Text Summarizer Online",
+      "url": "https://onepagetools.vercel.app/tools/text-summarizer",
+      "description": "Free online text summarizer tool. Summarize any article instantly.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Free text summarization",
+        "No signup required",
+        "Instant results",
+        "Multiple summary lengths"
       ]
     })}}
   />
@@ -90,6 +113,7 @@ export default function TextSummarizerPage() {
   return (
     <div className="container mx-auto py-8 md:py-16 px-4 tool-page-fade">
       <FAQSchema />
+      <WebAppSchema />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -131,7 +155,7 @@ export default function TextSummarizerPage() {
 
         <ToolHeader 
           title="Text Summarizer"
-          description="Condense long articles into concise points. After summarizing, use our Grammar Checker to ensure your key takeaways are written perfectly."
+          description="Instantly summarize any article, essay, or document online free. No signup needed. Works on any text — paste and get results in seconds."
           icon={<BookOpen className="w-6 h-6 md:w-8 md:h-8" />}
           category="Text"
         />
@@ -177,10 +201,10 @@ export default function TextSummarizerPage() {
                   </p>
                   <ol className="space-y-4 list-none p-0">
                     {[
-                      "Paste your article or text in the box above to use our free text summarizer.",
-                      "Choose your summary length (Short, Medium, or Detailed) to summarize text online free.",
-                      "Click the Summarize button to process your document instantly.",
-                      "Copy or download your summary for your academic or professional work."
+                      "Paste your article or text into the box above",
+                      "Choose your summary length — short, medium, or detailed",
+                      "Click Summarize to get your free online text summary instantly",
+                      "Copy or download your summarized text"
                     ].map((step, i) => (
                       <li key={i} className="flex gap-4 items-start">
                         <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
@@ -224,7 +248,7 @@ export default function TextSummarizerPage() {
                     What is a free text summarizer?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
-                    A free text summarizer is an online tool that automatically condenses long articles, documents, or any text into shorter, easy-to-read summaries without losing the key points.
+                    A free text summarizer is an online tool that automatically shortens long articles, essays, or documents into clear summaries. Our free online text summarizer works instantly — no signup, no limits.
                   </AccordionContent>
                 </AccordionItem>
                 <Separator className="mx-6" />
@@ -233,7 +257,7 @@ export default function TextSummarizerPage() {
                     How does this summarizer tool work?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
-                    Simply paste your text, choose summary length (short, medium, or detailed), and click Summarize. The tool analyzes your text and extracts the most important information instantly.
+                    Simply paste your text into the box above, choose your summary length, and click Summarize. Our free summarizing tool online analyzes your text and extracts the most important points in seconds.
                   </AccordionContent>
                 </AccordionItem>
                 <Separator className="mx-6" />
@@ -242,7 +266,7 @@ export default function TextSummarizerPage() {
                     Is this text summarizer really free?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
-                    Yes, completely free. No signup, no payment, no watermark. Use it unlimited times.
+                    Yes — completely free. This is a free summarizer tool online with no hidden charges, no signup required, and no usage limits. Use it as many times as you need.
                   </AccordionContent>
                 </AccordionItem>
                 <Separator className="mx-6" />
@@ -251,7 +275,7 @@ export default function TextSummarizerPage() {
                     What types of text can I summarize?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-600 dark:text-muted-foreground pb-4">
-                    You can summarize articles, essays, research papers, blog posts, news articles, books chapters, emails, and any other text.
+                    You can summarize articles, essays, research papers, blog posts, news articles, book chapters, emails, and any other text. Our free article summarizer tool handles all types of content.
                   </AccordionContent>
                 </AccordionItem>
                 <Separator className="mx-6" />
