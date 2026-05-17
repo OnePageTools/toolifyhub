@@ -17,7 +17,8 @@ import {
   Eye,
   CheckCircle2,
   Loader2,
-  Image as ImageIcon
+  ImageIcon,
+  Maximize2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -385,7 +386,7 @@ export function PassportPhotoMakerForm() {
               <div className="flex items-center gap-2 text-slate-300 font-bold text-xs uppercase tracking-widest">
                 <Eye className="w-4 h-4 text-blue-400" /> Photo Standards Tip
               </div>
-              <p className="text-sm text-slate-400 leading-relaxed">
+              <p className="text-sm text-slate-400 leading-relaxed italic">
                 Most passports require a neutral facial expression with eyes open and visible. For <span className="text-white font-bold">Pakistan CNIC</span> or <span className="text-white font-bold">USA Passports</span>, ensure your face takes up 70-80% of the photo area. Use a high-quality selfie for the best results!
               </p>
             </div>
