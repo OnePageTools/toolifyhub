@@ -13,11 +13,14 @@ const tool = {
 };
 
 export const metadata: Metadata = {
-  title: "Roman Numerals Converter Free — Convert Numbers to Roman Instantly | ToolifyHub",
-  description: "Convert numbers to Roman numerals and Roman numerals to numbers free online. Instant conversion. Supports numbers up to 3.9M. No signup needed.",
+  title: "Roman Numerals Converter Online Free — Convert Numbers to Roman Instantly | ToolifyHub",
+  description: "Convert numbers to Roman numerals and Roman numerals to numbers free online. Instant conversion with reference table. No signup needed.",
+  alternates: {
+    canonical: "https://onepagetools.vercel.app/tools/roman-numerals-converter",
+  },
   openGraph: {
-    title: "Roman Numerals Converter — Free Online Tool | ToolifyHub",
-    description: "Instant Roman numeral conversion for students, designers, and history buffs. Free and accurate.",
+    title: "Roman Numerals Converter Free — Convert Numbers Instantly | ToolifyHub",
+    description: "Convert numbers to Roman numerals free online instantly. Two way conversion with examples. No signup needed.",
     url: tool.url,
   },
   other: {
@@ -31,15 +34,24 @@ const WebAppSchema = () => (
     dangerouslySetInnerHTML={{ __html: JSON.stringify({
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "Roman Numerals Converter",
-      "url": tool.url,
+      "name": "Roman Numerals Converter Online Free",
+      "url": "https://onepagetools.vercel.app/tools/roman-numerals-converter",
+      "description": "Convert numbers to Roman numerals free online instantly.",
       "applicationCategory": "EducationApplication",
       "operatingSystem": "Any",
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "USD"
-      }
+      },
+      "featureList": [
+        "Roman numerals converter free",
+        "Number to Roman numeral",
+        "Roman numeral to number",
+        "Instant conversion",
+        "No signup required",
+        "Reference table included"
+      ]
     })}}
   />
 );
@@ -50,21 +62,23 @@ export default function RomanNumeralsPage() {
       <WebAppSchema />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://onepagetools.vercel.app" },
-            { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://onepagetools.vercel.app" },
-            { "@type": "ListItem", "position": 3, "name": tool.name, "item": tool.url }
-          ]
-        })}}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://onepagetools.vercel.app" },
+              { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://onepagetools.vercel.app" },
+              { "@type": "ListItem", "position": 3, "name": tool.name, "item": tool.url }
+            ]
+          })
+        }}
       />
 
       <div className="max-w-[1100px] mx-auto space-y-12">
         <ToolHeader 
           title="Roman Numerals Converter"
-          description="An accurate ancient number system tool to convert Arabic numbers to Roman numerals and back instantly."
+          description="Convert numbers to Roman numerals and Roman numerals to numbers free online instantly. Perfect for dates, Super Bowl numbers, movie sequels, and clock faces."
           icon={<Hash className="w-6 h-6 md:w-8 md:h-8" />}
           category="Education"
         />
@@ -79,10 +93,10 @@ export default function RomanNumeralsPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              {[
-               "Select 'Number to Roman' or 'Roman to Number' from the tabs.",
-               "Type your input. The result will appear instantly as you type.",
-               "Refer to the symbols table on the right for quick learning.",
-               "Click the 'Copy Result' button to use the conversion elsewhere."
+               "Select conversion direction — Number to Roman or Roman to Number",
+               "Enter your number or Roman numeral in the input field",
+               "See instant conversion result — updates as you type",
+               "Copy your result with one click — free, no signup needed"
              ].map((step, i) => (
                <div key={i} className="flex gap-4 p-5 bg-slate-800/40 border border-slate-700 rounded-2xl">
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600/10 text-blue-400 flex items-center justify-center font-bold text-sm">{i + 1}</span>
@@ -103,28 +117,46 @@ export default function RomanNumeralsPage() {
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="q1" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    What are Roman numerals?
+                    How to convert numbers to Roman numerals free?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    Roman numerals are a numeric system that originated in ancient Rome and remained the usual way of writing numbers throughout Europe well into the Late Middle Ages. It uses combinations of letters from the Latin alphabet to signify values.
+                    Enter any number from 1 to 3999 in the input above. Our free Roman numerals converter online shows the Roman numeral result instantly as you type.
                   </AccordionContent>
                 </AccordionItem>
                 <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="q2" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    What is the largest number I can convert?
+                    What is 2026 in Roman numerals?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    While standard Roman numerals typically stop at 3,999 (MMMCMXCIX), our tool supports extended notation (Vinculum) which allows for conversions up to 3,999,999.
+                    2026 in Roman numerals is MMXXVI. M=1000, M=1000, XX=20, VI=6. Use our free number to Roman numeral converter to convert any year instantly.
                   </AccordionContent>
                 </AccordionItem>
                  <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="q3" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    Why do we still use Roman numerals today?
+                    What is the Roman numeral for 1 to 100?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    Roman numerals are still used for aesthetic or traditional purposes, such as on clock faces, in movie sequels (e.g., Star Wars VII), for Super Bowl numbering, and in names of monarchs or popes.
+                    I=1, V=5, X=10, L=50, C=100. Common ones: IV=4, IX=9, XL=40, XC=90. Our free Roman numerals chart shows all values with our converter tool.
+                  </AccordionContent>
+                </AccordionItem>
+                <div className="mx-6 h-px bg-slate-800" />
+                <AccordionItem value="q4" className="px-6 border-b-0">
+                  <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
+                    How to read Roman numerals easily?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4">
+                    Read left to right. If a smaller value appears before larger, subtract it. IV = 5 minus 1 = 4. IX = 10 minus 1 = 9. Our free Roman numeral translator shows step by step conversion.
+                  </AccordionContent>
+                </AccordionItem>
+                <div className="mx-6 h-px bg-slate-800" />
+                <AccordionItem value="q5" className="px-6 border-b-0">
+                  <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
+                    What are Roman numerals used for today?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4">
+                    Roman numerals appear on clock faces, Super Bowl numbers (LVIII=58), movie sequels (Rocky II), copyright years, and chapter numbers. Convert any with our free tool.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
