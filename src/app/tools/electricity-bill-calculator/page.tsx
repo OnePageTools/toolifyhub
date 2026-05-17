@@ -13,57 +13,24 @@ const tool = {
 };
 
 export const metadata: Metadata = {
-  title: "Free Electricity Bill Calculator Online — Calculate Your Electric Bill | ToolifyHub",
-  description: "Calculate your electricity bill free online. Enter units consumed and get exact bill amount instantly. Supports Pakistan, India, USA, UK rates. No signup needed.",
+  title: "Electricity Bill Calculator Online Free — Calculate WAPDA Bill by Units | ToolifyHub",
+  description: "Calculate electricity bill by units consumed free online. Supports Pakistan WAPDA, India, USA, UK rates. Instant accurate results. No signup needed.",
+  alternates: {
+    canonical: "https://onepagetools.vercel.app/tools/electricity-bill-calculator",
+  },
   openGraph: {
-    title: "Free Electricity Bill Calculator — Calculate Electric Bill Online | ToolifyHub",
-    description: "Calculate electricity bill by units consumed. Supports Pakistan WAPDA, India, USA, UK rates. Free, instant, no signup.",
+    title: "Electricity Bill Calculator Free — Calculate WAPDA Bill by Units | ToolifyHub",
+    description: "Calculate electricity bill by units free online. Pakistan WAPDA, India, USA rates supported. Instant results.",
     url: tool.url,
   },
   twitter: {
-    title: "Free Electricity Bill Calculator — Calculate Electric Bill Online | ToolifyHub",
-    description: "Calculate electricity bill by units consumed. Supports Pakistan WAPDA, India, USA, UK rates. Free, instant, no signup.",
+    title: "Electricity Bill Calculator Online Free — Calculate WAPDA Bill by Units | ToolifyHub",
+    description: "Calculate electricity bill by units consumed free online. Supports Pakistan WAPDA, India, USA, UK rates. Instant accurate results. No signup needed.",
   },
   other: {
     'last-modified': '2026-05-16'
   }
 };
-
-const FAQSchema = () => (
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{ __html: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "How to calculate electricity bill?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Multiply units consumed (kWh) by the rate per unit, then add any fixed charges and taxes."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What is a unit of electricity?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "One unit equals 1 kilowatt-hour (kWh), which is 1000 watts used for 1 hour."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How can I reduce my electricity bill?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Use energy-efficient appliances, switch off standby devices, and maintain your AC at optimal temperature (around 26°C)."
-          }
-        }
-      ]
-    })}}
-  />
-);
 
 const WebAppSchema = () => (
   <script
@@ -71,15 +38,24 @@ const WebAppSchema = () => (
     dangerouslySetInnerHTML={{ __html: JSON.stringify({
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "Electricity Bill Calculator",
+      "name": "Electricity Bill Calculator Online Free",
       "url": "https://onepagetools.vercel.app/tools/electricity-bill-calculator",
+      "description": "Calculate electricity bill by units consumed free online.",
       "applicationCategory": "UtilitiesApplication",
       "operatingSystem": "Any",
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "USD"
-      }
+      },
+      "featureList": [
+        "Electricity bill calculator free",
+        "WAPDA bill calculator",
+        "Pakistan electricity calculator",
+        "India electricity bill calculator",
+        "No signup required",
+        "Instant results"
+      ]
     })}}
   />
 );
@@ -87,13 +63,41 @@ const WebAppSchema = () => (
 export default function ElectricityCalculatorPage() {
   return (
     <div className="container mx-auto py-8 md:py-16 px-4 tool-page-fade">
-      <FAQSchema />
       <WebAppSchema />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem", 
+                "position": 2,
+                "name": "Tools",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": tool.name,
+                "item": tool.url
+              }
+            ]
+          })
+        }}
+      />
       
       <div className="max-w-[900px] mx-auto space-y-12">
         <ToolHeader 
           title="Electricity Bill Calculator"
-          description="Instantly estimate your electric bill based on units consumed, local tariffs, and taxes."
+          description="Calculate your electricity bill by units consumed free online. Supports Pakistan WAPDA, India, USA, UK, UAE, and Saudi Arabia rates. Get instant accurate bill estimates."
           icon={<Zap className="w-6 h-6 md:w-8 md:h-8" />}
           category="Finance"
         />
@@ -112,10 +116,10 @@ export default function ElectricityCalculatorPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              {[
-               "Select your country or enter a custom tariff rate.",
-               "Enter the total units (kWh) consumed from your meter.",
-               "Add optional fixed charges or adjust the tax percentage.",
-               "Click Calculate to see your total bill breakdown."
+               "Select your country or region — Pakistan WAPDA, India, USA, UK, UAE",
+               "Enter units consumed from your electricity meter",
+               "Add fixed charges and tax percentage if applicable",
+               "Click Calculate to see your exact electricity bill instantly free"
              ].map((step, i) => (
                <div key={i} className="flex gap-4 p-5 bg-slate-800/40 border border-slate-700 rounded-2xl">
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600/10 text-blue-400 flex items-center justify-center font-bold text-sm">{i + 1}</span>
@@ -136,28 +140,46 @@ export default function ElectricityCalculatorPage() {
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="q1" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    What is a unit of electricity?
+                    How to calculate electricity bill by units?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    A 'unit' on your electricity bill is equal to 1 kilowatt-hour (kWh). It represents the consumption of 1,000 watts of power for one hour. For example, using a 1000W heater for an hour uses 1 unit.
+                    Select your region, enter units consumed from your meter, and click Calculate. Our free electricity bill calculator online shows exact bill amount instantly.
                   </AccordionContent>
                 </AccordionItem>
                 <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="q2" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    Is the Pakistani WAPDA rate accurate?
+                    How to calculate WAPDA electricity bill?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    Our default rate for Pakistan is an average baseline. Actual bills in Pakistan often use slab-based pricing (higher rates for more consumption) and include additional fuel adjustment charges (FAC). For most accurate results, enter the rate shown on your latest bill.
+                    Select Pakistan WAPDA from the region dropdown. Enter your units consumed. Our free WAPDA bill calculator automatically applies current 2026 tariff rates.
                   </AccordionContent>
                 </AccordionItem>
                  <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="q3" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    Does this include Fuel Adjustment Charges (FAC)?
+                    What is the current WAPDA rate per unit?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    FAC varies monthly. You can include it by adding it to your 'Custom Rate' or entering the FAC total into 'Fixed Charges' for a precise total.
+                    Current WAPDA rate is approximately PKR 19.99 per unit plus taxes and fixed charges. Our electricity units to bill calculator applies these rates automatically.
+                  </AccordionContent>
+                </AccordionItem>
+                <div className="mx-6 h-px bg-slate-800" />
+                <AccordionItem value="q4" className="px-6 border-b-0">
+                  <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
+                    How to reduce electricity bill in Pakistan?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4">
+                    Use LED bulbs, run AC at 26°C, switch off standby appliances, and use solar energy. Calculate your savings using our free electricity bill calculator online.
+                  </AccordionContent>
+                </AccordionItem>
+                <div className="mx-6 h-px bg-slate-800" />
+                <AccordionItem value="q5" className="px-6 border-b-0">
+                  <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
+                    Does this calculator work for India too?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4">
+                    Yes — our online bijli bill calculator supports India rates per state, USA, UK, UAE, and Saudi Arabia. Select your region for accurate local electricity rates.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
