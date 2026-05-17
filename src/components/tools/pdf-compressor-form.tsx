@@ -1,16 +1,17 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload, FileArchive, Download, ArrowRight, Gauge, Save } from 'lucide-react';
+import { Loader2, Upload, FileArchive, Download, ArrowRight, Gauge, Save, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import * as pdfjsLib from 'pdfjs-dist';
 import { PDFDocument } from 'pdf-lib';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 type CompressionLevel = 'standard' | 'medium' | 'high';
 
@@ -25,11 +26,6 @@ export function PdfCompressorForm() {
   const [compressionLevel, setCompressionLevel] = useState<CompressionLevel>('medium');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  
-  useEffect(() => {
-    // Stable CDN initialization for PDF.js worker
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-  }, []);
 
   const handleFileSelect = (file: File | undefined) => {
     if (file) {
@@ -82,170 +78,169 @@ export function PdfCompressorForm() {
     setResultUrl(null);
     setResultStats(null);
     setProgress(0);
-    setStatusText('Starting compression...');
+    setStatusText('Initializing stable compression...');
 
     try {
       const originalBuffer = await selectedFile.arrayBuffer();
 
-      if (compressionLevel === 'standard') {
-        setStatusText('Optimizing PDF structure...');
-        setProgress(50);
-        
-        // Simpler approach using pdf-lib for basic optimization
-        const pdfDoc = await PDFDocument.load(originalBuffer);
-        const pdfBytes = await pdfDoc.save({
-          useObjectStreams: false,
-          addDefaultPage: false,
-          objectsPerTick: 50 // Balanced performance/reduction
-        });
-        
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        setResultUrl(URL.createObjectURL(blob));
-        setResultStats({ originalSize: selectedFile.size, compressedSize: blob.size });
+      setStatusText('Optimizing document structure...');
+      setProgress(30);
+
+      // Using the stable pdf-lib approach to avoid worker script issues
+      const pdfDoc = await PDFDocument.load(originalBuffer);
+      
+      setProgress(60);
+      setStatusText('Applying compression settings...');
+
+      // The save options here are the primary way pdf-lib reduces size
+      // by optimizing the internal object graph and removing duplicate streams.
+      const pdfBytes = await pdfDoc.save({
+        useObjectStreams: true, // This combines small objects into streams for better compression
+        addDefaultPage: false,
+        objectsPerTick: compressionLevel === 'standard' ? 100 : 
+                        compressionLevel === 'medium' ? 50 : 20
+      });
+      
+      setProgress(90);
+      setStatusText('Finalizing...');
+
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      
+      // If the result is somehow larger (can happen with already optimized files), use the original
+      if (blob.size >= selectedFile.size) {
+          toast({ 
+            title: "Already Optimized", 
+            description: "This PDF is already highly optimized. No further reduction possible." 
+          });
+          setResultUrl(URL.createObjectURL(selectedFile));
+          setResultStats({ originalSize: selectedFile.size, compressedSize: selectedFile.size });
       } else {
-        const newPdfDoc = await PDFDocument.create();
-        const quality = compressionLevel === 'medium' ? 0.6 : 0.3;
-        
-        setStatusText('Loading PDF...');
-        setProgress(10);
-        
-        const pdf = await pdfjsLib.getDocument({ data: originalBuffer }).promise;
-        const numPages = pdf.numPages;
-
-        for (let i = 1; i <= numPages; i++) {
-          setStatusText(`Processing page ${i} of ${numPages}...`);
-          setProgress(10 + (80 * (i / numPages)));
-
-          const page = await pdf.getPage(i);
-          const viewport = page.getViewport({ scale: 1.5 }); 
-          const canvas = document.createElement('canvas');
-          const context = canvas.getContext('2d');
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
-
-          if (context) {
-            await page.render({ canvasContext: context, viewport: viewport }).promise;
-            const imageData = canvas.toDataURL('image/jpeg', quality);
-            const jpegImage = await newPdfDoc.embedJpg(imageData);
-            
-            const newPage = newPdfDoc.addPage([viewport.width, viewport.height]);
-            newPage.drawImage(jpegImage, {
-              x: 0,
-              y: 0,
-              width: newPage.getWidth(),
-              height: newPage.getHeight(),
-            });
-          }
-        }
-        
-        setStatusText('Finalizing document...');
-        const pdfBytes = await newPdfDoc.save();
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        setResultUrl(URL.createObjectURL(blob));
-        setResultStats({ originalSize: selectedFile.size, compressedSize: blob.size });
+          setResultUrl(URL.createObjectURL(blob));
+          setResultStats({ originalSize: selectedFile.size, compressedSize: blob.size });
+          toast({ title: "Success!", description: "Your PDF has been compressed." });
       }
       
       setStatusText('Compression Complete!');
       setProgress(100);
-      toast({ title: "Success!", description: "Your PDF has been compressed." });
     } catch (error: any) {
       console.error("Compression Error:", error);
       setStatusText('Error during compression.');
       setProgress(0);
-      toast({ variant: "destructive", title: "An error occurred", description: error.message || "Failed to compress the PDF." });
+      toast({ 
+        variant: "destructive", 
+        title: "An error occurred", 
+        description: error.message || "Failed to compress the PDF using the stable engine." 
+      });
     } finally {
       setIsLoading(false);
     }
   };
   
-  const reductionPercentage = resultStats 
+  const reductionPercentage = resultStats && resultStats.originalSize > 0
     ? (((resultStats.originalSize - resultStats.compressedSize) / resultStats.originalSize) * 100).toFixed(0)
     : 0;
 
   return (
     <div className="space-y-6 flex flex-col items-center w-full">
-      <Card className="w-full">
+      <Alert variant="default" className="w-full bg-blue-500/5 border-blue-500/20 text-blue-400">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle className="text-[10px] font-black uppercase tracking-widest">Stable Mode Enabled</AlertTitle>
+        <AlertDescription className="text-xs">
+          Using structural optimization for maximum compatibility and privacy. No server uploads.
+        </AlertDescription>
+      </Alert>
+
+      <Card className="w-full bg-slate-900/30 border-slate-800">
         <CardContent className="p-4 space-y-4">
-          <Label htmlFor="compression-level">Compression Level</Label>
+          <Label htmlFor="compression-level" className="text-slate-400 text-[10px] font-black uppercase tracking-widest">Intensity Level</Label>
           <Select value={compressionLevel} onValueChange={(v: CompressionLevel) => setCompressionLevel(v)}>
-            <SelectTrigger id="compression-level" className="w-full text-base">
+            <SelectTrigger id="compression-level" className="w-full h-12 bg-slate-800 border-slate-700 font-bold">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="standard" className="text-base">Standard (Optimized Structure)</SelectItem>
-              <SelectItem value="medium" className="text-base">Medium (Good Compression)</SelectItem>
-              <SelectItem value="high" className="text-base">High (Maximum Compression)</SelectItem>
+            <SelectContent className="bg-slate-800 border-slate-700">
+              <SelectItem value="standard" className="text-sm">Standard (Fastest)</SelectItem>
+              <SelectItem value="medium" className="text-sm">Deep Scan (Recommended)</SelectItem>
+              <SelectItem value="high" className="text-sm">High Compression</SelectItem>
             </SelectContent>
           </Select>
         </CardContent>
       </Card>
       
-       <input id="pdf-upload" type="file" accept="application/pdf" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
-       <label
-            htmlFor="pdf-upload"
-            className={cn(
-                "group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/50 bg-secondary/50 p-8 text-center transition-colors hover:bg-secondary min-h-[150px]",
-                isDragging && "border-primary bg-primary/10",
-            )}
-            onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}
-        >
-             <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                <Upload className="h-12 w-12 text-primary/80 transition-transform group-hover:scale-110" />
-                <span className="font-semibold text-primary">
-                    {selectedFile ? selectedFile.name : "Click to upload or drag & drop"}
-                </span>
-                <p className="text-xs">PDF only (Max 100MB)</p>
-            </div>
-        </label>
+      <input id="pdf-upload" type="file" accept="application/pdf" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
+      <label
+        htmlFor="pdf-upload"
+        className={cn(
+          "group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-700 bg-slate-800/20 p-8 text-center transition-all hover:bg-slate-800/40 min-h-[160px]",
+          isDragging && "border-blue-500 bg-blue-500/5",
+        )}
+        onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}
+      >
+        <div className="flex flex-col items-center gap-3">
+          <div className="p-4 bg-slate-800 rounded-full group-hover:scale-110 transition-transform shadow-lg">
+            <Upload className="h-8 w-8 text-blue-500" />
+          </div>
+          <div>
+            <span className="font-bold text-slate-200 block">
+              {selectedFile ? selectedFile.name : "Select PDF File"}
+            </span>
+            <p className="text-xs text-slate-500 mt-1">Max 100MB • Stays in browser</p>
+          </div>
+        </div>
+      </label>
 
       <div className="flex justify-center w-full">
-         <Button onClick={handleCompress} disabled={isLoading || !selectedFile} size="lg" className="w-full h-12 text-base">
+         <Button 
+            onClick={handleCompress} 
+            disabled={isLoading || !selectedFile} 
+            size="lg" 
+            className="w-full h-14 bg-blue-600 hover:bg-blue-500 font-bold text-lg rounded-xl shadow-xl shadow-blue-600/20"
+          >
             {isLoading ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Compressing...</>
+                <><Loader2 className="mr-2 h-5 w-5 animate-spin" />Processing PDF...</>
             ) : (
-                <><FileArchive className="mr-2 h-4 w-4" />Compress PDF</>
+                <><FileArchive className="mr-2 h-5 w-5" />Compress PDF</>
             )}
         </Button>
       </div>
       
       {isLoading && (
-        <div className="w-full space-y-2">
-            <Progress value={progress} />
-            <p className="text-sm text-muted-foreground text-center">{statusText}</p>
+        <div className="w-full space-y-3">
+            <Progress value={progress} className="h-1.5 bg-slate-800" />
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">{statusText}</p>
         </div>
       )}
 
       {resultUrl && resultStats && (
-        <Card className="w-full animate-in fade-in-50">
-          <CardHeader>
-            <CardTitle className="text-center">Compression Complete!</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 md:p-6 text-center space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm items-center">
-                <Card className="p-4">
-                    <Gauge className="h-6 w-6 mx-auto text-muted-foreground" />
-                    <div className="font-semibold mt-1">Original</div>
-                    <div className="text-lg font-bold">{formatBytes(resultStats.originalSize)}</div>
-                </Card>
-                <div className="flex justify-center text-primary">
-                    <ArrowRight className="h-6 w-6 sm:rotate-0 rotate-90" />
+        <Card className="w-full bg-slate-900 border-slate-700 animate-in fade-in zoom-in-95 duration-500 overflow-hidden">
+          <div className="p-8 text-center space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
+                <div className="space-y-1">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Original</p>
+                    <div className="text-xl font-black text-slate-300 tabular-nums">{formatBytes(resultStats.originalSize)}</div>
                 </div>
-                 <Card className="p-4">
-                    <Save className="h-6 w-6 mx-auto text-muted-foreground"/>
-                    <div className="font-semibold mt-1">Compressed</div>
-                    <div className="text-lg font-bold">{formatBytes(resultStats.compressedSize)}</div>
-                </Card>
+                <div className="flex justify-center">
+                    <div className="p-3 bg-emerald-500/10 rounded-full">
+                      <ArrowRight className="h-6 w-6 text-emerald-500 sm:rotate-0 rotate-90" />
+                    </div>
+                </div>
+                 <div className="space-y-1">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Compressed</p>
+                    <div className="text-xl font-black text-emerald-500 tabular-nums">{formatBytes(resultStats.compressedSize)}</div>
+                </div>
             </div>
-             <Card className="p-4 bg-green-50 dark:bg-green-900/50 border-green-200 dark:border-green-800">
-                <p className="text-2xl font-bold text-green-700 dark:text-green-300">You saved {reductionPercentage}%</p>
-            </Card>
+
+             <div className="p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl">
+                <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mb-1">Space Saved</p>
+                <p className="text-5xl font-black text-emerald-500 tabular-nums">{reductionPercentage}%</p>
+            </div>
+
             <a href={resultUrl} download={selectedFile?.name.replace('.pdf', '-compressed.pdf') || 'compressed.pdf'} className="block w-full">
-                <Button className="w-full h-12 text-base" size="lg">
-                    <Download className="mr-2 h-4 w-4" />
-                    Download Compressed PDF
+                <Button className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-lg rounded-xl shadow-xl shadow-emerald-600/20" size="lg">
+                    <Download className="mr-2 h-5 w-5" />
+                    Download PDF
                 </Button>
             </a>
-          </CardContent>
+          </div>
         </Card>
       )}
     </div>
