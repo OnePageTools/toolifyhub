@@ -13,11 +13,14 @@ const tool = {
 };
 
 export const metadata: Metadata = {
-  title: "Free Percentage Calculator Online — Calculate Percentages Instantly | ToolifyHub",
-  description: "Calculate percentages free online. Find what percent of a number, percentage change, and more. Instant results for discounts, tips, and financial calculations. No signup needed.",
+  title: "Percentage Calculator Online Free — Calculate Any Percentage Instantly | ToolifyHub",
+  description: "Calculate percentages free online instantly. Find what percent of a number, percentage change, and more. No signup, instant results.",
+  alternates: {
+    canonical: "https://onepagetools.vercel.app/tools/percentage-calculator",
+  },
   openGraph: {
-    title: "Free Percentage Calculator — Instant Portions & Change | ToolifyHub",
-    description: "Multi-purpose percentage tool for students and pros. Calculate growth, portions, and basic percentages instantly.",
+    title: "Percentage Calculator Free — Calculate Any Percentage | ToolifyHub",
+    description: "Calculate percentages free online instantly. Three calculators in one. No signup, instant results.",
     url: tool.url,
   },
   other: {
@@ -31,15 +34,24 @@ const WebAppSchema = () => (
     dangerouslySetInnerHTML={{ __html: JSON.stringify({
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "Percentage Calculator",
-      "url": tool.url,
-      "applicationCategory": "FinanceApplication",
+      "name": "Percentage Calculator Online Free",
+      "url": "https://onepagetools.vercel.app/tools/percentage-calculator",
+      "description": "Calculate any percentage free online instantly.",
+      "applicationCategory": "UtilitiesApplication",
       "operatingSystem": "Any",
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "USD"
-      }
+      },
+      "featureList": [
+        "Percentage calculator free online",
+        "Percent of number calculator",
+        "Percentage change calculator",
+        "Percentage increase calculator",
+        "Marks percentage calculator",
+        "No signup required"
+      ]
     })}}
   />
 );
@@ -64,7 +76,7 @@ export default function PercentageCalculatorPage() {
       <div className="max-w-[1100px] mx-auto space-y-12">
         <ToolHeader 
           title="Percentage Calculator"
-          description="A versatile utility to handle all common percentage calculations, from portion finding to year-over-year growth tracking."
+          description="Calculate any percentage free online instantly. Find what percent of a number, what percentage one number is of another, and percentage increase or decrease. No signup needed."
           icon={<Percent className="w-6 h-6 md:w-8 md:h-8" />}
           category="Finance"
         />
@@ -79,10 +91,10 @@ export default function PercentageCalculatorPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              {[
-               "Select the calculation type from the top tabs.",
-               "Enter your input values in the designated fields.",
-               "The result will appear instantly in the right-hand panel.",
-               "Toggle between basic math, portion calculation, or percentage change."
+               "Select calculation type — What is X% of Y, X is what % of Y, or Percentage Change",
+               "Enter your numbers in the input fields",
+               "See instant percentage result automatically",
+               "Copy result — free, no signup needed"
              ].map((step, i) => (
                <div key={i} className="flex gap-4 p-5 bg-slate-800/40 border border-slate-700 rounded-2xl">
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600/10 text-blue-400 flex items-center justify-center font-bold text-sm">{i + 1}</span>
@@ -96,35 +108,53 @@ export default function PercentageCalculatorPage() {
         <section className="space-y-6">
           <div className="flex items-center gap-3">
             <HelpCircle className="w-6 h-6 text-primary" />
-            <h2 className="text-2xl font-bold text-slate-100">Common Questions</h2>
+            <h2 className="text-2xl font-bold text-slate-100">Frequently Asked Questions</h2>
           </div>
           <Card className="bg-slate-900/30 border-slate-800">
             <CardContent className="p-0">
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="q1" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    How do I calculate a basic percentage?
+                    How to calculate percentage online free?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    Divide the part by the whole and multiply by 100. For example, to find what percentage 20 is of 50: (20 / 50) * 100 = 40%.
+                    Select your calculation type above, enter your numbers, and our free percentage calculator online shows the result instantly. No signup, no payment needed.
                   </AccordionContent>
                 </AccordionItem>
                 <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="q2" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    What is the formula for percentage increase?
+                    How to find what percent of a number?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    Subtract the original value from the new value, divide that difference by the original value, and multiply by 100. Formula: ((New - Old) / Old) * 100.
+                    Use our What is X% of Y calculator. Enter percentage and number. Example: 20% of 500 = 100. Our free percent of a number calculator shows instantly.
                   </AccordionContent>
                 </AccordionItem>
                  <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="q3" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    Why use a percentage calculator?
+                    How to calculate percentage increase?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    While the math is simple, our calculator prevents manual errors and handles complex decimals instantly. It also provides automatic increase/decrease detection, which is vital for financial reports.
+                    Use Percentage Change tab. Enter original and new value. Our free percentage increase calculator online shows increase or decrease percentage instantly with color coding.
+                  </AccordionContent>
+                </AccordionItem>
+                <div className="mx-6 h-px bg-slate-800" />
+                <AccordionItem value="q4" className="px-6 border-b-0">
+                  <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
+                    What is percentage change formula?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4">
+                    Percentage change = (New Value minus Old Value) divided by Old Value multiplied by 100. Our free percentage change calculator does this automatically.
+                  </AccordionContent>
+                </AccordionItem>
+                <div className="mx-6 h-px bg-slate-800" />
+                <AccordionItem value="q5" className="px-6 border-b-0">
+                  <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
+                    How to calculate percentage of marks?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4">
+                    Enter your marks as X and total marks as Y in our X is what percent of Y tab. Our free marks percentage calculator shows your percentage score instantly.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
