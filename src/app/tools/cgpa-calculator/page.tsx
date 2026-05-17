@@ -13,11 +13,14 @@ const tool = {
 };
 
 export const metadata: Metadata = {
-  title: "Free CGPA Calculator Online — Calculate GPA & CGPA Instantly | ToolifyHub",
-  description: "Calculate your semester GPA and cumulative CGPA free online. Supports 4.0 and 10.0 grading scales for Pakistan, USA, and India. No signup needed.",
+  title: "CGPA Calculator Online Free — Calculate GPA for Pakistan University | ToolifyHub",
+  description: "Calculate CGPA and GPA free online. Add subjects, credit hours and grades. Instant results for Pakistan, India university students. No signup needed.",
+  alternates: {
+    canonical: tool.url,
+  },
   openGraph: {
-    title: "Free CGPA Calculator — GPA & CGPA Online | ToolifyHub",
-    description: "Instant GPA and CGPA calculation with credit hours. Supports multiple grading systems. Free and private.",
+    title: "CGPA Calculator Free — Calculate GPA Pakistan University | ToolifyHub",
+    description: "Calculate CGPA and GPA free online for Pakistan and India universities. Add subjects and grades. Instant results.",
     url: tool.url,
   },
   other: {
@@ -25,42 +28,72 @@ export const metadata: Metadata = {
   }
 };
 
+const WebAppSchema = () => (
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{ __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "CGPA Calculator Online Free",
+      "url": "https://onepagetools.vercel.app/tools/cgpa-calculator",
+      "description": "Calculate CGPA and GPA free online for university students.",
+      "applicationCategory": "EducationApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "CGPA calculator free online",
+        "GPA calculator Pakistan university",
+        "4.0 and 10.0 scale support",
+        "Semester GPA calculator",
+        "No signup required",
+        "Instant results"
+      ]
+    })}}
+  />
+);
+
 export default function CgpaCalculatorPage() {
   return (
     <div className="container mx-auto py-8 md:py-16 px-4 tool-page-fade">
+      <WebAppSchema />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebApplication",
-          "name": "CGPA Calculator",
-          "url": tool.url,
-          "applicationCategory": "EducationApplication",
-          "operatingSystem": "Any",
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-          }
-        })}}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://onepagetools.vercel.app" },
-            { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://onepagetools.vercel.app" },
-            { "@type": "ListItem", "position": 3, "name": tool.name, "item": tool.url }
-          ]
-        })}}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem", 
+                "position": 2,
+                "name": "Tools",
+                "item": "https://onepagetools.vercel.app"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": tool.name,
+                "item": tool.url
+              }
+            ]
+          })
+        }}
       />
 
       <div className="max-w-[1000px] mx-auto space-y-12">
         <ToolHeader 
           title="CGPA Calculator"
-          description="A professional academic tool to track your GPA and cumulative CGPA across multiple semesters and grading systems."
+          description="Calculate your CGPA and GPA free online instantly. Add subjects, credit hours and grades for any semester. Supports Pakistan 4.0 scale and India 10.0 scale universities."
           icon={<GraduationCap className="w-6 h-6 md:w-8 md:h-8" />}
           category="Education"
         />
@@ -75,10 +108,10 @@ export default function CgpaCalculatorPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              {[
-               "Select your grading scale (4.0 for PK/USA or 10.0 for India).",
-               "Enter subject names, credit hours, and your achieved grades.",
-               "Add previous semesters if you want to calculate your cumulative CGPA.",
-               "Review your instant academic report and status classification."
+               "Select your grading system — 4.0 scale Pakistan/USA or 10.0 scale India",
+               "Add your subjects with credit hours and grade for each",
+               "Add previous semesters to calculate cumulative CGPA",
+               "See your GPA and CGPA instantly — free, no signup needed"
              ].map((step, i) => (
                <div key={i} className="flex gap-4 p-5 bg-slate-800/40 border border-slate-700 rounded-2xl">
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600/10 text-blue-400 flex items-center justify-center font-bold text-sm">{i + 1}</span>
@@ -99,28 +132,46 @@ export default function CgpaCalculatorPage() {
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="q1" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    How is CGPA actually calculated?
+                    How to calculate CGPA online free?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    CGPA is calculated by multiplying the grade points of each subject by its credit hours, summing those products (total quality points), and then dividing the total by the sum of all credit hours across all semesters.
+                    Select your grading system, add subjects with credit hours and grades, and our free CGPA calculator online shows your result instantly. No signup, no payment needed.
                   </AccordionContent>
                 </AccordionItem>
                 <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="q2" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    What is a "Good" CGPA in Pakistan?
+                    How to calculate CGPA in Pakistan university?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    In the Pakistani university system (HEC standard), a CGPA above 3.5 is considered excellent (Distinction level), while a CGPA between 3.0 and 3.49 is considered good (First Division). Most competitive jobs require at least a 3.0.
+                    Select 4.0 scale, add your subjects with credit hours and letter grades A, B, C. Our free CGPA calculator for Pakistan university computes results automatically.
                   </AccordionContent>
                 </AccordionItem>
                  <div className="mx-6 h-px bg-slate-800" />
                 <AccordionItem value="q3" className="px-6 border-b-0">
                   <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
-                    Does failing a course affect my CGPA?
+                    What is a good CGPA in Pakistan?
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 pb-4">
-                    Yes. An 'F' grade carries 0 points, but the credit hours for that course are still added to the total credits. This significantly pulls down your average unless you repeat the course and improve the grade.
+                    3.5 to 4.0 CGPA is excellent — Distinction. 3.0 to 3.49 is First Division. 2.5 to 2.99 is Second Division. Below 2.0 means academic risk in most universities.
+                  </AccordionContent>
+                </AccordionItem>
+                <div className="mx-6 h-px bg-slate-800" />
+                <AccordionItem value="q4" className="px-6 border-b-0">
+                  <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
+                    How to convert CGPA to percentage?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4">
+                    Multiply your CGPA by 25 for 4.0 scale. Example: 3.5 CGPA equals 87.5 percent. Our free CGPA to percentage calculator shows this conversion automatically.
+                  </AccordionContent>
+                </AccordionItem>
+                <div className="mx-6 h-px bg-slate-800" />
+                <AccordionItem value="q5" className="px-6 border-b-0">
+                  <AccordionTrigger className="text-left font-semibold text-slate-200 hover:no-underline">
+                    Can I calculate semester GPA separately?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4">
+                    Yes — our free semester GPA calculator online shows current semester GPA and overall CGPA separately. Add multiple semesters to track your academic progress.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
