@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
@@ -28,7 +27,8 @@ export function PdfCompressorForm() {
   const { toast } = useToast();
   
   useEffect(() => {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.mjs`;
+    // Stable CDN initialization for PDF.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
   }, []);
 
   const handleFileSelect = (file: File | undefined) => {
@@ -86,20 +86,29 @@ export function PdfCompressorForm() {
 
     try {
       const originalBuffer = await selectedFile.arrayBuffer();
-      const newPdfDoc = await PDFDocument.create();
 
       if (compressionLevel === 'standard') {
         setStatusText('Optimizing PDF structure...');
         setProgress(50);
-        const pdfDoc = await PDFDocument.load(originalBuffer, { ignoreInvalidXRefTable: true });
-        const pdfBytes = await pdfDoc.save();
+        
+        // Simpler approach using pdf-lib for basic optimization
+        const pdfDoc = await PDFDocument.load(originalBuffer);
+        const pdfBytes = await pdfDoc.save({
+          useObjectStreams: false,
+          addDefaultPage: false,
+          objectsPerTick: 50 // Balanced performance/reduction
+        });
+        
         const blob = new Blob([pdfBytes], { type: 'application/pdf' });
         setResultUrl(URL.createObjectURL(blob));
         setResultStats({ originalSize: selectedFile.size, compressedSize: blob.size });
       } else {
+        const newPdfDoc = await PDFDocument.create();
         const quality = compressionLevel === 'medium' ? 0.6 : 0.3;
+        
         setStatusText('Loading PDF...');
         setProgress(10);
+        
         const pdf = await pdfjsLib.getDocument({ data: originalBuffer }).promise;
         const numPages = pdf.numPages;
 
@@ -108,7 +117,7 @@ export function PdfCompressorForm() {
           setProgress(10 + (80 * (i / numPages)));
 
           const page = await pdf.getPage(i);
-          const viewport = page.getViewport({ scale: 1.5 }); // Render at higher scale for better quality
+          const viewport = page.getViewport({ scale: 1.5 }); 
           const canvas = document.createElement('canvas');
           const context = canvas.getContext('2d');
           canvas.height = viewport.height;
@@ -129,7 +138,7 @@ export function PdfCompressorForm() {
           }
         }
         
-        setStatusText('Saving compressed PDF...');
+        setStatusText('Finalizing document...');
         const pdfBytes = await newPdfDoc.save();
         const blob = new Blob([pdfBytes], { type: 'application/pdf' });
         setResultUrl(URL.createObjectURL(blob));
@@ -163,9 +172,9 @@ export function PdfCompressorForm() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="standard" className="text-base">Standard (Selectable Text, Low Compression)</SelectItem>
+              <SelectItem value="standard" className="text-base">Standard (Optimized Structure)</SelectItem>
               <SelectItem value="medium" className="text-base">Medium (Good Compression)</SelectItem>
-              <SelectItem value="high" className="text-base">High (Highest Compression)</SelectItem>
+              <SelectItem value="high" className="text-base">High (Maximum Compression)</SelectItem>
             </SelectContent>
           </Select>
         </CardContent>
@@ -215,7 +224,7 @@ export function PdfCompressorForm() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm items-center">
                 <Card className="p-4">
                     <Gauge className="h-6 w-6 mx-auto text-muted-foreground" />
-                    <div className="font-semibold mt-1">Original Size</div>
+                    <div className="font-semibold mt-1">Original</div>
                     <div className="text-lg font-bold">{formatBytes(resultStats.originalSize)}</div>
                 </Card>
                 <div className="flex justify-center text-primary">
@@ -223,7 +232,7 @@ export function PdfCompressorForm() {
                 </div>
                  <Card className="p-4">
                     <Save className="h-6 w-6 mx-auto text-muted-foreground"/>
-                    <div className="font-semibold mt-1">Compressed Size</div>
+                    <div className="font-semibold mt-1">Compressed</div>
                     <div className="text-lg font-bold">{formatBytes(resultStats.compressedSize)}</div>
                 </Card>
             </div>
