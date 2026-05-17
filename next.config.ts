@@ -37,7 +37,8 @@ const securityHeaders = [
       script-src 'self' 'unsafe-eval' 'unsafe-inline' 
         https://www.googletagmanager.com 
         https://www.google-analytics.com
-        https://api.exchangerate-api.com;
+        https://api.exchangerate-api.com
+        https://cdnjs.cloudflare.com;
       style-src 'self' 'unsafe-inline' 
         https://fonts.googleapis.com;
       font-src 'self' 
