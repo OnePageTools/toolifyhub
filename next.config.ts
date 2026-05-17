@@ -34,12 +34,13 @@ const securityHeaders = [
     key: 'Content-Security-Policy',
     value: `
       default-src 'self';
-      script-src 'self' 'unsafe-eval' 'unsafe-inline' 
+      script-src 'self' 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval'
         https://www.googletagmanager.com 
         https://www.google-analytics.com
         https://api.exchangerate-api.com
         https://cdnjs.cloudflare.com
         https://cdn.jsdelivr.net
+        https://static.imgly.com
         https://unpkg.com;
       style-src 'self' 'unsafe-inline' 
         https://fonts.googleapis.com;
@@ -50,7 +51,7 @@ const securityHeaders = [
         https://www.google-analytics.com
         https://placehold.co
         https://picsum.photos;
-      connect-src 'self' 
+      connect-src 'self' blob:
         https://www.google-analytics.com
         https://api.exchangerate-api.com
         https://api.openweathermap.org
@@ -65,7 +66,7 @@ const securityHeaders = [
         https://cdn.jsdelivr.net
         https://unpkg.com;
       worker-src 'self' blob:;
-      frame-src 'none';
+      frame-src 'self';
       object-src 'none';
       base-uri 'self';
       form-action 'self';

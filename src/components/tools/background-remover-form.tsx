@@ -30,7 +30,7 @@ export function BackgroundRemoverForm() {
   const { toast } = useToast();
 
   useEffect(() => {
-    const hasUsedBefore = localStorage.getItem('background_remover_used');
+    const hasUsedBefore = typeof window !== 'undefined' && localStorage.getItem('background_remover_used');
     if (!hasUsedBefore) {
       setIsFirstUse(true);
     }
@@ -129,7 +129,7 @@ export function BackgroundRemoverForm() {
         variant: "destructive",
         title: isFetchError ? "Download Failed" : "Processing Failed",
         description: isFetchError 
-            ? "Could not download AI assets. Please check your internet connection or disable ad-blockers."
+            ? "Could not download AI assets. Please check your internet connection or disable ad-blockers for this site."
             : "Failed to process image. Try a clearer photo with high contrast.",
       });
       setStatus('Error occurred');
