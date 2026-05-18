@@ -95,7 +95,7 @@ export function PomodoroTimerForm() {
     playSound();
     
     // Simple browser notification
-    if ("Notification" in window && Notification.permission === "granted") {
+    if (typeof window !== 'undefined' && "Notification" in window && Notification.permission === "granted") {
         new Notification(mode === 'pomodoro' ? "Time for a break!" : "Back to work!", {
             body: mode === 'pomodoro' ? "Focus session complete." : "Break is over.",
         });
@@ -174,7 +174,7 @@ export function PomodoroTimerForm() {
         }
     }
     // Request notification permission
-    if ("Notification" in window && Notification.permission !== "denied") {
+    if (typeof window !== 'undefined' && "Notification" in window && Notification.permission !== "denied") {
         Notification.requestPermission();
     }
   }, []);
@@ -189,10 +189,10 @@ export function PomodoroTimerForm() {
   }, [statsToday]);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 w-full max-w-full overflow-x-hidden box-border px-4 md:px-0">
       {/* Mode Switcher */}
       <div className="flex justify-center">
-        <div className="flex items-center gap-2 bg-slate-800/50 p-1.5 rounded-full border border-slate-700">
+        <div className="flex items-center gap-1 sm:gap-2 bg-slate-800/50 p-1 rounded-[8px] md:p-1.5 md:rounded-full border border-slate-700 w-full md:w-auto">
           {[
             { id: 'pomodoro', label: 'Pomodoro', icon: Focus },
             { id: 'shortBreak', label: 'Short Break', icon: Coffee },
@@ -202,13 +202,13 @@ export function PomodoroTimerForm() {
               key={m.id}
               onClick={() => switchMode(m.id as Mode)}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all",
+                "flex-1 flex items-center justify-center gap-1.5 px-2 md:px-4 py-2 rounded-[6px] md:rounded-full text-[12px] md:text-xs font-bold transition-all h-[40px] md:h-auto whitespace-nowrap",
                 mode === m.id 
                   ? "bg-slate-700 text-white shadow-lg" 
                   : "text-slate-500 hover:text-slate-300"
               )}
             >
-              <m.icon className="w-3.5 h-3.5" />
+              <m.icon className="w-3.5 h-3.5 hidden sm:inline" />
               {m.label}
             </button>
           ))}
@@ -218,7 +218,7 @@ export function PomodoroTimerForm() {
       {/* Main Timer Display */}
       <div className="flex flex-col items-center justify-center relative py-4">
         {/* Session Indicators (Dots) */}
-        <div className="flex gap-2 mb-8">
+        <div className="flex justify-center gap-2 mb-8 flex-wrap">
             {[1, 2, 3, 4].map(dot => (
                 <div 
                     key={dot}
@@ -232,7 +232,7 @@ export function PomodoroTimerForm() {
             ))}
         </div>
 
-        <div className="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center">
+        <div className="relative w-[220px] h-[220px] md:w-80 md:h-80 flex items-center justify-center">
           {/* Circular Progress Ring */}
           <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
             <circle
@@ -263,11 +263,11 @@ export function PomodoroTimerForm() {
               key={timeLeft}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="text-6xl md:text-7xl font-black tabular-nums text-slate-100 tracking-tighter"
+              className="text-[42px] md:text-7xl font-black tabular-nums text-slate-100 tracking-tighter"
             >
               {formatTime(timeLeft)}
             </motion.span>
-            <span className={cn("text-xs font-bold uppercase tracking-[0.2em] mt-1", modeColors[mode])}>
+            <span className={cn("text-[14px] md:text-xs font-bold uppercase tracking-[0.2em] mt-1", modeColors[mode])}>
               {mode === 'pomodoro' ? 'Focus' : 'Break'}
             </span>
           </div>
@@ -275,13 +275,13 @@ export function PomodoroTimerForm() {
       </div>
 
       {/* Controls */}
-      <div className="flex flex-col items-center gap-6 max-w-sm mx-auto">
-        <div className="flex items-center gap-4 w-full">
+      <div className="flex flex-col items-center gap-6 max-w-sm mx-auto w-full">
+        <div className="flex flex-col gap-2.5 w-full">
             <Button 
                 onClick={() => setIsActive(!isActive)}
                 size="lg"
                 className={cn(
-                    "flex-1 h-16 rounded-2xl text-xl font-bold transition-all duration-300",
+                    "w-full h-[52px] rounded-2xl text-base font-semibold transition-all duration-300",
                     isActive 
                         ? "bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700" 
                         : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 shadow-xl shadow-blue-600/20"
@@ -291,12 +291,12 @@ export function PomodoroTimerForm() {
                 {isActive ? 'Pause' : 'Start Focus'}
             </Button>
             
-            <div className="flex gap-2">
-                <Button variant="outline" size="icon" onClick={handleReset} className="h-16 w-16 rounded-2xl border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-slate-400">
-                    <RotateCcw className="w-6 h-6" />
+            <div className="flex flex-col gap-2.5 w-full">
+                <Button variant="outline" onClick={handleSkip} className="h-[44px] w-full rounded-2xl border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-slate-400 font-bold text-sm">
+                    <SkipForward className="w-4 h-4 mr-2" /> Skip Session
                 </Button>
-                <Button variant="outline" size="icon" onClick={handleSkip} className="h-16 w-16 rounded-2xl border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-slate-400">
-                    <SkipForward className="w-6 h-6" />
+                <Button variant="outline" onClick={handleReset} className="h-[44px] w-full rounded-2xl border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-slate-400 font-bold text-sm">
+                    <RotateCcw className="w-4 h-4 mr-2" /> Reset Timer
                 </Button>
             </div>
         </div>
@@ -320,45 +320,33 @@ export function PomodoroTimerForm() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
+            className="overflow-hidden w-full"
           >
-            <Card className="bg-slate-800/30 border-slate-700">
-              <CardContent className="p-6 space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-slate-500 uppercase">Focus (min)</Label>
-                    <Input 
-                      type="number" 
-                      value={settings.pomodoro} 
-                      onChange={(e) => setSettings({...settings, pomodoro: Math.max(1, parseInt(e.target.value) || 1)})}
-                      className="bg-slate-900 border-slate-700 h-10 font-bold"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-slate-500 uppercase">Short Break</Label>
-                    <Input 
-                      type="number" 
-                      value={settings.shortBreak} 
-                      onChange={(e) => setSettings({...settings, shortBreak: Math.max(1, parseInt(e.target.value) || 1)})}
-                      className="bg-slate-900 border-slate-700 h-10 font-bold"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-slate-500 uppercase">Long Break</Label>
-                    <Input 
-                      type="number" 
-                      value={settings.longBreak} 
-                      onChange={(e) => setSettings({...settings, longBreak: Math.max(1, parseInt(e.target.value) || 1)})}
-                      className="bg-slate-900 border-slate-700 h-10 font-bold"
-                    />
-                  </div>
+            <Card className="bg-slate-800/30 border-slate-700 w-full">
+              <CardContent className="p-4 md:p-6 space-y-6">
+                <div className="flex flex-col gap-4">
+                  {[
+                    { key: 'pomodoro' as const, label: 'Focus (min)' },
+                    { key: 'shortBreak' as const, label: 'Short Break' },
+                    { key: 'longBreak' as const, label: 'Long Break' },
+                  ].map((item) => (
+                    <div key={item.key} className="flex items-center justify-between">
+                       <Label className="text-[14px] font-bold text-slate-500 uppercase">{item.label}</Label>
+                       <Input 
+                        type="number" 
+                        value={settings[item.key]} 
+                        onChange={(e) => setSettings({...settings, [item.key]: Math.max(1, parseInt(e.target.value) || 1)})}
+                        className="bg-slate-900 border-slate-700 h-10 w-[80px] font-bold text-center"
+                      />
+                    </div>
+                  ))}
                 </div>
 
-                <div className="flex flex-col gap-4 border-t border-slate-700 pt-4">
+                <div className="flex flex-col gap-5 border-t border-slate-700 pt-5">
                   <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label className="text-slate-300 font-bold">Auto-start Breaks</Label>
-                      <p className="text-xs text-slate-500">Automatically start the break timer after focus.</p>
+                    <div className="space-y-0.5 max-w-[70%]">
+                      <Label className="text-[14px] md:text-sm font-bold text-slate-300">Auto-start Breaks</Label>
+                      <p className="text-[11px] text-slate-500 leading-tight">Start next session automatically.</p>
                     </div>
                     <Switch 
                       checked={settings.autoStartBreaks} 
@@ -367,9 +355,9 @@ export function PomodoroTimerForm() {
                     />
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label className="text-slate-300 font-bold">Sound Notifications</Label>
-                      <p className="text-xs text-slate-500">Play a bell sound when a session ends.</p>
+                    <div className="space-y-0.5 max-w-[70%]">
+                      <Label className="text-[14px] md:text-sm font-bold text-slate-300">Sound Notifications</Label>
+                      <p className="text-[11px] text-slate-500 leading-tight">Play a bell when session ends.</p>
                     </div>
                     <div className="flex items-center gap-3">
                         {settings.soundEnabled ? <Volume2 className="w-4 h-4 text-slate-400"/> : <VolumeX className="w-4 h-4 text-red-400"/>}
@@ -388,31 +376,31 @@ export function PomodoroTimerForm() {
       </AnimatePresence>
 
       {/* Stats Section */}
-      <div className="pt-8 border-t border-slate-800">
-        <div className="flex items-center gap-2 mb-6 text-slate-200 font-bold text-sm uppercase tracking-widest">
+      <div className="pt-8 border-t border-slate-800 w-full">
+        <div className="flex items-center gap-2 mb-6 text-slate-200 font-bold text-sm uppercase tracking-widest px-1">
             <Trophy className="w-4 h-4 text-amber-400" />
             Today's Progress
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Card className="bg-[#1E293B] border-slate-700">
-                <CardContent className="p-4 flex items-center gap-4">
-                    <div className="p-3 bg-blue-500/10 rounded-xl">
-                        <CheckCircle2 className="w-6 h-6 text-blue-400" />
+        <div className="grid grid-cols-2 gap-3 w-full">
+            <Card className="bg-[#1E293B] border-slate-700 p-0">
+                <CardContent className="p-3 md:p-4 flex flex-col md:flex-row items-center gap-2 md:gap-4 text-center md:text-left">
+                    <div className="p-2 md:p-3 bg-blue-500/10 rounded-xl">
+                        <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-blue-400" />
                     </div>
                     <div>
-                        <p className="text-2xl font-black text-slate-100">{statsToday.count}</p>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Pomodoros Done</p>
+                        <p className="text-xl md:text-2xl font-black text-slate-100 tabular-nums">{statsToday.count}</p>
+                        <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sessions</p>
                     </div>
                 </CardContent>
             </Card>
-            <Card className="bg-[#1E293B] border-slate-700">
-                <CardContent className="p-4 flex items-center gap-4">
-                    <div className="p-3 bg-emerald-500/10 rounded-xl">
-                        <Clock className="w-6 h-6 text-emerald-400" />
+            <Card className="bg-[#1E293B] border-slate-700 p-0">
+                <CardContent className="p-3 md:p-4 flex flex-col md:flex-row items-center gap-2 md:gap-4 text-center md:text-left">
+                    <div className="p-2 md:p-3 bg-emerald-500/10 rounded-xl">
+                        <Clock className="w-5 h-5 md:w-6 md:h-6 text-emerald-400" />
                     </div>
                     <div>
-                        <p className="text-2xl font-black text-slate-100">{statsToday.totalFocus}m</p>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Focus Time</p>
+                        <p className="text-xl md:text-2xl font-black text-slate-100 tabular-nums">{statsToday.totalFocus}m</p>
+                        <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider">Focus Time</p>
                     </div>
                 </CardContent>
             </Card>
