@@ -44,6 +44,12 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: {
     optimizeCss: true,
+    serverComponentsExternalPackages: ['pdfjs-dist'],
+  },
+  webpack: (config) => {
+    config.resolve.alias.canvas = false;
+    config.resolve.alias.encoding = false;
+    return config;
   },
   async redirects() {
     return [

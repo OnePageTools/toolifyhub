@@ -4,7 +4,7 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload, FileArchive, Download, ArrowRight, Gauge, Save, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Loader2, Upload, FileArchive, Download, ArrowRight, AlertTriangle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
@@ -66,11 +66,12 @@ export function PdfCompressorForm() {
     setResultUrl(null);
     setResultStats(null);
     setProgress(0);
-    setStatusText('Loading PDF...');
+    setStatusText('Loading PDF engine...');
 
     try {
+      // Dynamic imports to prevent build-time canvas resolution errors
       const { PDFDocument } = await import('pdf-lib');
-      const pdfjsLib = await import('pdfjs-dist');
+      const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf');
       
       // Use stable worker from CDN
       pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -124,7 +125,7 @@ export function PdfCompressorForm() {
         });
       }
 
-      setStatusText('Compressing...');
+      setStatusText('Optimizing structure...');
       const compressedBytes = await newPdfDoc.save();
       const blob = new Blob([compressedBytes], { type: 'application/pdf' });
 
@@ -166,9 +167,9 @@ export function PdfCompressorForm() {
     <div className="space-y-6 flex flex-col items-center w-full">
       <Alert variant="default" className="w-full bg-blue-500/5 border-blue-500/20 text-blue-400">
         <AlertTriangle className="h-4 w-4" />
-        <AlertTitle className="text-[10px] font-black uppercase tracking-widest text-blue-500">Professional Compression</AlertTitle>
+        <AlertTitle className="text-[10px] font-black uppercase tracking-widest text-blue-500">Device-Level Compression</AlertTitle>
         <AlertDescription className="text-xs">
-          Using high-fidelity canvas rendering for actual size reduction. All processing happens on your device.
+          Your file is processed locally. We never upload your PDF to any server.
         </AlertDescription>
       </Alert>
 
@@ -181,8 +182,8 @@ export function PdfCompressorForm() {
             </SelectTrigger>
             <SelectContent className="bg-slate-800 border-slate-700">
               <SelectItem value="standard" className="text-sm">Low (Best Quality)</SelectItem>
-              <SelectItem value="medium" className="text-sm">Medium (Recommended)</SelectItem>
-              <SelectItem value="high" className="text-sm">High (Maximum Compression)</SelectItem>
+              <SelectItem value="medium" className="text-sm">Medium (Balanced)</SelectItem>
+              <SelectItem value="high" className="text-sm">High (Smallest Size)</SelectItem>
             </SelectContent>
           </Select>
         </CardContent>
@@ -202,10 +203,10 @@ export function PdfCompressorForm() {
             <Upload className="h-8 w-8 text-blue-500" />
           </div>
           <div>
-            <span className="font-bold text-slate-200 block">
+            <span className="font-bold text-slate-200 block truncate max-w-[300px]">
               {selectedFile ? selectedFile.name : "Select PDF File"}
             </span>
-            <p className="text-xs text-slate-500 mt-1">Max 100MB • Stays in browser</p>
+            <p className="text-xs text-slate-500 mt-1">Up to 100MB supported</p>
           </div>
         </div>
       </label>
@@ -218,7 +219,7 @@ export function PdfCompressorForm() {
             className="w-full h-14 bg-blue-600 hover:bg-blue-500 font-bold text-lg rounded-xl shadow-xl shadow-blue-600/20"
           >
             {isLoading ? (
-                <><Loader2 className="mr-2 h-5 w-5 animate-spin" />Processing PDF...</>
+                <><Loader2 className="mr-2 h-5 w-5 animate-spin" />Processing...</>
             ) : (
                 <><FileArchive className="mr-2 h-5 w-5" />Compress PDF</>
             )}
@@ -233,11 +234,11 @@ export function PdfCompressorForm() {
       )}
 
       {resultUrl && resultStats && (
-        <Card className="w-full bg-slate-900 border-slate-700 animate-in fade-in zoom-in-95 duration-500 overflow-hidden">
+        <Card className="w-full bg-slate-900 border-slate-800 animate-in fade-in zoom-in-95 duration-500 overflow-hidden">
           <div className="p-8 text-center space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
                 <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Original</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Before</p>
                     <div className="text-xl font-black text-slate-300 tabular-nums">{formatBytes(resultStats.originalSize)}</div>
                 </div>
                 <div className="flex justify-center">
@@ -246,20 +247,20 @@ export function PdfCompressorForm() {
                     </div>
                 </div>
                  <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Compressed</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500">After</p>
                     <div className="text-xl font-black text-emerald-500 tabular-nums">{formatBytes(resultStats.compressedSize)}</div>
                 </div>
             </div>
 
              <div className="p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl">
-                <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mb-1">Space Saved</p>
+                <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mb-1">Total Saving</p>
                 <p className="text-5xl font-black text-emerald-500 tabular-nums">{reductionPercentage}%</p>
             </div>
 
             <a href={resultUrl} download={selectedFile?.name.replace('.pdf', '-compressed.pdf') || 'compressed.pdf'} className="block w-full">
                 <Button className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-lg rounded-xl shadow-xl shadow-emerald-600/20" size="lg">
                     <Download className="mr-2 h-5 w-5" />
-                    Download PDF
+                    Download Skinny PDF
                 </Button>
             </a>
           </div>

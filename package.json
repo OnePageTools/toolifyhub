@@ -1,7 +1,11 @@
+
 {
   "name": "nextn",
   "version": "0.1.0",
   "private": true,
+  "browser": {
+    "canvas": false
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
