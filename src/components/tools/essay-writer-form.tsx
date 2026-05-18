@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Copy, ClipboardCheck, Download, Wand2, RefreshCw } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { Loader2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type EssayResult = {
   title: string;
@@ -28,6 +29,10 @@ const stopWords = new Set([
 export function EssayWriterForm() {
   const [topic, setTopic] = useState('');
   const [instructions, setInstructions] = useState('');
+  const [essayType, setEssayType] = useState('argumentative');
+  const [essayLength, setEssayLength] = useState('medium');
+  const [tone, setTone] = useState('formal');
+  
   const [result, setResult] = useState<EssayResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -121,49 +126,93 @@ export function EssayWriterForm() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full overflow-x-hidden box-border">
       {!result ? (
-        <div className="space-y-4">
-          <div>
+        <div className="space-y-3 md:space-y-4 px-4 md:px-0 max-w-full">
+          <div className="space-y-1">
             <Label htmlFor="topic">Essay Topic</Label>
-            <Input id="topic" placeholder="e.g., The Impact of Renewable Energy" value={topic} onChange={e => setTopic(e.target.value)} />
+            <Input id="topic" placeholder="e.g., The Impact of Renewable Energy" value={topic} onChange={e => setTopic(e.target.value)} className="w-full h-12 md:h-11" />
           </div>
-          <div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+             <div className="space-y-1">
+                <Label>Essay Type</Label>
+                <Select value={essayType} onValueChange={setEssayType}>
+                    <SelectTrigger className="w-full h-12 md:h-11"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="argumentative">Argumentative</SelectItem>
+                        <SelectItem value="descriptive">Descriptive</SelectItem>
+                        <SelectItem value="narrative">Narrative</SelectItem>
+                        <SelectItem value="expository">Expository</SelectItem>
+                    </SelectContent>
+                </Select>
+             </div>
+             <div className="space-y-1">
+                <Label>Length</Label>
+                <Select value={essayLength} onValueChange={setEssayLength}>
+                    <SelectTrigger className="w-full h-12 md:h-11"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="short">Short (300 words)</SelectItem>
+                        <SelectItem value="medium">Medium (500 words)</SelectItem>
+                        <SelectItem value="long">Long (800 words)</SelectItem>
+                    </SelectContent>
+                </Select>
+             </div>
+             <div className="space-y-1">
+                <Label>Tone</Label>
+                <Select value={tone} onValueChange={setTone}>
+                    <SelectTrigger className="w-full h-12 md:h-11"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="formal">Formal</SelectItem>
+                        <SelectItem value="academic">Academic</SelectItem>
+                        <SelectItem value="creative">Creative</SelectItem>
+                    </SelectContent>
+                </Select>
+             </div>
+          </div>
+
+          <div className="space-y-1">
             <Label htmlFor="instructions">Optional Instructions</Label>
-            <Textarea id="instructions" placeholder="e.g., Focus on positive impacts, mention solar and wind power." value={instructions} onChange={e => setInstructions(e.target.value)} />
+            <Textarea id="instructions" placeholder="e.g., Focus on positive impacts..." value={instructions} onChange={e => setInstructions(e.target.value)} className="w-full min-h-[120px]" />
           </div>
-          <Button onClick={handleGenerate} disabled={isLoading} size="lg">
+          
+          <Button onClick={handleGenerate} disabled={isLoading} size="lg" className="w-full md:w-auto h-[52px] md:h-14 text-base md:text-lg font-bold">
             {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</>
               : <><Wand2 className="mr-2 h-4 w-4" /> Generate Essay</>}
           </Button>
         </div>
       ) : (
-        <div className="space-y-4">
-          <Card>
-            <CardHeader className="flex-row items-center justify-between">
-              <div>
-                <CardTitle>Generated Essay</CardTitle>
-                <CardDescription>Word Count: {result.wordCount}</CardDescription>
+        <div className="space-y-4 w-full max-w-full px-4 md:px-0 overflow-x-hidden">
+          <Card className="w-full max-w-full overflow-hidden border-border bg-white dark:bg-card rounded-2xl shadow-sm">
+            <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 md:p-6 border-b border-border/50">
+              <div className="w-full md:w-auto">
+                <CardTitle className="text-xl md:text-2xl font-bold">Generated Essay</CardTitle>
+                <CardDescription className="text-xs md:text-sm">Word Count: {result.wordCount}</CardDescription>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={handleCopy}>
-                  {isCopied ? <ClipboardCheck /> : <Copy />} Copy
+              <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+                <Button variant="outline" size="sm" onClick={handleCopy} className="w-full md:w-auto h-11 md:h-9 flex-1 text-sm">
+                  {isCopied ? <ClipboardCheck className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />} Copy
                 </Button>
-                <Button variant="outline" size="sm" onClick={handleDownload}>
-                  <Download /> Download (.txt)
+                <Button variant="outline" size="sm" onClick={handleDownload} className="w-full md:w-auto h-11 md:h-9 flex-1 text-sm">
+                  <Download className="h-4 w-4 mr-2" /> Download (.txt)
                 </Button>
-                 <Button variant="default" size="sm" onClick={handleReset}>
-                  <RefreshCw /> Start Over
+                 <Button variant="default" size="sm" onClick={handleReset} className="w-full md:w-auto h-11 md:h-9 flex-1 text-sm">
+                  <RefreshCw className="h-4 w-4 mr-2" /> Start Over
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[60vh] rounded-md border p-4 bg-secondary/30">
-                <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
-                    <h1>{result.title}</h1>
-                    <div dangerouslySetInnerHTML={{ __html: result.content.replace(/## (.*?)\n/g, '<h2>$1</h2>').replace(/\n/g, '<br/>') }} />
+            <CardContent className="p-4 md:p-12 bg-secondary/10 overflow-hidden">
+              <ScrollArea className="h-[40vh] md:h-[60vh] min-h-[300px] w-full rounded-xl border border-border bg-white dark:bg-slate-900/50 p-4 md:p-6 overflow-hidden">
+                <div className="prose prose-sm md:prose-base dark:prose-invert max-w-full whitespace-pre-wrap break-words text-sm md:text-base leading-relaxed overflow-x-hidden box-border">
+                    <h1 className="text-xl md:text-3xl font-black mb-6 border-b pb-4 leading-tight">{result.title}</h1>
+                    <div className="w-full max-w-full overflow-hidden" dangerouslySetInnerHTML={{ __html: result.content.replace(/## (.*?)\n/g, '<h2 class="text-lg md:text-xl font-bold mt-8 mb-4 border-l-4 border-primary pl-3">$1</h2>').replace(/\n/g, '<br/>') }} />
                 </div>
               </ScrollArea>
+              <div className="mt-4 flex items-center justify-end">
+                <div className="px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] md:text-xs font-black uppercase tracking-widest">
+                    {result.wordCount} Words Total
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
