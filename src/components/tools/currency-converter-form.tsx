@@ -1,12 +1,12 @@
-
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowRightLeft, Copy, ClipboardCheck, Loader2, AlertCircle, TrendingUp, Clock, Zap, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
@@ -293,7 +293,7 @@ export function CurrencyConverterForm() {
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                         <TrendingUp className="w-3 h-3 text-blue-400" /> 7-Day Trend
                     </span>
-                    <Badge variant="outline" className="text-[9px] bg-blue-500/10 text-blue-400 border-none font-black uppercase">Live Updates</Badge>
+                    <div className="px-2 py-0.5 rounded-md text-xs font-medium text-[9px] bg-blue-500/10 text-blue-400 border-none font-black uppercase">Live Updates</div>
                 </div>
              </CardHeader>
              <CardContent className="p-6 pt-10">
@@ -357,12 +357,4 @@ export function CurrencyConverterForm() {
       </div>
     </div>
   );
-}
-
-function Badge({ children, className, variant = 'default' }: any) {
-    return (
-        <div className={cn("px-2 py-0.5 rounded-md text-xs font-medium", className)}>
-            {children}
-        </div>
-    )
 }
