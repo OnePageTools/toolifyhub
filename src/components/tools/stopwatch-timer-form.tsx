@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -137,10 +138,8 @@ export function StopwatchTimerForm() {
     audio.play().catch(() => {});
 
     // Browser Notification
-    if ("Notification" in window && Notification.permission === "granted") {
+    if (typeof window !== 'undefined' && "Notification" in window && Notification.permission === "granted") {
       new Notification("Time is up!", { body: "Your countdown has finished.", icon: "/favicon.ico" });
-    } else if ("Notification" in window && Notification.permission !== "denied") {
-      Notification.requestPermission();
     }
 
     toast({ title: 'Time is up!', description: 'The countdown has finished.' });
@@ -185,64 +184,70 @@ export function StopwatchTimerForm() {
   }, []);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 w-full max-w-full overflow-x-hidden">
       <Tabs defaultValue="stopwatch" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 bg-slate-800 border border-slate-700 h-12 mb-8">
-          <TabsTrigger value="stopwatch" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-            <Timer className="w-4 h-4 mr-2" /> Stopwatch
+        <TabsList className="grid w-full grid-cols-2 bg-slate-800 border border-slate-700 h-11 md:h-12 mb-8">
+          <TabsTrigger value="stopwatch" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-sm md:text-base">
+            <Timer className="w-4 h-4 mr-2 hidden sm:inline" /> Stopwatch
           </TabsTrigger>
-          <TabsTrigger value="timer" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white">
-            <Timer className="w-4 h-4 mr-2" /> Timer
+          <TabsTrigger value="timer" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-sm md:text-base">
+            <Timer className="w-4 h-4 mr-2 hidden sm:inline" /> Timer
           </TabsTrigger>
         </TabsList>
 
         {/* --- STOPWATCH TAB --- */}
-        <TabsContent value="stopwatch" className="space-y-8 animate-in fade-in zoom-in-95 duration-300">
-          <div className="text-center">
+        <TabsContent value="stopwatch" className="space-y-8 animate-in fade-in zoom-in-95 duration-300 w-full">
+          <div className="text-center px-2">
             <motion.h2 
               key={swTime}
               initial={false}
-              className="text-6xl md:text-8xl font-black font-mono text-white tracking-tighter tabular-nums drop-shadow-2xl"
+              className="text-[42px] sm:text-5xl md:text-8xl font-black font-mono text-white tracking-tighter tabular-nums drop-shadow-2xl"
             >
               {formatStopwatchTime(swTime)}
             </motion.h2>
           </div>
 
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-3 md:gap-4 w-full max-w-md mx-auto">
             {!swIsActive ? (
               <Button 
                 onClick={startStopwatch}
                 size="lg"
-                className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-emerald-600 hover:bg-emerald-500 shadow-lg shadow-emerald-500/20"
+                className="w-full md:w-20 h-[52px] md:h-20 rounded-xl md:rounded-full bg-emerald-600 hover:bg-emerald-500 shadow-lg shadow-emerald-500/20 text-base md:text-lg font-bold"
               >
-                <Play className="w-8 h-8 fill-current" />
+                <Play className="w-6 h-6 md:w-8 md:h-8 fill-current md:mr-0 mr-2" />
+                <span className="md:hidden">Start</span>
               </Button>
             ) : (
               <Button 
                 onClick={pauseStopwatch}
                 size="lg"
-                className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-yellow-600 hover:bg-yellow-500 shadow-lg shadow-yellow-500/20"
+                className="w-full md:w-20 h-[52px] md:h-20 rounded-xl md:rounded-full bg-yellow-600 hover:bg-yellow-500 shadow-lg shadow-yellow-500/20 text-base md:text-lg font-bold"
               >
-                <Pause className="w-8 h-8 fill-current" />
+                <Pause className="w-6 h-6 md:w-8 md:h-8 fill-current md:mr-0 mr-2" />
+                <span className="md:hidden">Pause</span>
               </Button>
             )}
             
-            <Button 
-              onClick={addLap}
-              disabled={!swIsActive}
-              size="lg"
-              className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-500/20 disabled:opacity-30"
-            >
-              <Flag className="w-8 h-8" />
-            </Button>
+            <div className="flex w-full md:w-auto gap-2">
+              <Button 
+                onClick={addLap}
+                disabled={!swIsActive}
+                size="lg"
+                className="flex-1 md:w-20 h-[48px] md:h-20 rounded-xl md:rounded-full bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-500/20 disabled:opacity-30 text-base md:text-lg font-bold"
+              >
+                <Flag className="w-5 h-5 md:w-8 md:h-8 md:mr-0 mr-2" />
+                <span className="md:hidden">Lap</span>
+              </Button>
 
-            <Button 
-              onClick={resetStopwatch}
-              size="lg"
-              className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-red-600 hover:bg-red-500 shadow-lg shadow-red-500/20"
-            >
-              <RotateCcw className="w-8 h-8" />
-            </Button>
+              <Button 
+                onClick={resetStopwatch}
+                size="lg"
+                className="flex-1 md:w-20 h-[48px] md:h-20 rounded-xl md:rounded-full bg-red-600 hover:bg-red-500 shadow-lg shadow-red-500/20 text-base md:text-lg font-bold"
+              >
+                <RotateCcw className="w-5 h-5 md:w-8 md:h-8 md:mr-0 mr-2" />
+                <span className="md:hidden">Reset</span>
+              </Button>
+            </div>
           </div>
 
           <AnimatePresence>
@@ -251,37 +256,37 @@ export function StopwatchTimerForm() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="space-y-4"
+                className="space-y-4 w-full"
               >
                 <div className="flex justify-between items-center px-2">
-                  <h3 className="text-slate-400 font-bold uppercase tracking-widest text-xs">Lap Times</h3>
-                  <Button variant="ghost" size="sm" onClick={() => setLaps([])} className="text-slate-500 hover:text-red-400 h-8">
-                    <Trash2 className="w-4 h-4 mr-2" /> Clear Laps
+                  <h3 className="text-slate-400 font-bold uppercase tracking-widest text-[10px] md:text-xs">Lap History</h3>
+                  <Button variant="ghost" size="sm" onClick={() => setLaps([])} className="text-slate-500 hover:text-red-400 h-8 text-xs">
+                    <Trash2 className="w-3 h-3 mr-1" /> Clear
                   </Button>
                 </div>
-                <div className="rounded-2xl border border-slate-800 bg-slate-900/50 overflow-hidden">
-                  <ScrollArea className="h-[300px]">
-                    <div className="divide-y divide-slate-800">
+                <div className="rounded-2xl border border-slate-800 bg-slate-900/50 overflow-hidden w-full">
+                  <ScrollArea className="h-[200px] md:h-[300px] w-full">
+                    <div className="divide-y divide-slate-800 text-[13px] md:text-sm">
                       {laps.map((lap) => (
                         <div 
                           key={lap.id} 
                           className={cn(
-                            "flex items-center justify-between p-4 transition-colors",
+                            "flex items-center justify-between p-3 md:p-4 transition-colors",
                             lap.id === lapAnalysis.fastestId ? "bg-emerald-500/10" : 
                             lap.id === lapAnalysis.slowestId ? "bg-red-500/10" : ""
                           )}
                         >
-                          <div className="flex items-center gap-4">
-                            <span className="text-slate-500 font-mono text-sm">#{lap.id.toString().padStart(2, '0')}</span>
+                          <div className="flex items-center gap-3 md:gap-4">
+                            <span className="text-slate-500 font-mono text-[11px] md:text-sm">#{lap.id.toString().padStart(2, '0')}</span>
                             <span className={cn(
-                              "font-mono text-lg font-bold",
+                              "font-mono font-bold",
                               lap.id === lapAnalysis.fastestId ? "text-emerald-400" : 
                               lap.id === lapAnalysis.slowestId ? "text-red-400" : "text-slate-200"
                             )}>
                               {formatStopwatchTime(lap.time)}
                             </span>
                           </div>
-                          <span className="text-slate-500 font-mono text-sm">
+                          <span className="text-slate-500 font-mono text-[11px] md:text-sm">
                             Total: {formatStopwatchTime(lap.total)}
                           </span>
                         </div>
@@ -295,46 +300,54 @@ export function StopwatchTimerForm() {
         </TabsContent>
 
         {/* --- TIMER TAB --- */}
-        <TabsContent value="timer" className="space-y-8 animate-in fade-in zoom-in-95 duration-300">
+        <TabsContent value="timer" className="space-y-8 animate-in fade-in zoom-in-95 duration-300 w-full">
           {!tIsActive && tTimeLeft === 0 ? (
-            <div className="space-y-6">
-              <div className="flex justify-center gap-4">
+            <div className="space-y-6 w-full px-2">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 max-w-md mx-auto">
                 {[
                   { label: 'Hours', value: tHours, set: setTHours, max: 99 },
                   { label: 'Mins', value: tMins, set: setTMins, max: 59 },
                   { label: 'Secs', value: tSecs, set: setTSecs, max: 59 },
                 ].map((unit) => (
                   <div key={unit.label} className="space-y-2 text-center">
-                    <Label className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">{unit.label}</Label>
+                    <Label className="text-[9px] md:text-[10px] uppercase font-bold text-slate-500 tracking-widest">{unit.label}</Label>
                     <Input 
                       type="number"
                       min="0"
                       max={unit.max}
                       value={unit.value}
                       onChange={(e) => unit.set(Math.min(unit.max, Math.max(0, parseInt(e.target.value) || 0)).toString())}
-                      className="w-20 h-20 text-3xl font-black text-center bg-slate-800 border-slate-700 rounded-2xl focus:ring-purple-500/50"
+                      className="w-full h-[52px] md:h-20 text-xl md:text-3xl font-black text-center bg-slate-800 border-slate-700 rounded-xl md:rounded-2xl focus:ring-purple-500/50 p-0"
                     />
                   </div>
                 ))}
               </div>
 
-              <div className="flex flex-wrap justify-center gap-2">
-                {[1, 5, 10, 15, 25, 30, 60].map(m => (
+              <div className="grid grid-cols-3 md:flex md:flex-wrap justify-center gap-2 max-w-md mx-auto">
+                {[1, 5, 10, 15, 25, 30].map(m => (
                   <Button 
                     key={m}
                     variant="outline" 
                     size="sm"
                     onClick={() => setPreset(m)}
-                    className="rounded-full border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700"
+                    className="h-10 md:h-9 rounded-xl border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 text-[12px] md:text-sm font-bold"
                   >
-                    {m} min
+                    {m}m
                   </Button>
                 ))}
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setPreset(60)}
+                  className="h-10 md:h-9 rounded-xl border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 text-[12px] md:text-sm font-bold"
+                >
+                  1h
+                </Button>
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center relative py-10">
-              <div className="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center">
+            <div className="flex flex-col items-center justify-center relative py-6 md:py-10 w-full">
+              <div className="relative w-[200px] h-[200px] md:w-80 md:h-80 flex items-center justify-center">
                 {/* Circular Progress Ring */}
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
                   <circle
@@ -360,7 +373,7 @@ export function StopwatchTimerForm() {
                 </svg>
 
                 {/* Center Content */}
-                <div className="absolute flex flex-col items-center">
+                <div className="absolute flex flex-col items-center w-full">
                    <AnimatePresence mode="wait">
                     {tIsFinished ? (
                       <motion.div 
@@ -368,15 +381,15 @@ export function StopwatchTimerForm() {
                         animate={{ scale: 1, opacity: 1 }}
                         className="flex flex-col items-center text-red-500"
                       >
-                        <Bell className="w-12 h-12 mb-2 animate-bounce" />
-                        <span className="text-3xl font-black uppercase tracking-tighter">Time is up!</span>
+                        <Bell className="w-8 h-8 md:w-12 md:h-12 mb-2 animate-bounce" />
+                        <span className="text-xl md:text-3xl font-black uppercase tracking-tighter">Done!</span>
                       </motion.div>
                     ) : (
                       <motion.span 
                         key={tTimeLeft}
                         initial={{ opacity: 0.5 }}
                         animate={{ opacity: 1 }}
-                        className="text-6xl md:text-7xl font-black tabular-nums text-white tracking-tighter font-mono"
+                        className="text-[36px] md:text-7xl font-black tabular-nums text-white tracking-tighter font-mono"
                       >
                         {formatTimerTime(tTimeLeft)}
                       </motion.span>
@@ -384,34 +397,26 @@ export function StopwatchTimerForm() {
                   </AnimatePresence>
                 </div>
               </div>
-              
-              {tIsFinished && (
-                <motion.div 
-                  animate={{ opacity: [0, 1, 0] }}
-                  transition={{ repeat: Infinity, duration: 0.5 }}
-                  className="absolute inset-0 bg-red-500/10 pointer-events-none rounded-3xl"
-                />
-              )}
             </div>
           )}
 
-          <div className="flex flex-col items-center gap-4 max-w-sm mx-auto">
-            <div className="flex gap-4 w-full">
+          <div className="flex flex-col items-center gap-4 w-full max-w-md mx-auto px-2">
+            <div className="flex gap-3 w-full">
               {!tIsActive ? (
                 <Button 
                   onClick={startTimer}
                   size="lg"
-                  className="flex-1 h-14 rounded-2xl bg-purple-600 hover:bg-purple-500 font-bold"
+                  className="flex-1 h-14 rounded-xl md:rounded-2xl bg-purple-600 hover:bg-purple-500 font-bold text-base md:text-lg"
                 >
-                  <Play className="mr-2 fill-current" /> Start
+                  <Play className="mr-2 h-5 w-5 fill-current" /> Start
                 </Button>
               ) : (
                 <Button 
                   onClick={pauseTimer}
                   size="lg"
-                  className="flex-1 h-14 rounded-2xl bg-yellow-600 hover:bg-yellow-500 font-bold"
+                  className="flex-1 h-14 rounded-xl md:rounded-2xl bg-yellow-600 hover:bg-yellow-500 font-bold text-base md:text-lg"
                 >
-                  <Pause className="mr-2 fill-current" /> Pause
+                  <Pause className="mr-2 h-5 w-5 fill-current" /> Pause
                 </Button>
               )}
               
@@ -419,7 +424,7 @@ export function StopwatchTimerForm() {
                 variant="outline" 
                 size="icon" 
                 onClick={resetTimer}
-                className="h-14 w-14 rounded-2xl border-slate-700 bg-slate-800/50 hover:bg-slate-700 text-slate-400"
+                className="h-14 w-14 rounded-xl md:rounded-2xl border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-slate-400"
               >
                 <RotateCcw className="w-6 h-6" />
               </Button>
